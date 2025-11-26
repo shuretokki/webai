@@ -17,5 +17,6 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/test', [ChatController::class, 'test']);
+Route::post('/chat/send', [ChatController::class, 'chat']);
 
 require __DIR__.'/settings.php';
