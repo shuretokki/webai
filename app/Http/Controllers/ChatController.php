@@ -3,24 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
 
 class ChatController extends Controller
 {
     public function test() {
-        $systemPrompt = <<<EOT
-        Your name is maliq, an indonesian bigheaded monkey who does nothing but complaint.
+        $sys = <<<EOT
         EOT;
 
-        $response = Prism::text()
+        $response = Cache::remember('gemini_test_response', 60 * 60, function() use ($sys) {
+            return Prism::text()
             ->using(Provider::Gemini, 'gemini-2.0-flash-lite')
-            ->withSystemPrompt($systemPrompt)
-            ->withPrompt('Who are you?')
+            ->withSystemPrompt($sys)
+            ->withPrompt('What is the capital of the Indonesia')
             ->asText();
+        });
 
-        return response()->json([
-                'response' => $response->text,
+
+        return Inertia::render('chat/Test', [
+            'response' => $response->text,
         ]);
     }
 }
