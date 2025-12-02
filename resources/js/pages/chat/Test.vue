@@ -13,7 +13,7 @@ const messagesContainer = ref<HTMLElement | null>(null);
 
 const scrollToBottom = () => {
   if (!messagesContainer.value) return;
-
+    
   messagesContainer.value.scrollTop =
     messagesContainer.value.scrollHeight;
 }
