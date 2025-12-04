@@ -11,7 +11,22 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ISolarAtomBoldDuotone: typeof import('~icons/solar/atom-bold-duotone')['default']
+    ISolarChatRoundLineLinear: typeof import('~icons/solar/chat-round-line-linear')['default']
+    ISolarCloseCircleLinear: typeof import('~icons/solar/close-circle-linear')['default']
+    ISolarCopyLinear: typeof import('~icons/solar/copy-linear')['default']
+    ISolarDoubleAltArrowLeftLinear: typeof import('~icons/solar/double-alt-arrow-left-linear')['default']
+    ISolarDoubleAltArrowRightLinear: typeof import('~icons/solar/double-alt-arrow-right-linear')['default']
+    ISolarDownloadLinear: typeof import('~icons/solar/download-linear')['default']
+    ISolarHamburgerMenuLinear: typeof import('~icons/solar/hamburger-menu-linear')['default']
+    ISolarMagniferLinear: typeof import('~icons/solar/magnifer-linear')['default']
+    ISolarMenuDotsLinear: typeof import('~icons/solar/menu-dots-linear')['default']
+    ISolarPaperclipLinear: typeof import('~icons/solar/paperclip-linear')['default']
+    ISolarPenNewSquareLinear: typeof import('~icons/solar/pen-new-square-linear')['default']
+    ISolarPlain2BoldDuotone: typeof import('~icons/solar/plain2-bold-duotone')['default']
     ISolarPlain3Bold: typeof import('~icons/solar/plain3-bold')['default']
+    ISolarRestartLinear: typeof import('~icons/solar/restart-linear')['default']
+    ISolarSettingsLinear: typeof import('~icons/solar/settings-linear')['default']
     ISolarStarsMinimalisticLinear: typeof import('~icons/solar/stars-minimalistic-linear')['default']
   }
 }

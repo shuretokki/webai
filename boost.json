@@ -1,11 +1,12 @@
 {
     "agents": [
-        "gemini"
+        "copilot"
     ],
     "editors": [
-        "gemini"
+        "vscode"
     ],
     "guidelines": [
-        "laravel/fortify"
+        "laravel/fortify",
+        "prism-php/prism"
     ]
 }
