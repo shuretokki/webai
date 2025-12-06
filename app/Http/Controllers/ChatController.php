@@ -15,9 +15,16 @@ class ChatController extends Controller
         $chat = Chat::where('user_id', auth()->id())->latest()->first();
         $messages = $chat ? $chat->messages : [];
 
+        $chats = Chat::where('user_id', auth()->user()->id)
+            ->latest()
+            ->get(['id', 'title', 'created_at']);
+
+        $activeChat = Chat::where('user_id', auth()->user()->id)->latest()->first();
+
         return Inertia::render('chat/Index', [
-            'messages' => $messages,
-            'chatId' => $chat ? $chat->id : null,
+            'chats' => $chats,
+            'messages' => $activeChat ? $activeChat->messages : [],
+            'chatId' => $activeChat ? $activeChat->id : null,
         ]);
     }
 
@@ -28,6 +35,7 @@ class ChatController extends Controller
             'prompt'=>'required|string',
             'chat_id' => 'nullable|exists:chats,id'
         ]);
+
 
         $user  = auth()->user();
         $chatId = $request->input('chat_id');
@@ -40,8 +48,13 @@ class ChatController extends Controller
             ]);
         }
 
+        $chat->messages()->create([
+            'role' => 'user',
+            'content' => $request->input('prompt')
+        ]);
+
         $response = Prism::text()
-            ->using(Provider::Gemini, 'gemini-2.0-flash-lite')
+            ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
             ->withPrompt($request->input('prompt'))
             ->asText();
 

@@ -2,9 +2,11 @@
 import { Link } from '@inertiajs/vue3';
 import { Motion } from 'motion-v';
 import { ref } from 'vue';
+import { chat as Chat } from '@/routes/index'
 
 defineProps<{
     isOpen?: boolean;
+    chats: Array<{id:number,title:string,created_at:string}>;
 }>();
 
 const emit = defineEmits(['close']);
@@ -64,33 +66,29 @@ const toggleCollapse = () => {
         <div v-else class="w-full h-px bg-white/10 my-4 mx-2"></div>
 
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-2 custom-scrollbar">
-            <div class="w-full shrink-0 relative flex flex-col gap-1">
-                <p v-if="!isCollapsed" class="px-2 py-1 font-space text-xs text-white/30">Today</p>
-                <div v-for="i in 3" :key="i"
-                    class="w-full flex items-center p-2 gap-3 hover:bg-white/5 cursor-pointer rounded-lg group transition-colors"
-                    :class="[isCollapsed ? 'justify-center' : '']"
-                >
-                    <i-solar-chat-round-line-linear class="text-white/40 group-hover:text-[#dbf156] transition-colors shrink-0" />
-                    <p v-if="!isCollapsed" class="flex-1 font-space text-sm text-white/70 truncate group-hover:text-white transition-colors">
-                        Project Analysis Report...
-                    </p>
-                </div>
-            </div>
+            <p v-if="!isCollapsed" class="px-2 py-1 font-space text-xs text-white/30">
+                Recent Chats
+            </p>
 
-            <div class="w-full shrink-0 relative flex flex-col gap-1 mt-4">
-                <p v-if="!isCollapsed" class="px-2 py-1 font-space text-xs text-white/30">Yesterday</p>
-                <div v-for="i in 2" :key="i"
-                    class="w-full flex items-center p-2 gap-3 hover:bg-white/5 cursor-pointer rounded-lg group transition-colors"
-                    :class="[isCollapsed ? 'justify-center' : '']"
-                >
-                    <i-solar-chat-round-line-linear class="text-white/40 group-hover:text-[#dbf156] transition-colors shrink-0" />
-                    <p v-if="!isCollapsed" class="flex-1 font-space text-sm text-white/70 truncate group-hover:text-white transition-colors">
-                        Code Refactoring Ideas...
-                    </p>
-                </div>
-            </div>
+            <Link
+                v-for="chat in chats"
+                :key="chat.id"
+                :href="Chat({query: {chat_id: chat.id}}).url"
+                class="w-full flex items-center p-2 gap-3 hover:bg-white/5 cursor-pointer transition-colors"
+                :class="[isCollapsed ? 'justify-center' : '']"
+            >
+            <i-solar-chat-round-line-linear class="text-white/40 group-hover:text-[#dbf156] transition-colors shrink-0" />
+            <p v-if ="!isCollapsed" class="flex-1 font-space text-sm text-white/70 trunctae group-hover:text-white transition-colors">
+                {{  chat.title || 'Untitled' }}
+            </p>
+        </Link>
+
+        <div v-if="chats.length === 0 && !isCollapsed" class="px-4 py-8 text-center text-white/20 text-xs">
+            No history yet.
         </div>
 
+
+        </div>
         <div class="w-full shrink-0 mt-auto pt-2 pb-4 px-2 border-t border-white/10 flex flex-col gap-2">
             <div
                 class="w-full flex items-center p-2 rounded-xl hover:bg-white/5 cursor-pointer transition-colors group relative"
@@ -99,10 +97,6 @@ const toggleCollapse = () => {
                 <div class="flex items-center gap-3">
                     <div class="size-8 rounded-full bg-gradient-to-br from-[#dbf156] to-[#acb564] flex items-center justify-center text-black font-bold shrink-0">
                         U
-                    </div>
-                    <div v-if="!isCollapsed" class="flex flex-col overflow-hidden">
-                        <span class="text-sm text-white font-medium truncate">User Name</span>
-                        <span class="text-xs text-white/50 truncate">Pro Plan</span>
                     </div>
                 </div>
 

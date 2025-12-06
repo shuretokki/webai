@@ -8,6 +8,7 @@ import Icons from 'unplugin-icons/vite';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 import VueDevTools from 'vite-plugin-vue-devtools';
+import { run } from 'vite-plugin-run'
 
 export default defineConfig({
     plugins: [
@@ -28,6 +29,13 @@ export default defineConfig({
                 },
             },
         }),
+        run([
+        {
+          name: 'wayfinder',
+          run: ['php', 'artisan', 'wayfinder'],
+          pattern: ['routes/**/*.php'],
+        }
+      ]),
         VueDevTools(),
         AutoImport({
             imports: [

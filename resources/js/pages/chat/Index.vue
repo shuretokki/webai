@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import Sidebar from '@/components/chat/Sidebar.vue';
 import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
-import { AnimatePresence, Motion } from 'motion-v';
 
 const props = defineProps<{
+    chats: Array<{ id: number, title:string, created_at: string}>,
     messages: Array<{ role: string, content: string }>,
     chatId: number | null
 }>();
@@ -15,26 +14,29 @@ const form = useForm({
     chat_id: props.chatId
 });
 
-const isSidebarOpen = ref(false);
+watch(() => props.chatId, (newId) => {
+    form.chat_id = newId;
+});
 
+const isSidebarOpen = ref(false);
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
 
-const messages = ref([
-    { variant: 'User/Text', content: 'Can you help me analyze this code snippet?' },
-    { variant: 'Responder/Text', content: 'Of course! Please share the code you would like me to look at.' },
-    { variant: 'User/Text', content: 'Here it is:' },
-    { variant: 'Responder/Code' },
-    { variant: 'User/Text', content: 'Can you also generate an image representing this algorithm?' },
-    { variant: 'Responder/Image' },
-]);
+const uiMessages = computed(() => {
+    return props.messages.map(msg => ({
+        variant: msg.role === 'user' ? 'User/Text' : 'Responder/Text',
+        content: msg.content
+    }));
+})
 
 const handleSendMessage = (text: string) => {
-    messages.value.push({ variant: 'User/Text', content: text });
-    setTimeout(() => {
-        messages.value.push({ variant: 'Responder/Text', content: 'I received your message: ' + text });
-    }, 1000);
+    form.prompt = text;
+    form.post('/chat/send', {
+        onSuccess: () => {
+            form.reset('prompt');
+        },
+    });
 };
 
 const bgStyle = {
@@ -48,7 +50,7 @@ const bgStyle = {
 
         <div class="w-full h-full shrink-0 relative flex items-start justify-center content-stretch overflow-hidden">
             <!-- Sidebar (Desktop) -->
-            <Sidebar class="hidden md:flex h-full border-r border-white/10" />
+            <Sidebar :chats="chats" class="hidden md:flex h-full border-r border-white/10" />
 
             <!-- Sidebar (Mobile Drawer) -->
             <AnimatePresence>
@@ -83,7 +85,7 @@ const bgStyle = {
                 <div class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth">
                     <div class="w-full max-w-3xl flex flex-col gap-4 py-4">
                         <Message
-                            v-for="(msg, index) in messages"
+                            v-for="(msg, index) in uiMessages"
                             :key="index"
                             :variant="msg.variant as any"
                             :content="msg.content"
