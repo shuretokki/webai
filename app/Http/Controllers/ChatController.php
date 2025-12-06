@@ -11,11 +11,11 @@ use App\Models\Chat;
 
 class ChatController extends Controller
 {
-    public function test() {
+    public function index() {
         $chat = Chat::where('user_id', auth()->id())->latest()->first();
         $messages = $chat ? $chat->messages : [];
 
-        return Inertia::render('chat/Test', [
+        return Inertia::render('chat/Index', [
             'messages' => $messages,
             'chatId' => $chat ? $chat->id : null,
         ]);

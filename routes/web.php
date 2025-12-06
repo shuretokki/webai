@@ -18,8 +18,6 @@ Route::get('dashboard', function () {
 
 Route::get('/test', [ChatController::class, 'test']);
 Route::post('/chat/send', [ChatController::class, 'chat']);
-Route::get('/chat', function () {
-    return Inertia::render('chat/Index');
-})->name('chat');
+Route::get('/chat', [ChatController::class, 'index'])->name('chat');
 
 require __DIR__.'/settings.php';

@@ -23,11 +23,14 @@ const toggleCollapse = () => {
             x: 0,
             width: isCollapsed ? '80px' : '268px'
         }"
-        :transition="{ duration: 0.3, ease: 'easeInOut' }"
-        class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-[#1e1e1e] border-r border-white/10 overflow-hidden z-20 transition-all duration-300"
+        :transition="{
+            type: 'spring',
+            stiffness: 300,
+            damping: 30
+        }"
+        class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-[#1e1e1e] border-r border-white/10 overflow-hidden z-20"
         :class="[isCollapsed ? 'items-center' : 'items-start']"
     >
-        <!-- Navbar -->
         <div class="w-full shrink-0 relative h-[60px] flex items-center" :class="[isCollapsed ? 'justify-center' : 'justify-between px-4']">
             <div class="size-8 flex items-center justify-center text-white">
                 <i-solar-atom-bold-duotone class="text-2xl text-[#dbf156]" />
@@ -37,9 +40,7 @@ const toggleCollapse = () => {
             </button>
         </div>
 
-        <!-- Search & New Chat -->
         <div class="w-full shrink-0 flex flex-col gap-2 px-2 mt-2">
-            <!-- Search -->
             <div
                 class="w-full relative flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']"
@@ -48,7 +49,6 @@ const toggleCollapse = () => {
                 <p v-if="!isCollapsed" class="font-space font-normal text-[16px] text-white/80 group-hover:text-white transition-colors whitespace-nowrap">Search</p>
             </div>
 
-            <!-- New Chat -->
             <div
                 class="w-full relative flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']"
@@ -58,13 +58,11 @@ const toggleCollapse = () => {
             </div>
         </div>
 
-        <!-- History Header -->
         <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-4 py-2 mt-4">
             <p class="font-space font-normal text-sm text-white/40 uppercase tracking-wider">History</p>
         </div>
         <div v-else class="w-full h-px bg-white/10 my-4 mx-2"></div>
 
-        <!-- History Content -->
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-2 custom-scrollbar">
             <div class="w-full shrink-0 relative flex flex-col gap-1">
                 <p v-if="!isCollapsed" class="px-2 py-1 font-space text-xs text-white/30">Today</p>
@@ -93,21 +91,10 @@ const toggleCollapse = () => {
             </div>
         </div>
 
-        <!-- Bottom User Profile -->
         <div class="w-full shrink-0 mt-auto pt-2 pb-4 px-2 border-t border-white/10 flex flex-col gap-2">
-             <!-- Collapse Toggle -->
-            <button
-                @click="toggleCollapse"
-                class="w-full flex items-center justify-center p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                :title="isCollapsed ? 'Expand' : 'Collapse'"
-            >
-                <i-solar-double-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
-                <i-solar-double-alt-arrow-left-linear v-else class="text-xl" />
-            </button>
-
             <div
-                class="w-full flex items-center p-2 rounded-xl hover:bg-white/5 cursor-pointer transition-colors group"
-                :class="[isCollapsed ? 'justify-center' : 'justify-between']"
+                class="w-full flex items-center p-2 rounded-xl hover:bg-white/5 cursor-pointer transition-colors group relative"
+                :class="[isCollapsed ? 'flex-col justify-center gap-4' : 'justify-between']"
             >
                 <div class="flex items-center gap-3">
                     <div class="size-8 rounded-full bg-gradient-to-br from-[#dbf156] to-[#acb564] flex items-center justify-center text-black font-bold shrink-0">
@@ -118,7 +105,15 @@ const toggleCollapse = () => {
                         <span class="text-xs text-white/50 truncate">Pro Plan</span>
                     </div>
                 </div>
-                <i-solar-settings-linear v-if="!isCollapsed" class="text-white/40 group-hover:text-white transition-colors" />
+
+                <button
+                    @click.stop="toggleCollapse"
+                    class="text-white/40 hover:text-white transition-colors"
+                    :class="[isCollapsed ? '' : '']"
+                >
+                    <i-solar-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
+                    <i-solar-alt-arrow-left-linear v-else class="text-xl" />
+                </button>
             </div>
         </div>
     </Motion>

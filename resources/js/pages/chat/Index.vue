@@ -5,6 +5,16 @@ import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
 import { AnimatePresence, Motion } from 'motion-v';
 
+const props = defineProps<{
+    messages: Array<{ role: string, content: string }>,
+    chatId: number | null
+}>();
+
+const form = useForm({
+    prompt: '',
+    chat_id: props.chatId
+});
+
 const isSidebarOpen = ref(false);
 
 const toggleSidebar = () => {
@@ -22,7 +32,6 @@ const messages = ref([
 
 const handleSendMessage = (text: string) => {
     messages.value.push({ variant: 'User/Text', content: text });
-    // Simulate response
     setTimeout(() => {
         messages.value.push({ variant: 'Responder/Text', content: 'I received your message: ' + text });
     }, 1000);

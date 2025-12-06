@@ -11,6 +11,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ISolarAltArrowLeftLinear: typeof import('~icons/solar/alt-arrow-left-linear')['default']
+    ISolarAltArrowRightLinear: typeof import('~icons/solar/alt-arrow-right-linear')['default']
+    ISolarArrowRightLinear: typeof import('~icons/solar/arrow-right-linear')['default']
     ISolarAtomBoldDuotone: typeof import('~icons/solar/atom-bold-duotone')['default']
     ISolarChatRoundLineLinear: typeof import('~icons/solar/chat-round-line-linear')['default']
     ISolarCloseCircleLinear: typeof import('~icons/solar/close-circle-linear')['default']
