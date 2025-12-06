@@ -118,4 +118,16 @@ class ChatController extends Controller
             'X-Accel-Buffering' => 'no',
         ]);
     }
+
+    public function update(Request $request, Chat $chat) {
+        if ($chat->user_id !== auth()->id())
+            abort(403);
+
+        $request->validate([
+            'title' => 'required|string|max:255'
+        ]);
+
+        $chat->update(['title' => $request->input('title')]);
+        return back();
+    }
 }

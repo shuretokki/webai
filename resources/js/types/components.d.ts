@@ -30,6 +30,7 @@ declare module 'vue' {
     ISolarMagniferLinear: typeof import('~icons/solar/magnifer-linear')['default']
     ISolarMenuDotsLinear: typeof import('~icons/solar/menu-dots-linear')['default']
     ISolarPaperclipLinear: typeof import('~icons/solar/paperclip-linear')['default']
+    ISolarPenLinear: typeof import('~icons/solar/pen-linear')['default']
     ISolarPenNewSquareLinear: typeof import('~icons/solar/pen-new-square-linear')['default']
     ISolarPlain2BoldDuotone: typeof import('~icons/solar/plain2-bold-duotone')['default']
     ISolarPlain3Bold: typeof import('~icons/solar/plain3-bold')['default']

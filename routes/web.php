@@ -16,9 +16,8 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/test', [ChatController::class, 'test']);
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::patch('/chat/{chat}', [ChatController::class, 'update'])->name('chat.update');
     Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
 });
