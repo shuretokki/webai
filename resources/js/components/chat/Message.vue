@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Motion } from 'motion-v';
+import MarkdownIt from 'markdown-it';
+import { createHighlighter } from 'shiki';
 
 interface Props {
     variant?: 'User/Text' | 'Responder/Text' | 'Responder/Code' | 'Responder/Image';
@@ -17,6 +19,33 @@ const isUser = computed(() => props.variant.startsWith('User'));
 const isResponder = computed(() => props.variant.startsWith('Responder'));
 
 const imgImage = "https://www.figma.com/api/mcp/asset/f79a321c-5666-4648-ab56-cb9a2ac2b1b5";
+
+const md = ref(new MarkdownIt({
+    html: false,
+    linkify: true,
+    typographer: true,
+}));
+
+onMounted(async() => {
+    const highlighter = await createHighlighter({
+        themes: ['vitesse-dark'],
+        langs: ['javascript', 'typescipt', 'php', 'python', 'html', 'css', 'json', 'bash', 'sql'],
+    });
+
+    md.value = new MarkdownIt({
+        html: false,
+        linkify: true,
+        typographer: true,
+        highlight: (code, lang) => {
+            if (!lang || !highlighter.getLoadedLanguages().includes(lang)) {
+                return highlighter.codeToHtml(code, { lang: 'text', theme: 'vitesse-dark'});
+            }
+
+            return highlighter.codeToHtml(code, { lang, theme: 'vitesse-dark'});
+        }
+    });
+});
+
 </script>
 
 <template>
@@ -52,12 +81,11 @@ const imgImage = "https://www.figma.com/api/mcp/asset/f79a321c-5666-4648-ab56-cb
             ]"
         >
             <!-- Text Content -->
-            <p v-if="variant === 'User/Text' || variant === 'Responder/Text'"
-                class="font-space font-normal text-[16px] leading-relaxed whitespace-pre-wrap break-words"
+            <div v-if="variant === 'User/Text' || variant === 'Responder/Text'"
+                class="prose prose-invert font-space font-normal text-[16px] leading-relaxed break-words"
                 :class="isResponder ? 'text-[#f8ffd7]' : 'text-[#f3f3f3]'"
-            >
-                {{ content }}
-            </p>
+                v-html="md.render(content)"
+            />
 
             <!-- Code Content -->
             <div v-if="variant === 'Responder/Code'" class="w-full overflow-x-auto">
@@ -101,3 +129,40 @@ const imgImage = "https://www.figma.com/api/mcp/asset/f79a321c-5666-4648-ab56-cb
         </div>
     </Motion>
 </template>
+
+<style scoped>
+/* :deep(.prose h1) {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    color: #dbf156;
+}
+:deep(.prose h2) {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    color: #f3f3f3;
+}
+:deep(.prose ul) {
+    list-style-type: disc;
+    padding-left: 1.5em;
+}
+:deep(.prose ol) {
+    list-style-type: decimal;
+    padding-left: 1.5em;
+}
+:deep(.prose code) {
+    background-color: rgba(255,255,255,0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25em;
+    font-family: monospace;
+}
+:deep(.prose pre) {
+    background-color: #1e1e1e;
+    padding: 1em;
+    border-radius: 0.5em;
+    overflow-x: auto;
+} */
+</style>

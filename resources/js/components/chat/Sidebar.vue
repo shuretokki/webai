@@ -51,13 +51,14 @@ const toggleCollapse = () => {
                 <p v-if="!isCollapsed" class="font-space font-normal text-[16px] text-white/80 group-hover:text-white transition-colors whitespace-nowrap">Search</p>
             </div>
 
-            <div
+            <Link
+                :href="Chat().url"
                 class="w-full relative flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']"
             >
                 <i-solar-pen-new-square-linear class="text-xl text-white/60 group-hover:text-white transition-colors" />
                 <p v-if="!isCollapsed" class="font-space font-normal text-[16px] text-white/80 group-hover:text-white transition-colors whitespace-nowrap">New Chat</p>
-            </div>
+        </Link>
         </div>
 
         <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-4 py-2 mt-4">

@@ -10,15 +10,18 @@ use App\Models\Chat;
 
 class ChatController extends Controller
 {
-    public function index() {
-        $chat = Chat::where('user_id', auth()->id())->latest()->first();
-        $messages = $chat ? $chat->messages : [];
-
+    public function index(Request $request) {
         $chats = Chat::where('user_id', auth()->user()->id)
             ->latest()
-            ->get(['id', 'title', 'created_at']);
+            ->get();
 
-        $activeChat = Chat::where('user_id', auth()->user()->id)->latest()->first();
+        $chatId = $request->query('chat_id');
+        $activeChat = null;
+
+        if ($chatId) {
+            $activeChat = $chats->firstWhere('id', $chatId);
+        }
+
 
         return Inertia::render('chat/Index', [
             'chats' => $chats,
