@@ -30,14 +30,79 @@ const uiMessages = computed(() => {
     }));
 })
 
-const handleSendMessage = (text: string) => {
-    form.prompt = text;
-    form.post('/chat/send', {
-        onSuccess: () => {
-            form.reset('prompt');
-        },
-    });
-};
+const streamingMessage = ref('');
+const isStreaming = ref(false);
+
+const handleSendMessage = async (text: string) => {
+    console.log("Starting stream for:", text); // LOG 1
+    props.messages.push({ role: 'user', content: text });
+
+    isStreaming.value = true;
+    streamingMessage.value = '';
+
+    try {
+        const response = await fetch('/chat/stream', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
+            },
+            body: JSON.stringify({
+                prompt: text,
+                chat_id: props.chatId
+            })
+        });
+
+    console.log("Response status:", response.status);
+    if (!response.body)
+        throw new Error('No response body');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        const { done, value } = await reader.read();
+
+        if (done)
+            break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+        console.log('Received chunk:', chunk);
+
+        for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed || !trimmed.startsWith('data: '))
+                continue
+
+            const data = line.slice(6);
+            if (data === '[Done]')
+                continue;
+
+            try {
+                const json = JSON.parse(data);
+                streamingMessage.value += json.text;
+            } catch (e) {
+                console.error('Error parsing JSON', e);
+            }
+        }
+    }
+} catch (error) {
+    console.error('Stream failed', error);
+} finally {
+    isStreaming.value = false;
+
+    if (streamingMessage.value) {
+        props.messages.push({
+            role:'assistant',
+            content: streamingMessage.value
+        });
+    }
+
+    streamingMessage.value = '';
+    // router.reload({ only: ['messages', 'chatId']});
+}};
+
 
 const bgStyle = {
     backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\\'0 0 880 835\\' xmlns=\\'http://www.w3.org/2000/svg\\' preserveAspectRatio=\\'none\\'><rect x=\\'0\\' y=\\'0\\' height=\\'100%\\' width=\\'100%\\' fill=\\'url(%23grad)\\' opacity=\\'1\\'/><defs><radialGradient id=\\'grad\\' gradientUnits=\\'userSpaceOnUse\\' cx=\\'0\\' cy=\\'0\\' r=\\'10\\' gradientTransform=\\'matrix(-58.667 -57.85 60.968 -43.485 590.24 586.5)\\'><stop stop-color=\\'rgba(0,0,0,0)\\' offset=\\'0\\'/><stop stop-color=\\'rgba(0,0,0,1)\\' offset=\\'1\\'/></radialGradient></defs></svg>'), linear-gradient(180deg, rgba(0, 0, 0, 1) 21.677%, rgba(0, 0, 0, 0) 100%), linear-gradient(90deg, rgba(30, 30, 30, 1) 0%, rgba(30, 30, 30, 1) 100%)"
@@ -90,11 +155,23 @@ const bgStyle = {
                             :variant="msg.variant as any"
                             :content="msg.content"
                         />
+
+                        <Message
+                            v-if="isStreaming || streamingMessage"
+                            variant="Responder/Text"
+                            :content="streamingMessage"
+                        />
+
+                    <div class="fixed top-0 right-0 bg-red-500 text-white z-50 p-2">
+                        Streaming: {{ isStreaming }} <br>
+                        Length: {{ streamingMessage.length }}
+                    </div>
                     </div>
                 </div>
 
                 <!-- Input Area -->
                 <div class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
+
                     <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" />
                 </div>
             </div>

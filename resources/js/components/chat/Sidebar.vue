@@ -27,8 +27,8 @@ const toggleCollapse = () => {
         }"
         :transition="{
             type: 'spring',
-            stiffness: 300,
-            damping: 30
+            duration: 0.5,
+            bounce: 0
         }"
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-[#1e1e1e] border-r border-white/10 overflow-hidden z-20"
         :class="[isCollapsed ? 'items-center' : 'items-start']"

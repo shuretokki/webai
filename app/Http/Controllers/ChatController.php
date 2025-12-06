@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
@@ -27,8 +26,6 @@ class ChatController extends Controller
             'chatId' => $activeChat ? $activeChat->id : null,
         ]);
     }
-
-
 
     public function chat(Request $request) {
         $request->validate([
@@ -64,5 +61,64 @@ class ChatController extends Controller
         ]);
 
         return back();
+    }
+
+    public function stream(Request $request) {
+        $request->validate([
+            'prompt' => 'required|string',
+            'chat_id' => 'nullable|exists:chats,id'
+        ]);
+
+        $chatId = $request->input('chat_id');
+
+        if ($chatId) {
+            $chat = Chat::where('user_id', auth()->user()->id)->findOrFail($chatId);
+        } else {
+            $chat = Chat::create(['user_id' => auth()->user()->id, 'title' => 'New Chat']);
+        }
+
+        $chat->messages()->create([
+            'role' => 'user',
+            'content' => $request->input('prompt')
+        ]);
+
+        return response()->stream(function () use ($chat, $request) {
+            $stream = Prism::text()
+                ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
+                ->withPrompt($request->input('prompt'))
+                ->asStream();
+
+            $fullResponse = '';
+
+            foreach ($stream as $chunk) {
+                $text = $chunk->delta ?? '';
+
+                if (empty($text))
+                    continue;
+
+                $fullResponse .= $text;
+
+                echo "data: " . json_encode(['text' => $text]) . "\n\n";
+
+                if (ob_get_level() > 0) ob_flush();
+                flush();
+
+
+            }
+
+            $chat->messages()->create([
+                'role' => 'assistant',
+                'content' => $fullResponse,
+            ]);
+
+            echo "data: [Done]\n\n";
+            if (ob_get_level() > 0) ob_flush();
+            flush();
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no',
+        ]);
     }
 }

@@ -56,7 +56,7 @@ const imgImage = "https://www.figma.com/api/mcp/asset/f79a321c-5666-4648-ab56-cb
                 class="font-space font-normal text-[16px] leading-relaxed whitespace-pre-wrap break-words"
                 :class="isResponder ? 'text-[#f8ffd7]' : 'text-[#f3f3f3]'"
             >
-                {{ content || (isResponder ? "Lorem Ipsum is simply dummy text..." : "Lorem Ipsum is simply dummy text...") }}
+                {{ content }}
             </p>
 
             <!-- Code Content -->
