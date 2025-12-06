@@ -19,23 +19,13 @@ const toggleCollapse = () => {
 
 <template>
     <Motion
-        :initial="{ opacity: 0, x: -20 }"
-        :animate="{
-            opacity: 1,
-            x: 0,
-            width: isCollapsed ? '80px' : '268px'
-        }"
-        :transition="{
-            type: 'spring',
-            duration: 0.5,
-            bounce: 0
-        }"
+
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-[#1e1e1e] border-r border-white/10 overflow-hidden z-20"
         :class="[isCollapsed ? 'items-center' : 'items-start']"
     >
         <div class="w-full shrink-0 relative h-[60px] flex items-center" :class="[isCollapsed ? 'justify-center' : 'justify-between px-4']">
             <div class="size-8 flex items-center justify-center text-white">
-                <i-solar-atom-bold-duotone class="text-2xl text-[#dbf156]" />
+                <div class="text-2xl text-[#dbf156]" />
             </div>
             <button @click="$emit('close')" class="md:hidden text-white" v-if="!isCollapsed">
                 <i-solar-close-circle-linear class="text-2xl" />
@@ -96,8 +86,8 @@ const toggleCollapse = () => {
                 :class="[isCollapsed ? 'flex-col justify-center gap-4' : 'justify-between']"
             >
                 <div class="flex items-center gap-3">
-                    <div class="size-8 rounded-full bg-gradient-to-br from-[#dbf156] to-[#acb564] flex items-center justify-center text-black font-bold shrink-0">
-                        U
+                    <div class="size-8 rounded-full bg-[#dbf156] flex items-center justify-center text-black font-bold shrink-0">
+
                     </div>
                 </div>
 

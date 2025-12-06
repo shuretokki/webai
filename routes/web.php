@@ -20,7 +20,6 @@ Route::get('/test', [ChatController::class, 'test']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
-    Route::post('/chat/send', [ChatController::class, 'chat'])->name('chat.send');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
 });
 

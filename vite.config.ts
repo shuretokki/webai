@@ -30,12 +30,12 @@ export default defineConfig({
             },
         }),
         run([
-        {
-          name: 'wayfinder',
-          run: ['php', 'artisan', 'wayfinder'],
-          pattern: ['routes/**/*.php'],
-        }
-      ]),
+            {
+                name: 'wayfinder',
+                run: ['php', 'artisan', 'wayfinder'],
+                pattern: ['routes/**/*.php'],
+            }
+        ]),
         VueDevTools(),
         AutoImport({
             imports: [
@@ -55,6 +55,12 @@ export default defineConfig({
                     prefix: 'i',
                     enabledCollections: ['solar'],
                 }),
+                (name) => {
+
+                    if (name === 'Motion') {
+                        return { name, from: 'motion-v' }
+                    }
+                }
             ],
             dts: 'resources/js/types/components.d.ts',
         }),

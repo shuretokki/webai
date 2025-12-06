@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import Sidebar from '@/components/chat/Sidebar.vue';
 import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
+import { chat as Chat } from '@/routes/index'
 
 const props = defineProps<{
-    chats: Array<{ id: number, title:string, created_at: string}>,
+    chats: Array<{ id: number, title: string, created_at: string }>,
     messages: Array<{ role: string, content: string }>,
     chatId: number | null
 }>();
@@ -34,7 +36,6 @@ const streamingMessage = ref('');
 const isStreaming = ref(false);
 
 const handleSendMessage = async (text: string) => {
-    console.log("Starting stream for:", text); // LOG 1
     props.messages.push({ role: 'user', content: text });
 
     isStreaming.value = true;
@@ -53,55 +54,62 @@ const handleSendMessage = async (text: string) => {
             })
         });
 
-    console.log("Response status:", response.status);
-    if (!response.body)
-        throw new Error('No response body');
+        if (!response.body)
+            throw new Error('No response body');
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-    while (true) {
-        const { done, value } = await reader.read();
+        while (true) {
+            const { done, value } = await reader.read();
 
-        if (done)
-            break;
+            if (done)
+                break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        console.log('Received chunk:', chunk);
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
 
-        for (const line of lines) {
-            const trimmed = line.trim()
-            if (!trimmed || !trimmed.startsWith('data: '))
-                continue
+            for (const line of lines) {
+                const trimmed = line.trim()
+                if (!trimmed || !trimmed.startsWith('data: '))
+                    continue
 
-            const data = line.slice(6);
-            if (data === '[Done]')
-                continue;
+                const data = line.slice(6);
+                if (data === '[Done]')
+                    continue;
 
-            try {
-                const json = JSON.parse(data);
-                streamingMessage.value += json.text;
-            } catch (e) {
-                console.error('Error parsing JSON', e);
+                try {
+                    const json = JSON.parse(data);
+                    if (!json.chat_id) {
+                        streamingMessage.value += json.text;
+                    } else {
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.set('chat_id', json.chat_id);
+                        window.history.replaceState({}, '', newUrl);
+
+                        form.chat_id = json.chat_id;
+                    }
+                } catch (e) {
+                    console.error('Error parsing JSON', e);
+                }
             }
         }
-    }
-} catch (error) {
-    console.error('Stream failed', error);
-} finally {
-    isStreaming.value = false;
+    } catch (error) {
+        console.error('Stream failed', error);
+    } finally {
+        isStreaming.value = false;
 
-    if (streamingMessage.value) {
-        props.messages.push({
-            role:'assistant',
-            content: streamingMessage.value
-        });
-    }
+        if (streamingMessage.value) {
+            props.messages.push({
+                role: 'assistant',
+                content: streamingMessage.value
+            });
+        }
 
-    streamingMessage.value = '';
-    // router.reload({ only: ['messages', 'chatId']});
-}};
+        streamingMessage.value = '';
+        router.reload({ only: ['chats'] });
+    }
+};
 
 
 const bgStyle = {
@@ -126,51 +134,46 @@ const bgStyle = {
             </AnimatePresence>
 
             <!-- Main Content -->
-            <div class="flex flex-col flex-1 h-full items-center content-stretch min-w-0 relative shrink-0 backdrop-blur-[6px]">
+            <div
+                class="flex flex-col flex-1 h-full items-center content-stretch min-w-0 relative shrink-0 backdrop-blur-[6px]">
 
                 <!-- Navbar (Content) -->
                 <div class="w-full shrink-0 relative h-[60px] flex items-center justify-between px-4 md:px-6 py-0 z-10">
                     <!-- Mobile Menu Button -->
-                    <button @click="toggleSidebar" class="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <button @click="toggleSidebar"
+                        class="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
                         <i-solar-hamburger-menu-linear class="text-2xl" />
                     </button>
 
                     <!-- Right Actions -->
                     <div class="flex items-center gap-3 ml-auto">
-                        <button class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <button
+                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
                             <i-solar-menu-dots-linear class="text-xl" />
                         </button>
-                        <button class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <Link
+                            :href="Chat().url"
+                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
                             <i-solar-pen-new-square-linear class="text-xl" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
                 <!-- Messages Area -->
-                <div class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth">
+                <div
+                    class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth">
                     <div class="w-full max-w-3xl flex flex-col gap-4 py-4">
-                        <Message
-                            v-for="(msg, index) in uiMessages"
-                            :key="index"
-                            :variant="msg.variant as any"
-                            :content="msg.content"
-                        />
+                        <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
+                            :content="msg.content" />
 
-                        <Message
-                            v-if="isStreaming || streamingMessage"
-                            variant="Responder/Text"
-                            :content="streamingMessage"
-                        />
-
-                    <div class="fixed top-0 right-0 bg-red-500 text-white z-50 p-2">
-                        Streaming: {{ isStreaming }} <br>
-                        Length: {{ streamingMessage.length }}
-                    </div>
+                        <Message v-if="isStreaming || streamingMessage" variant="Responder/Text"
+                            :content="streamingMessage" />
                     </div>
                 </div>
 
                 <!-- Input Area -->
-                <div class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
+                <div
+                    class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
 
                     <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" />
                 </div>

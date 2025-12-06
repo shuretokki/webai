@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
-use App\Models\Chat;
+use Prism\Prism\ValueObjects\Messages\AssistantMessage;
+use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class ChatController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $chats = Chat::where('user_id', auth()->user()->id)
             ->latest()
             ->get();
@@ -22,7 +25,6 @@ class ChatController extends Controller
             $activeChat = $chats->firstWhere('id', $chatId);
         }
 
-
         return Inertia::render('chat/Index', [
             'chats' => $chats,
             'messages' => $activeChat ? $activeChat->messages : [],
@@ -30,46 +32,11 @@ class ChatController extends Controller
         ]);
     }
 
-    public function chat(Request $request) {
-        $request->validate([
-            'prompt'=>'required|string',
-            'chat_id' => 'nullable|exists:chats,id'
-        ]);
-
-
-        $user  = auth()->user();
-        $chatId = $request->input('chat_id');
-        if ($chatId) {
-            $chat = Chat::where('user_id', $user->id)->findOrFail($chatId);
-        } else {
-            $chat = Chat::create([
-                'user_id' => $user->id,
-                'title' => 'New Chat',
-            ]);
-        }
-
-        $chat->messages()->create([
-            'role' => 'user',
-            'content' => $request->input('prompt')
-        ]);
-
-        $response = Prism::text()
-            ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
-            ->withPrompt($request->input('prompt'))
-            ->asText();
-
-        $chat->messages()->create([
-            'role' => 'assistant',
-            'content' => $response->text,
-        ]);
-
-        return back();
-    }
-
-    public function stream(Request $request) {
+    public function stream(Request $request)
+    {
         $request->validate([
             'prompt' => 'required|string',
-            'chat_id' => 'nullable|exists:chats,id'
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         $chatId = $request->input('chat_id');
@@ -80,33 +47,55 @@ class ChatController extends Controller
             $chat = Chat::create(['user_id' => auth()->user()->id, 'title' => 'New Chat']);
         }
 
+        $history = [];
+        if ($chat->exists) {
+            $messages = $chat->messages()->oldest()->get();
+
+            foreach ($messages as $msg) {
+                if ($msg->role === 'user') {
+                    $history[] = new UserMessage($msg->content);
+                } else {
+                    $history[] = new AssistantMessage($msg->content);
+                }
+            }
+        }
+
+        $history[] = new UserMessage($request->input('prompt'));
         $chat->messages()->create([
             'role' => 'user',
-            'content' => $request->input('prompt')
+            'content' => $request->input('prompt'),
         ]);
 
-        return response()->stream(function () use ($chat, $request) {
-            $stream = Prism::text()
-                ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
-                ->withPrompt($request->input('prompt'))
-                ->asStream();
+        return response()->stream(function () use ($chat, $request, $history) {
+            echo "data: " . json_encode(['chat_id' => $chat->id]) . "\n\n";
+            try {
+                $stream = Prism::text()
+                    ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
+                    ->withMessages($history)
+                    ->asStream();
 
-            $fullResponse = '';
+                $fullResponse = '';
 
-            foreach ($stream as $chunk) {
-                $text = $chunk->delta ?? '';
+                foreach ($stream as $chunk) {
+                    $text = $chunk->delta ?? '';
 
-                if (empty($text))
-                    continue;
+                    if (empty($text)) {
+                        continue;
+                    }
 
-                $fullResponse .= $text;
+                    $fullResponse .= $text;
 
-                echo "data: " . json_encode(['text' => $text]) . "\n\n";
+                    echo 'data: ' .json_encode(['text' => $text])."\n\n";
 
-                if (ob_get_level() > 0) ob_flush();
-                flush();
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
 
-
+                }
+            } catch (\Throwable $e) {
+                \Log::error($e);
+                echo 'data: '.json_encode(['error' => $e->getMessage()])."\n\n";
             }
 
             $chat->messages()->create([
@@ -114,8 +103,13 @@ class ChatController extends Controller
                 'content' => $fullResponse,
             ]);
 
+            if ($chat->title === 'New Chat' || $chat->messages->count() <= 2)
+                \App\Jobs\GenerateChatTitle::dispatch($chat);
+
             echo "data: [Done]\n\n";
-            if (ob_get_level() > 0) ob_flush();
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
         }, 200, [
             'Content-Type' => 'text/event-stream',

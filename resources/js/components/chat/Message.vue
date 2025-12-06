@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Motion } from 'motion-v';
+import { useMarkdown } from '@/lib/markdown';
 import MarkdownIt from 'markdown-it';
 import { createHighlighter } from 'shiki';
 
@@ -20,31 +21,7 @@ const isResponder = computed(() => props.variant.startsWith('Responder'));
 
 const imgImage = "https://www.figma.com/api/mcp/asset/f79a321c-5666-4648-ab56-cb9a2ac2b1b5";
 
-const md = ref(new MarkdownIt({
-    html: false,
-    linkify: true,
-    typographer: true,
-}));
-
-onMounted(async() => {
-    const highlighter = await createHighlighter({
-        themes: ['vitesse-dark'],
-        langs: ['javascript', 'typescipt', 'php', 'python', 'html', 'css', 'json', 'bash', 'sql'],
-    });
-
-    md.value = new MarkdownIt({
-        html: false,
-        linkify: true,
-        typographer: true,
-        highlight: (code, lang) => {
-            if (!lang || !highlighter.getLoadedLanguages().includes(lang)) {
-                return highlighter.codeToHtml(code, { lang: 'text', theme: 'vitesse-dark'});
-            }
-
-            return highlighter.codeToHtml(code, { lang, theme: 'vitesse-dark'});
-        }
-    });
-});
+const md = useMarkdown();
 
 </script>
 
@@ -64,20 +41,20 @@ onMounted(async() => {
             <div class="flex items-center gap-2">
                 <div class="h-[2px] w-12 bg-gradient-to-r from-[#acb564] to-transparent"></div>
                 <p class="font-philosopher font-bold text-sm text-[#f3f3f3] tracking-wide shadow-black drop-shadow-md">
-                    Silence
+
                 </p>
             </div>
         </div>
 
         <!-- Content Container -->
         <div
-            class="relative shrink-0 max-w-full md:max-w-[80%] rounded-2xl overflow-hidden transition-all"
+            class="relative shrink-0 max-w-full md:max-w-[80%] overflow-hidden transition-all"
             :class="[
                 variant === 'Responder/Code'
                     ? 'bg-[#1e1e1e] border-l-4 border-[#acb564] p-4 rounded-none'
                     : isResponder
-                        ? 'bg-white/5 p-4 backdrop-blur-sm border border-white/10 rounded-tl-none'
-                        : 'bg-[#dbf156]/10 p-4 border border-[#dbf156]/20 rounded-tr-none'
+                        ? 'bg-white/5 p-4 backdrop-blur-sm border border-white/10'
+                        : 'bg-[#dbf156]/10 p-4 border border-[#dbf156]/20'
             ]"
         >
             <!-- Text Content -->
@@ -131,7 +108,7 @@ onMounted(async() => {
 </template>
 
 <style scoped>
-/* :deep(.prose h1) {
+:deep(.prose h1) {
     font-size: 1.5em;
     font-weight: 700;
     margin-top: 1em;
@@ -154,15 +131,12 @@ onMounted(async() => {
     padding-left: 1.5em;
 }
 :deep(.prose code) {
-    background-color: rgba(255,255,255,0.1);
     padding: 0.2em 0.4em;
-    border-radius: 0.25em;
     font-family: monospace;
 }
 :deep(.prose pre) {
-    background-color: #1e1e1e;
     padding: 1em;
-    border-radius: 0.5em;
+    border-radius: 0;
     overflow-x: auto;
-} */
+}
 </style>
