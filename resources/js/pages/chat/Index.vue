@@ -51,24 +51,29 @@ watch(streaming, () => {
     scrollToBottom();
 });
 
-const handleSendMessage = async (text: string) => {
+const handleSendMessage = async (text: string, file?: File | null) => {
+    if (file) { }
+
     props.messages.push({ role: 'user', content: text });
 
     isStreaming.value = true;
     streaming.value = '';
 
     try {
+        const formData = new FormData();
+        formData.append('prompt', text);
+        formData.append('chat_id', props.chatId?.toString() || '');
+        formData.append('model', model.value);
+
+        if (file)
+            formData.append('file', file);
+
         const response = await fetch('/chat/stream', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
             },
-            body: JSON.stringify({
-                prompt: text,
-                chat_id: props.chatId,
-                model: model.value
-            })
+            body: formData as any
         });
 
         if (!response.body)
