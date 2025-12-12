@@ -58,7 +58,7 @@ const md = useMarkdown();
             </div>
         </div>
 
-        <div v-if="attachments?.length" class="flex flex-wrap gap-2 mt-2">
+        <!-- <div v-if="attachments?.length" class="flex flex-wrap gap-2 mt-2">
             <div v-for="(att, i) in attachments" :key="i" class="relative group">
                 <img v-if="att.type === 'image'" :src="att.url" class="h-32 w-auto rounded-lg border border-white/10" />
                 <a v-else :href="att.url" target="_blank"
@@ -67,7 +67,7 @@ const md = useMarkdown();
                     <span class="text-xs">{{ att.name || 'File' }}</span>
                 </a>
             </div>
-        </div>
+        </div> -->
 
         <div class="flex items-center gap-2 mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button class="text-white/20 hover:text-white transition-colors">
