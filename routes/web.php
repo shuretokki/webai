@@ -17,6 +17,7 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])->name('chat.destroy');
     Route::patch('/chat/{chat}', [ChatController::class, 'update'])->name('chat.update');
     Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
