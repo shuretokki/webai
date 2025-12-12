@@ -51,8 +51,8 @@ watch(streaming, () => {
     scrollToBottom();
 });
 
-const handleSendMessage = async (text: string, file?: File | null) => {
-    if (file) { }
+const handleSendMessage = async (text: string, files?: File[]) => {
+    // Optimistic UI for files can go here (TODO)
 
     props.messages.push({ role: 'user', content: text });
 
@@ -65,8 +65,11 @@ const handleSendMessage = async (text: string, file?: File | null) => {
         formData.append('chat_id', props.chatId?.toString() || '');
         formData.append('model', model.value);
 
-        if (file)
-            formData.append('file', file);
+        if (files) {
+            files.forEach(file => {
+                formData.append('files[]', file);
+            });
+        }
 
         const response = await fetch('/chat/stream', {
             method: 'POST',
@@ -149,7 +152,7 @@ onMounted(() => {
             <AnimatePresence>
                 <div v-if="isSidebarOpen" class="fixed inset-0 z-50 md:hidden flex">
                     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="toggleSidebar"></div>
-                    <Sidebar class="h-full shadow-2xl" @close="toggleSidebar" />
+                    <Sidebar :chats="chats" class="h-full shadow-2xl" @close="toggleSidebar" />
                 </div>
             </AnimatePresence>
 

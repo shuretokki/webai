@@ -39,12 +39,11 @@ class ChatController extends Controller
             'prompt' => 'required|string',
             'chat_id' => 'nullable|exists:chats,id',
             'model' => 'nullable|string',
-            'file' => 'nullable|file|image|max:10240',
+            'files.*' => 'nullable|file|max:10240', // Validate array of files
         ]);
 
         $model = $request->input('model', 'gemini-2.5-flash-lite');
         $chatId = $request->input('chat_id');
-        $file = $request->file('file');
 
         if ($chatId) {
             $chat = Chat::where('user_id', auth()->user()->id)->findOrFail($chatId);
@@ -65,22 +64,40 @@ class ChatController extends Controller
             }
         }
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $image = Image::fromLocalPath(
-                $file->getPathname(),
-                $file->getMimetype()
-            );
+        $prismContent = [];
+        $attachmentsData = [];
 
-            $history[] = new UserMessage($request->input('prompt'), [$image]);
-        } else {
-            $history[] = new UserMessage($request->input('prompt'));
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                // 1. Store File
+                $path = $file->store('attachments', 'public');
+
+                // 2. Add to DB Data
+                $attachmentsData[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                ];
+
+                // 3. Add to Prism (AI)
+                if (str_starts_with($file->getMimeType(), 'image/')) {
+                    $prismContent[] = Image::fromLocalPath($file->getPathname(), $file->getMimeType());
+                }
+                // TODO: Add PDF/Document support if Prism supports it for Gemini
+            }
         }
 
-        $chat->messages()->create([
+        $history[] = new UserMessage($request->input('prompt'), $prismContent);
+
+        $message = $chat->messages()->create([
             'role' => 'user',
             'content' => $request->input('prompt'),
         ]);
+
+        if (!empty($attachmentsData)) {
+            $message->attachments()->createMany($attachmentsData);
+        }
 
         return response()->stream(function () use ($chat, $history, $model) {
             echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";

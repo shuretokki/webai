@@ -6,8 +6,7 @@ const { textarea, input } = useTextareaAutosize();
 const emit = defineEmits(['submit']);
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const attachment = ref<File | null>(null);
-const attachmentPreview = ref<string | null>(null);
+const attachments = ref<Array<{ file: File, preview: string, type: 'image' | 'file' }>>([]);
 
 const triggerFileInput = () => {
     fileInput.value?.click();
@@ -15,35 +14,43 @@ const triggerFileInput = () => {
 
 const handleFileChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    if (!target.files || !target.files[0])
-        return;
+    if (!target.files?.length) return;
 
-    const file = target.files[0];
-    attachment.value = file;
+    Array.from(target.files).forEach(file => {
+        const isImage = file.type.startsWith('image/');
+        attachments.value.push({
+            file,
+            preview: isImage ? URL.createObjectURL(file) : '',
+            type: isImage ? 'image' : 'file'
+        });
+    });
 
-    attachmentPreview.value = URL.createObjectURL(file);
+    if (fileInput.value) fileInput.value.value = '';
 }
 
-const clearAttachment = () => {
-    attachment.value = null;
-    if (!attachmentPreview.value)
-        return;
+const removeAttachment = (index: number) => {
+    const item = attachments.value[index];
+    if (item.preview) URL.revokeObjectURL(item.preview);
+    attachments.value.splice(index, 1);
+}
 
-    URL.revokeObjectURL(attachmentPreview.value);
-    attachmentPreview.value = null;
-
-    if (fileInput.value)
-        fileInput.value.value = '';
+const clearAttachments = () => {
+    attachments.value.forEach(item => {
+        if (item.preview) URL.revokeObjectURL(item.preview);
+    });
+    attachments.value = [];
 }
 
 /* -=====- */
 
 const submit = () => {
-    if (!input.value.trim() && !attachment.value) return;
-    emit('submit', input.value, attachment.value);
+    if (!input.value.trim() && attachments.value.length === 0) return;
+
+    // Emit array of files
+    emit('submit', input.value, attachments.value.map(a => a.file));
 
     input.value = '';
-    clearAttachment();
+    clearAttachments();
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -65,18 +72,32 @@ const handleKeydown = (e: KeyboardEvent) => {
         </button>
 
         <div class="flex-1 min-w-0 py-3 flex flex-col gap-3">
-            <div v-if="attachmentPreview" class="relative inline-flex self-start group">
-                <img :src="attachmentPreview" class="h-20 w-auto object-coverr border border-white/20" />
-                <button type="button" @click="clearAttachment"
-                    class="absolute -top-2 -right-2 bg-black text-white rounded-full p-0.5 border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <i-solar-close-circle-bold class="text-lg" />
-                </button>
+            <!-- Attachments Preview Grid -->
+            <div v-if="attachments.length > 0" class="flex flex-wrap gap-2">
+                <div v-for="(item, index) in attachments" :key="index" class="relative group">
+                    <!-- Image Preview -->
+                    <img v-if="item.type === 'image'" :src="item.preview"
+                        class="h-16 w-16 rounded-md object-cover border border-white/20" />
+
+                    <!-- File Icon -->
+                    <div v-else
+                        class="h-16 w-16 rounded-md border border-white/20 bg-white/5 flex items-center justify-center">
+                        <i-solar-file-text-linear class="text-2xl text-white/60" />
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button type="button" @click="removeAttachment(index)"
+                        class="absolute -top-2 -right-2 bg-black text-white rounded-full p-0.5 border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i-solar-close-circle-bold class="text-lg" />
+                    </button>
+                </div>
             </div>
+
             <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..." @keydown="handleKeydown"
                 class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-[#f8ffd7] placeholder-white/30 focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
         </div>
 
-        <button type="submit" :disabled="!input.trim()"
+        <button type="submit" :disabled="!input.trim() && attachments.length === 0"
             class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-gradient-to-br from-[#dbf156] to-[#acb564] text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
             <div class="absolute inset-0 opacity-30">
                 <div
@@ -93,7 +114,8 @@ const handleKeydown = (e: KeyboardEvent) => {
         </button>
     </form>
 
-    <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg, image/webp"
+    <!-- Update accept and add multiple -->
+    <input type="file" ref="fileInput" class="hidden" multiple accept="image/*,application/pdf"
         @change="handleFileChange" />
 </template>
 

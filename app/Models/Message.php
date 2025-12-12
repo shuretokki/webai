@@ -12,4 +12,9 @@ class Message extends Model
     public function chat(): BelongsTo {
         return $this->belongsTo(Chat::class);
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
+    }
 }
