@@ -32,14 +32,30 @@ const uiMessages = computed(() => {
     }));
 })
 
-const streamingMessage = ref('');
+const container = ref<HTMLElement | null>(null);
+const scrollToBottom = async () => {
+    await nextTick();
+    if (!container.value)
+        return;
+
+    container.value.scrollTop =
+        container.value.scrollHeight;
+}
+
+watch(() => props.messages, scrollToBottom, { deep: true });
+
+const streaming = ref('');
 const isStreaming = ref(false);
+
+watch(streaming, () => {
+    scrollToBottom();
+});
 
 const handleSendMessage = async (text: string) => {
     props.messages.push({ role: 'user', content: text });
 
     isStreaming.value = true;
-    streamingMessage.value = '';
+    streaming.value = '';
 
     try {
         const response = await fetch('/chat/stream', {
@@ -81,7 +97,7 @@ const handleSendMessage = async (text: string) => {
                 try {
                     const json = JSON.parse(data);
                     if (!json.chat_id) {
-                        streamingMessage.value += json.text;
+                        streaming.value += json.text;
                     } else {
                         const newUrl = new URL(window.location.href);
                         newUrl.searchParams.set('chat_id', json.chat_id);
@@ -99,17 +115,23 @@ const handleSendMessage = async (text: string) => {
     } finally {
         isStreaming.value = false;
 
-        if (streamingMessage.value) {
+        if (streaming.value) {
             props.messages.push({
                 role: 'assistant',
-                content: streamingMessage.value
+                content: streaming.value
             });
         }
 
-        streamingMessage.value = '';
+        streaming.value = '';
         router.reload({ only: ['chats'] });
     }
+
+    scrollToBottom();
 };
+
+onMounted(() => {
+    scrollToBottom();
+});
 
 </script>
 <template>
@@ -117,10 +139,7 @@ const handleSendMessage = async (text: string) => {
         <div class="absolute inset-0 pointer-events-none"></div>
 
         <div class=" w-full h-full shrink-0 relative flex items-start justify-center content-stretch overflow-hidden">
-            <!-- Sidebar (Desktop) -->
             <Sidebar :chats="chats" class="hidden md:flex h-full border-r border-white/10" />
-
-            <!-- Sidebar (Mobile Drawer) -->
             <AnimatePresence>
                 <div v-if="isSidebarOpen" class="fixed inset-0 z-50 md:hidden flex">
                     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="toggleSidebar"></div>
@@ -149,14 +168,13 @@ const handleSendMessage = async (text: string) => {
                     </div>
                 </div>
 
-                <div
-                    class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth">
+                <div class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth"
+                    ref="container">
                     <div class="w-full max-w-3xl flex flex-col gap-4 py-4">
                         <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
                             :content="msg.content" />
 
-                        <Message v-if="isStreaming || streamingMessage" variant="Responder/Text"
-                            :content="streamingMessage" />
+                        <Message v-if="isStreaming || streaming" variant="Responder/Text" :content="streaming" />
                     </div>
                 </div>
 
