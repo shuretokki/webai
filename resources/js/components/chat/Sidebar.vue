@@ -63,9 +63,16 @@ const saveTitle = () => {
     });
 };
 
+const deleteChat = (id: number) => {
+    if (confirm('Are you sure you want to delete this chat?')) {
+        router.delete(`/chat/${id}`, {
+            preserveState: true,
+        });
+    }
+}
+
 const emit = defineEmits(['close']);
 const isCollapsed = ref(false);
-
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value;
 };
@@ -136,7 +143,12 @@ const toggleCollapse = () => {
                 <p class="font-space text-sm text-white/70 truncate group-hover:text-white transition-colors flex-1">
                     {{ chat.title || 'Untitled' }}
                 </p>
-                <button @click.prevent.stop="openEditModal(chat)" class="...">
+                <button @click.prevent.stop="deleteChat(chat.id)"
+                    class="p-1 text-white/40 hover:text-red-400 cursor-pointer transition-colors">
+                    <i-solar-trash-bin-trash-linear />
+                </button>
+                <button @click.prevent.stop="openEditModal(chat)"
+                    class="p-1 text-white/40 hover:text-[#dbf156] cursor-pointer transition-colors">
                     <i-solar-pen-linear />
                 </button>
             </div>
