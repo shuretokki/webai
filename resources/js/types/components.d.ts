@@ -37,5 +37,6 @@ declare module 'vue' {
     ISolarRestartLinear: typeof import('~icons/solar/restart-linear')['default']
     ISolarSettingsLinear: typeof import('~icons/solar/settings-linear')['default']
     ISolarStarsMinimalisticLinear: typeof import('~icons/solar/stars-minimalistic-linear')['default']
+    ISolarTrashBinTrashLinear: typeof import('~icons/solar/trash-bin-trash-linear')['default']
   }
 }
