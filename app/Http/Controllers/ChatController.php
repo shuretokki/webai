@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Facades\Prism;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 
@@ -49,7 +49,7 @@ class ChatController extends Controller
 
         $history = [];
         if ($chat->exists) {
-            $messages = $chat->messages()->oldest()->get();
+            $messages = $chat->messages()->latest()->take(10)->get()->reverse();
 
             foreach ($messages as $msg) {
                 if ($msg->role === 'user') {
@@ -66,8 +66,8 @@ class ChatController extends Controller
             'content' => $request->input('prompt'),
         ]);
 
-        return response()->stream(function () use ($chat, $request, $history) {
-            echo "data: " . json_encode(['chat_id' => $chat->id]) . "\n\n";
+        return response()->stream(function () use ($chat, $history) {
+            echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
             try {
                 $stream = Prism::text()
                     ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
@@ -85,7 +85,7 @@ class ChatController extends Controller
 
                     $fullResponse .= $text;
 
-                    echo 'data: ' .json_encode(['text' => $text])."\n\n";
+                    echo 'data: '.json_encode(['text' => $text])."\n\n";
 
                     if (ob_get_level() > 0) {
                         ob_flush();
@@ -103,8 +103,9 @@ class ChatController extends Controller
                 'content' => $fullResponse,
             ]);
 
-            if ($chat->title === 'New Chat' || $chat->messages->count() <= 2)
+            if ($chat->title === 'New Chat' || $chat->messages->count() <= 2) {
                 \App\Jobs\GenerateChatTitle::dispatch($chat);
+            }
 
             echo "data: [Done]\n\n";
             if (ob_get_level() > 0) {
@@ -119,15 +120,29 @@ class ChatController extends Controller
         ]);
     }
 
-    public function update(Request $request, Chat $chat) {
-        if ($chat->user_id !== auth()->id())
+    public function update(Request $request, Chat $chat)
+    {
+        if ($chat->user_id !== auth()->id()) {
             abort(403);
+        }
 
         $request->validate([
-            'title' => 'required|string|max:255'
+            'title' => 'required|string|max:255',
         ]);
 
         $chat->update(['title' => $request->input('title')]);
+
         return back();
+    }
+
+    public function destroy(Chat $chat)
+    {
+        $this->authorize('delete', $chat);
+
+        $chat->delete();
+        $previousUrl = url()->previous();
+        $atDeleted = str_contains($previousUrl, 'chat_id'.$chat->id);
+
+        return $atDeleted ? to_route('chat') : back();
     }
 }
