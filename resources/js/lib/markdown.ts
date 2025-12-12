@@ -13,9 +13,8 @@ export function useMarkdown() {
     return md;
 
   isInit = true;
-
   createHighlighter({
-    themes: ['vitesse-black'],
+    themes: ['gruvbox-dark-soft'],
     langs: ['javascript', 'typescript', 'c++', 'php', 'python', 'html', 'css', 'json', 'bash', 'sql', 'vue', 'blade', 'go', 'rust', 'java', 'c', 'c#', 'dart', 'elixir', 'erlang', 'haskell', 'kotlin', 'lua', 'perl', 'r', 'ruby', 'scala', 'swift', 'zig'],
   }).then((highlighter) => {
     md.value = new MarkdownIt({
@@ -26,7 +25,7 @@ export function useMarkdown() {
         const language = lang &&
           highlighter.getLoadedLanguages().includes(lang) ? lang : 'text';
 
-        return highlighter.codeToHtml(code, { lang: language, theme: 'vitesse-black' });
+        return highlighter.codeToHtml(code, { lang: language, theme: 'gruvbox-dark-soft' });
       }
     });
   });
