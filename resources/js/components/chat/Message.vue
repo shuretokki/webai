@@ -38,7 +38,6 @@ const md = useMarkdown();
         </div>
 
         <div class="relative shrink-0 max-w-full md:max-w-[80%] overflow-hidden transition-all">
-            <!-- Text Content -->
             <div v-if="variant === 'User/Text' || variant === 'Responder/Text'"
                 class="prose prose-invert font-space font-normal text-[16px] leading-relaxed break-words"
                 :class="isResponder ? 'text-[#f8ffd7]' : 'text-[#f3f3f3]'" v-html="md.render(content)" />
@@ -58,7 +57,6 @@ const md = useMarkdown();
             </div>
         </div>
 
-        <!-- Message Actions (Optional) -->
         <div class="flex items-center gap-2 mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button class="text-white/20 hover:text-white transition-colors">
                 <i-solar-copy-linear class="text-xs" />

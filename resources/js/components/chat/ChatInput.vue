@@ -21,7 +21,7 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 <template>
     <form @submit.prevent="submit"
-        class="w-full max-w-[600px] shrink-0 relative flex items-end gap-2 p-2 bg-[#1e1e1e] border-l-4 border-[#abb463] rounded-none shadow-lg transition-all focus-within:ring-1 focus-within:ring-[#abb463]/50">
+        class="w-full max-w-[600px] shrink-0 relative flex items-end gap-2 mb-2 bg-[#1e1e1e] border-l-4 border-[#abb463] rounded-none shadow-lg transition-all focus-within:ring-1 focus-within:ring-[#abb463]/50">
         <button type="button"
             class="shrink-0 p-3 text-white/60 hover:text-[#dbf156] cursor-pointer transition-colors rounded-none hover:bg-white/5 h-[48px] w-[48px] flex items-center justify-center">
             <i-solar-paperclip-linear class="text-xl" />

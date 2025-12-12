@@ -37,8 +37,10 @@ class ChatController extends Controller
         $request->validate([
             'prompt' => 'required|string',
             'chat_id' => 'nullable|exists:chats,id',
+            'model' => 'nullable|string',
         ]);
 
+        $model = $request->input('model', 'gemini-2.5-flash-lite');
         $chatId = $request->input('chat_id');
 
         if ($chatId) {
@@ -66,11 +68,11 @@ class ChatController extends Controller
             'content' => $request->input('prompt'),
         ]);
 
-        return response()->stream(function () use ($chat, $history) {
+        return response()->stream(function () use ($chat, $history, $model) {
             echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
             try {
                 $stream = Prism::text()
-                    ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
+                    ->using(Provider::Gemini, $model)
                     ->withMessages($history)
                     ->asStream();
 

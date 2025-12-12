@@ -11,9 +11,11 @@ const props = defineProps<{
     chatId: number | null
 }>();
 
+const model = ref('gemini-2.5-flash-lite');
 const form = useForm({
     prompt: '',
-    chat_id: props.chatId
+    chat_id: props.chatId,
+    model: model.value,
 });
 
 watch(() => props.chatId, (newId) => {
@@ -41,12 +43,10 @@ const scrollToBottom = async () => {
     container.value.scrollTop =
         container.value.scrollHeight;
 }
-
 watch(() => props.messages, scrollToBottom, { deep: true });
 
 const streaming = ref('');
 const isStreaming = ref(false);
-
 watch(streaming, () => {
     scrollToBottom();
 });
@@ -66,7 +66,8 @@ const handleSendMessage = async (text: string) => {
             },
             body: JSON.stringify({
                 prompt: text,
-                chat_id: props.chatId
+                chat_id: props.chatId,
+                model: model.value
             })
         });
 
@@ -157,6 +158,20 @@ onMounted(() => {
                     </button>
 
                     <div class="flex items-center gap-3 ml-auto">
+                        <div
+                            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <div class="relative group">
+                                <select v-model="model"
+                                    class="appearance-none bg-white/5 border border-white/10 hover:border-white/20 text-white text-sm rounded-lg pl-3 pr-8 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#dbf156]">
+                                    <option value="gemini-2.5-flash-lite">Gemini Flash Lite</option>
+                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                </select>
+                                <!-- Custom Arrow Icon -->
+                                <i-solar-alt-arrow-down-linear
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none text-xs" />
+                            </div>
+                        </div>
                         <button
                             class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
                             <i-solar-menu-dots-linear class="text-xl" />

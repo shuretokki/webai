@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ISolarAltArrowActionForwardLinear: typeof import('~icons/solar/alt-arrow-action-forward-linear')['default']
+    ISolarAltArrowDownLinear: typeof import('~icons/solar/alt-arrow-down-linear')['default']
     ISolarAltArrowLeftLinear: typeof import('~icons/solar/alt-arrow-left-linear')['default']
     ISolarAltArrowRightLinear: typeof import('~icons/solar/alt-arrow-right-linear')['default']
     ISolarAltChevronRightLinear: typeof import('~icons/solar/alt-chevron-right-linear')['default']
