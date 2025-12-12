@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,7 +29,8 @@ class ChatController extends Controller
 
         return Inertia::render('chat/Index', [
             'chats' => $chats,
-            'messages' => $activeChat ? $activeChat->messages : [],
+            'messages' => $activeChat ? MessageResource::collection(
+                $activeChat->messages()->with('attachments')->get()) : [],
             'chatId' => $activeChat ? $activeChat->id : null,
         ]);
     }
@@ -39,7 +41,7 @@ class ChatController extends Controller
             'prompt' => 'required|string',
             'chat_id' => 'nullable|exists:chats,id',
             'model' => 'nullable|string',
-            'files.*' => 'nullable|file|max:10240', // Validate array of files
+            'files.*' => 'nullable|file|max:10240',
         ]);
 
         $model = $request->input('model', 'gemini-2.5-flash-lite');
@@ -69,10 +71,7 @@ class ChatController extends Controller
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                // 1. Store File
                 $path = $file->store('attachments', 'public');
-
-                // 2. Add to DB Data
                 $attachmentsData[] = [
                     'name' => $file->getClientOriginalName(),
                     'path' => $path,
@@ -80,7 +79,6 @@ class ChatController extends Controller
                     'size' => $file->getSize(),
                 ];
 
-                // 3. Add to Prism (AI)
                 if (str_starts_with($file->getMimeType(), 'image/')) {
                     $prismContent[] = Image::fromLocalPath($file->getPathname(), $file->getMimeType());
                 }
@@ -95,7 +93,7 @@ class ChatController extends Controller
             'content' => $request->input('prompt'),
         ]);
 
-        if (!empty($attachmentsData)) {
+        if (! empty($attachmentsData)) {
             $message->attachments()->createMany($attachmentsData);
         }
 
