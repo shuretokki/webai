@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Facades\Prism;
+use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 
@@ -38,10 +39,12 @@ class ChatController extends Controller
             'prompt' => 'required|string',
             'chat_id' => 'nullable|exists:chats,id',
             'model' => 'nullable|string',
+            'file' => 'nullable|file|image|max:10240',
         ]);
 
         $model = $request->input('model', 'gemini-2.5-flash-lite');
         $chatId = $request->input('chat_id');
+        $file = $request->file('file');
 
         if ($chatId) {
             $chat = Chat::where('user_id', auth()->user()->id)->findOrFail($chatId);
@@ -62,7 +65,18 @@ class ChatController extends Controller
             }
         }
 
-        $history[] = new UserMessage($request->input('prompt'));
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $image = Image::fromLocalPath(
+                $file->getPathname(),
+                $file->getMimetype()
+            );
+
+            $history[] = new UserMessage($request->input('prompt'), [$image]);
+        } else {
+            $history[] = new UserMessage($request->input('prompt'));
+        }
+
         $chat->messages()->create([
             'role' => 'user',
             'content' => $request->input('prompt'),
