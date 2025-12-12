@@ -46,8 +46,12 @@ const clearAttachments = () => {
 const submit = () => {
     if (!input.value.trim() && attachments.value.length === 0) return;
 
-    // Emit array of files
-    emit('submit', input.value, attachments.value.map(a => a.file));
+
+    const files = attachments.value.length > 0
+        ? attachments.value.map(a => a.file)
+        : undefined;
+
+    emit('submit', input.value, files);
 
     input.value = '';
     clearAttachments();
