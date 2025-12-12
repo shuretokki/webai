@@ -7,11 +7,19 @@ import { chat as Chat } from '@/routes/index'
 
 const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>,
-    messages: Array<{ role: string, content: string }>,
+    messages: Array<{
+        role: string, content: string, attachments?: Array<{
+            type: string,
+            url: string,
+            name: string,
+            mime_type?: string,
+            path?: string
+        }>
+    }>,
     chatId: number | null
 }>();
 
-const model = ref('gemini-2.5-flash-lite');
+const model = ref('gemini-2.0-flash-lite');
 const form = useForm({
     prompt: '',
     chat_id: props.chatId,
@@ -30,7 +38,8 @@ const toggleSidebar = () => {
 const uiMessages = computed(() => {
     return props.messages.map(msg => ({
         variant: msg.role === 'user' ? 'User/Text' : 'Responder/Text',
-        content: msg.content
+        content: msg.content,
+        attachments: msg.attachments
     }));
 })
 
@@ -52,9 +61,14 @@ watch(streaming, () => {
 });
 
 const handleSendMessage = async (text: string, files?: File[]) => {
-    // Optimistic UI for files can go here (TODO)
+    const attachment = files?.map(file => ({
+        type: file.type.startsWith('image/') ? 'image' : 'file',
+        url: URL.createObjectURL(file),
+        name: file.name,
+        _optimistic: true
+    })) || [];
 
-    props.messages.push({ role: 'user', content: text });
+    props.messages.push({ role: 'user', content: text, attachments: attachment });
 
     isStreaming.value = true;
     streaming.value = '';
@@ -171,11 +185,9 @@ onMounted(() => {
                             <div class="relative group">
                                 <select v-model="model"
                                     class="appearance-none bg-white/5 border border-white/10 hover:border-white/20 text-white text-sm rounded-lg pl-3 pr-8 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#dbf156]">
-                                    <option value="gemini-2.5-flash-lite">Gemini Flash Lite</option>
-                                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                    <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                                 </select>
-                                <!-- Custom Arrow Icon -->
                                 <i-solar-alt-arrow-down-linear
                                     class="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none text-xs" />
                             </div>
