@@ -8,6 +8,7 @@ interface Props {
     content?: string;
     imageSrc?: string;
     language?: string;
+    attachments?: Array<{ type: 'image' | 'file', url: string, name?: string }>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -54,6 +55,17 @@ const md = useMarkdown();
                         <i-solar-download-linear />
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <div v-if="attachments?.length" class="flex flex-wrap gap-2 mt-2">
+            <div v-for="(att, i) in attachments" :key="i" class="relative group">
+                <img v-if="att.type === 'image'" :src="att.url" class="h-32 w-auto rounded-lg border border-white/10" />
+                <a v-else :href="att.url" target="_blank"
+                    class="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10">
+                    <i-solar-file-text-linear class="text-xl" />
+                    <span class="text-xs">{{ att.name || 'File' }}</span>
+                </a>
             </div>
         </div>
 
