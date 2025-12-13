@@ -9,11 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Chat extends Model
 {
     protected $fillable = ['user_id', 'title'];
-    public function user(): BelongsTo {
+
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function messages(): HasMany {
+    public function messages(): HasMany
+    {
         return $this->hasMany(Message::class);
     }
 }
