@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateChatRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
+use App\Models\UserUsage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Prism\Prism\Enums\Provider;
@@ -11,6 +13,8 @@ use Prism\Prism\Facades\Prism;
 use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
+
+use function strlen;
 
 class ChatController extends Controller
 {
@@ -46,23 +50,33 @@ class ChatController extends Controller
 
         $model = $request->input('model', 'gemini-2.5-flash-lite');
         $chatId = $request->input('chat_id');
+        $user = auth()->user();
+
+        if ($user->hasExceededQuota('messages', 100)) {
+            return response()->json([
+                'error' => 'You have reached your monthly message limit. Upgrade your plan to increase limit.',
+            ], 403);
+        }
 
         if ($chatId) {
-            $chat = Chat::where('user_id', auth()->user()->id)->findOrFail($chatId);
+            $chat = Chat::where('user_id', $user->id)
+                ->findOrFail($chatId);
         } else {
-            $chat = Chat::create(['user_id' => auth()->user()->id, 'title' => 'New Chat']);
+            $chat = Chat::create(['user_id' => $user->id, 'title' => 'New Chat']);
         }
 
         $history = [];
         if ($chat->exists) {
-            $messages = $chat->messages()->latest()->take(10)->get()->reverse();
+            $messages = $chat->messages()
+                ->latest()
+                ->take(10)
+                ->get()
+                ->reverse();
 
             foreach ($messages as $msg) {
-                if ($msg->role === 'user') {
-                    $history[] = new UserMessage($msg->content);
-                } else {
-                    $history[] = new AssistantMessage($msg->content);
-                }
+                $history[] = ($msg->role === 'user')
+                    ? new UserMessage($msg->content)
+                    : new AssistantMessage($msg->content);
             }
         }
 
@@ -82,6 +96,17 @@ class ChatController extends Controller
                 if (str_starts_with($file->getMimeType(), 'image/')) {
                     $prismContent[] = Image::fromLocalPath($file->getPathname(), $file->getMimeType());
                 }
+
+                UserUsage::record(
+                    userId: $user->id,
+                    type: 'file_upload',
+                    bytes: $file->getSize(),
+                    metadata: [
+                        'chat_id' => $chat->id,
+                        'mime_type' => $file->getMimeType(),
+                        'filename' => $file->getClientOriginalName(),
+                    ]
+                );
                 // TODO: Add PDF/Document support if Prism supports it for Gemini
             }
         }
@@ -97,7 +122,18 @@ class ChatController extends Controller
             $message->attachments()->createMany($attachmentsData);
         }
 
-        return response()->stream(function () use ($chat, $history, $model) {
+        UserUsage::record(
+            userId: $user->id,
+            type: 'message_sent',
+            messages: 1,
+            metadata: [
+                'chat_id' => $chat->id,
+                'model' => $model,
+                'has_attachments' => ! empty($attachmentsData),
+            ]
+        );
+
+        return response()->stream(function () use ($chat, $history, $model, $user) {
             echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
             try {
                 $stream = Prism::text()
@@ -106,6 +142,7 @@ class ChatController extends Controller
                     ->asStream();
 
                 $fullResponse = '';
+                $totalTokens = 0;
 
                 foreach ($stream as $chunk) {
                     $text = $chunk->delta ?? '';
@@ -115,14 +152,15 @@ class ChatController extends Controller
                     }
 
                     $fullResponse .= $text;
+                    $totalTokens += (int) (strlen($text) / 4);
 
                     echo 'data: '.json_encode(['text' => $text])."\n\n";
 
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
-                    flush();
 
+                    flush();
                 }
             } catch (\Throwable $e) {
                 \Log::error($e);
@@ -133,6 +171,17 @@ class ChatController extends Controller
                 'role' => 'assistant',
                 'content' => $fullResponse,
             ]);
+
+            UserUsage::record(
+                userId: $user->id,
+                type: 'ai_response',
+                tokens: $totalTokens,
+                metadata: [
+                    'chat_id' => $chat->id,
+                    'model' => $model,
+                    'response_length' => strlen($fullResponse),
+                ]
+            );
 
             if ($chat->title === 'New Chat' || $chat->messages->count() <= 2) {
                 \App\Jobs\GenerateChatTitle::dispatch($chat);
@@ -151,25 +200,16 @@ class ChatController extends Controller
         ]);
     }
 
-    public function update(Request $request, Chat $chat)
+    public function update(UpdateChatRequest $request, Chat $chat)
     {
-        if ($chat->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
-
-        $chat->update(['title' => $request->input('title')]);
+        $vRequest = $request->validated();
+        $chat->update(['title' => $vRequest->input('title')]);
 
         return back();
     }
 
     public function destroy(Chat $chat)
     {
-        $this->authorize('delete', $chat);
-
         $chat->delete();
         $previousUrl = url()->previous();
         $atDeleted = str_contains($previousUrl, 'chat_id'.$chat->id);
