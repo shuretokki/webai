@@ -12,6 +12,11 @@ class Attachment extends Model
 
     protected $guarded = [];
 
+    /**
+     * Summary of message
+     *
+     * @return BelongsTo<Message, Attachment>
+     */
     public function message(): BelongsTo
     {
         return $this->belongsTo(Message::class);
