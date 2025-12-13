@@ -31,21 +31,25 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
     }
 
+    /**
+     * Summary of configureRateLimiting
+     */
     protected function configureRateLimiting(): void
     {
-        RateLimiter::for('chat-messages', function (Request $request) {
-            return Limit::perMinute(2)
+        RateLimiter::for('chat-messages',
+            fn (Request $request) => Limit::perMinute(2)
                 ->by($request->user()->id)
-                ->response(function () {
-                    return response()->json([
+                ->response(fn () => response()
+                    ->json([
                         'error' => 'Too many messages. Please wait a moment.',
-                    ], 429);
-                });
-        });
+                    ], 429)));
 
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)
-                ->by($request->ip());
-        });
+        RateLimiter::for('api',
+            fn (Request $request) => Limit::perMinute(60)
+                ->by($request->ip()));
+
+        RateLimiter::for('global',
+            fn ($request) => Limit::perMinute(100)
+                ->by($request->ip()));
     }
 }
