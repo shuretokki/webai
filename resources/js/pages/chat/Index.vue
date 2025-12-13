@@ -19,7 +19,7 @@ const props = defineProps<{
     chatId: number | null
 }>();
 
-const model = ref('gemini-2.0-flash-lite');
+const model = ref('gemini-2.5-flash-lite');
 const form = useForm({
     prompt: '',
     chat_id: props.chatId,
