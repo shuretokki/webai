@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->string('type');
 
-            $table->integer('token')
+            $table->integer('tokens')
                 ->default(0);
 
             $table->integer('messages')
