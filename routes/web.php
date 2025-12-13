@@ -14,7 +14,8 @@ Route::inertia('dashboard', 'Dashboard')->middleware(['auth', 'verified'])->name
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])->name('chat.destroy');
     Route::patch('/chat/{chat}', [ChatController::class, 'update'])->name('chat.update');
-    Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
+    Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream')
+        ->middleware('throttle:chat-messages');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
 });
 
