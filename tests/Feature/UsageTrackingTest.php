@@ -21,7 +21,8 @@ test('usage is recorded when message is sent', function () {
 
     $response->assertOk();
 
-    /* expect message_sent by user; endpoint wont call Gemini in test; */
+    /* expect message_sent by user; ai_message wont be recorded
+        because endpoint wont call Gemini in test; */
     expect(UserUsage::where(
         'user_id', $this->user->id)->count())
         ->toBe(1);
