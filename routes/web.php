@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UsageController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,6 +12,14 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 
 Route::inertia('dashboard', 'Dashboard')->name('dashboard')
     ->middleware(['auth', 'verified']);
+
+Route::inertia('/settings/usage', 'settings/Usage')->name('settings.usage')
+    ->middleware(['auth', 'verified']);
+
+Route::middleware(['auth', 'verified'])->prefix('api')
+    ->group(function () {
+        Route::get('/usage/current', [UsageController::class, 'current']);
+    });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])->name('chat.destroy')
