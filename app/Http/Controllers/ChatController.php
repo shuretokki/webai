@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChatRequest;
 use App\Http\Requests\UpdateChatRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
@@ -41,18 +42,23 @@ class ChatController extends Controller
         ]);
     }
 
-    public function stream(Request $request)
+    public function stream(ChatRequest $rawRequest)
     {
-        $request->validate([
-            'prompt' => 'required|string',
-            'chat_id' => 'nullable|exists:chats,id',
-            'model' => 'nullable|string',
-            'files.*' => 'nullable|file|max:10240',
-        ]);
 
-        $model = $request->input('model', 'gemini-2.5-flash-lite');
-        $chatId = $request->input('chat_id');
-        $user = auth()->user();
+        $request = $rawRequest
+            ->validated();
+
+        $model = $request
+            ->input(
+                'model',
+                'gemini-2.5-flash-lite'
+            );
+
+        $chatId = $request
+            ->input('chat_id');
+
+        $user = auth()
+            ->user();
 
         if ($user->hasExceededQuota('messages', 100)) {
             return response()->json([
@@ -60,12 +66,12 @@ class ChatController extends Controller
             ], 403);
         }
 
-        if ($chatId) {
-            $chat = Chat::where('user_id', $user->id)
-                ->findOrFail($chatId);
-        } else {
-            $chat = Chat::create(['user_id' => $user->id, 'title' => 'New Chat']);
-        }
+        $chat = $chatId
+            ? Chat::where('user_id', $user->id)
+                ->findOrFail($chatId)
+            : Chat::create([
+                'user_id' => $user->id,
+                'title' => 'New Chat']);
 
         $history = [];
         if ($chat->exists) {
@@ -115,13 +121,17 @@ class ChatController extends Controller
 
         $history[] = new UserMessage($request->input('prompt'), $prismContent);
 
-        $message = $chat->messages()->create([
-            'role' => 'user',
-            'content' => $request->input('prompt'),
-        ]);
+        $message = $chat
+            ->messages()
+            ->create([
+                'role' => 'user',
+                'content' => $request->input('prompt'),
+            ]);
 
         if (! empty($attachmentsData)) {
-            $message->attachments()->createMany($attachmentsData);
+            $message
+                ->attachments()
+                ->createMany($attachmentsData);
         }
 
         UserUsage::record(
@@ -202,10 +212,10 @@ class ChatController extends Controller
         ]);
     }
 
-    public function update(UpdateChatRequest $request, Chat $chat)
+    public function update(UpdateChatRequest $rawRequest, Chat $chat)
     {
         $chat->update([
-            'title' => $request
+            'title' => $rawRequest
                 ->validated()
                 ->input('title')]);
 
@@ -219,6 +229,8 @@ class ChatController extends Controller
         $atDeleted = str_contains(
             url()->previous(), "chat_id{$chat->id}");
 
-        return $atDeleted ? to_route('chat') : back();
+        return $atDeleted
+            ? to_route('chat')
+            : back();
     }
 }
