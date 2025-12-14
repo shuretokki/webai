@@ -22,7 +22,10 @@ class ChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'prompt' => 'required|string',
+            'chat_id' => 'nullable|exists:chats,id',
+            'model' => 'nullable|string',
+            'files.*' => 'nullable|file|max:10240',
         ];
     }
 }
