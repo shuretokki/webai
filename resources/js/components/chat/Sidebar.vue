@@ -132,7 +132,7 @@ const toggleCollapse = () => {
 
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-2 custom-scrollbar">
 
-            <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat({ query: { chat_id: chat.id } }).url"
+            <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat({ chat: chat.id }).url"
                 class="w-full flex items-center p-2 gap-3 hover:bg-white/5 cursor-pointer transition-colors group relative"
                 :class="[isCollapsed ? 'justify-center' : '']">
 
