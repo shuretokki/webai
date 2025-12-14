@@ -8,14 +8,14 @@ use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\UserUsage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
-
-use function strlen;
 
 class ChatController extends Controller
 {
@@ -44,9 +44,6 @@ class ChatController extends Controller
 
     public function stream(ChatRequest $request)
     {
-
-        // $request = $rawRequest
-        //     ->validated();
 
         $model = $request
             ->input(
@@ -164,7 +161,7 @@ class ChatController extends Controller
                     }
 
                     $fullResponse .= $text;
-                    $totalTokens += (int) (strlen($text) / 4);
+                    $totalTokens += (int) (\strlen($text) / 4);
 
                     echo 'data: '.json_encode(['text' => $text])."\n\n";
 
@@ -191,7 +188,7 @@ class ChatController extends Controller
                 metadata: [
                     'chat_id' => $chat->id,
                     'model' => $model,
-                    'response_length' => strlen($fullResponse),
+                    'response_length' => \strlen($fullResponse),
                 ]
             );
 
@@ -232,5 +229,75 @@ class ChatController extends Controller
         return $atDeleted
             ? to_route('chat')
             : back();
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q', '');
+        $user = auth()->user();
+
+        if (\strlen($query) < 2) {
+            return response()->json([
+                'results' => [],
+            ]);
+        }
+
+        $escaped = str_replace(
+            ['%', '_'],
+            ['\%', '\_'],
+            $query);
+
+        $chats = Chat::where(
+            'user_id', $user->id)
+            ->where(
+                'title',
+                'LIKE',
+                "%{$escaped}%")
+            ->limit(5)
+            ->get()
+            ->map(fn ($chat) => [
+                'type' => 'chat',
+                'id' => $chat->id,
+                'title' => $chat->title,
+                'url' => "/chat/{$chat->id}",
+                'subtitle' => $chat
+                    ->created_at
+                    ->diffForHumans(),
+            ]);
+
+        $messages = DB::table('messages')
+            ->join(
+                'chats',
+                'messages.chat_id',
+                '=',
+                'chats.id')
+            ->where('chats.user_id', $user->id)
+            ->where(
+                'messages.content',
+                'LIKE',
+                "%{$escaped}%")
+            ->whereNull('messages.deleted_at')
+            ->select(
+                'messages.id',
+                'messages.content',
+                'chats.title as chat_title',
+                'chats.id as chat_id')
+            ->limit(10)
+            ->get()
+            ->map(fn ($msg) => [
+                'type' => 'message',
+                'id' => $msg->id,
+                'title' => Str::limit(
+                    $msg->content, 60),
+                'url' => "/chat/{$msg->chat_id}",
+                'subtitle' => "in {$msg->chat_title}",
+            ]);
+
+        $results = $chats
+            ->concat($messages)
+            ->take(15);
+
+        return response()
+            ->json(['results' => $results]);
     }
 }
