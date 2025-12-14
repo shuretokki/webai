@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'subscription_tier',
     ];
 
     /**
@@ -79,6 +80,7 @@ class User extends Authenticatable
         return [
             'messages' => $stats->total_messages ?? 0,
             'tokens' => $stats->total_tokens ?? 0,
+            'bytes' => $stats->total_bytes ?? 0,
             'cost' => $stats->total_cost ?? 0,
         ];
     }
