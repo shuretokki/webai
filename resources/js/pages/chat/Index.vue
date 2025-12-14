@@ -68,7 +68,11 @@ const handleSendMessage = async (text: string, files?: File[]) => {
         _optimistic: true
     })) || [];
 
-    props.messages.push({ role: 'user', content: text, attachments: attachment });
+    props.messages.push({
+        role: 'user',
+        content: text,
+        attachments: attachment
+    });
 
     isStreaming.value = true;
     streaming.value = '';
@@ -88,7 +92,13 @@ const handleSendMessage = async (text: string, files?: File[]) => {
         const response = await fetch('/chat/stream', {
             method: 'POST',
             headers: {
-                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1] || '')
+                'X-XSRF-TOKEN': decodeURIComponent(
+                    document.
+                        cookie.
+                        split('; ').
+                        find(row => row.
+                            startsWith('XSRF-TOKEN='))?.
+                        split('=')[1] || '')
             },
             body: formData as any
         });
@@ -122,10 +132,8 @@ const handleSendMessage = async (text: string, files?: File[]) => {
                     if (!json.chat_id) {
                         streaming.value += json.text;
                     } else {
-                        const newUrl = new URL(window.location.href);
-                        newUrl.searchParams.set('chat_id', json.chat_id);
-                        window.history.replaceState({}, '', newUrl);
-
+                        window.history.replaceState(
+                            {}, '', `/chat/${json.chat_id}`);
                         form.chat_id = json.chat_id;
                     }
                 } catch (e) {
