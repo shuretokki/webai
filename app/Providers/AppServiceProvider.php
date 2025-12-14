@@ -3,10 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Attachment;
+use App\Models\Chat;
 use App\Observers\AttachmentObserver;
+use App\Policies\ChatPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
         Attachment::observe(AttachmentObserver::class);
 
         $this->configureRateLimiting();
+
+        Gate::policy(Chat::class, ChatPolicy::class);
     }
 
     /**

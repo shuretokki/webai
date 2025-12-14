@@ -16,19 +16,18 @@ Route::inertia('dashboard', 'Dashboard')->name('dashboard')
 Route::inertia('/settings/usage', 'settings/Usage')->name('settings.usage')
     ->middleware(['auth', 'verified']);
 
-Route::middleware(['auth', 'verified'])->prefix('api')
-    ->group(function () {
-        Route::get('/usage/current', [UsageController::class, 'current']);
-    });
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/usage/current', [UsageController::class, 'current']);
+})->prefix('api');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])->name('chat.destroy')
-        ->middleware('can:delete, chat');
+        ->can('delete', 'chat');
     Route::patch('/chat/{chat}', [ChatController::class, 'update'])->name('chat.update')
-        ->middleware('can:update, chat');
+        ->can('update', 'chat');
     Route::post('/chat/stream', [ChatController::class, 'stream'])->name('chat.stream')
         ->middleware('throttle:chat-messages');
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::get('/chat/{chat?}', [ChatController::class, 'index'])->name('chat');
 });
 
 require __DIR__.'/settings.php';

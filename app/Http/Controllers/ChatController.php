@@ -18,24 +18,26 @@ use function strlen;
 
 class ChatController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, ?Chat $chat = null)
     {
-        $chats = Chat::where('user_id', auth()->user()->id)
+        $chats = Chat::where(
+            'user_id', auth()->user()->id)
             ->latest()
             ->get();
 
-        $chatId = $request->query('chat_id');
-        $activeChat = null;
-
-        if ($chatId) {
-            $activeChat = $chats->firstWhere('id', $chatId);
+        if ($chat) {
+            $this->authorize('view', $chat);
         }
 
         return Inertia::render('chat/Index', [
             'chats' => $chats,
-            'messages' => $activeChat ? MessageResource::collection(
-                $activeChat->messages()->with('attachments')->get()) : [],
-            'chatId' => $activeChat ? $activeChat->id : null,
+            'messages' => $chat
+                ? MessageResource::collection(
+                    $chat->messages()
+                        ->with('attachments')
+                        ->get())
+                : [],
+            'chatId' => $chat?->id,
         ]);
     }
 
@@ -202,8 +204,10 @@ class ChatController extends Controller
 
     public function update(UpdateChatRequest $request, Chat $chat)
     {
-        $vRequest = $request->validated();
-        $chat->update(['title' => $vRequest->input('title')]);
+        $chat->update([
+            'title' => $request
+                ->validated()
+                ->input('title')]);
 
         return back();
     }
@@ -211,8 +215,9 @@ class ChatController extends Controller
     public function destroy(Chat $chat)
     {
         $chat->delete();
-        $previousUrl = url()->previous();
-        $atDeleted = str_contains($previousUrl, 'chat_id'.$chat->id);
+
+        $atDeleted = str_contains(
+            url()->previous(), "chat_id{$chat->id}");
 
         return $atDeleted ? to_route('chat') : back();
     }
