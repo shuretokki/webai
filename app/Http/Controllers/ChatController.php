@@ -42,11 +42,11 @@ class ChatController extends Controller
         ]);
     }
 
-    public function stream(ChatRequest $rawRequest)
+    public function stream(ChatRequest $request)
     {
 
-        $request = $rawRequest
-            ->validated();
+        // $request = $rawRequest
+        //     ->validated();
 
         $model = $request
             ->input(
