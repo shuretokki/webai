@@ -16,7 +16,7 @@ beforeEach(function () {
 test('usage is recorded when message is sent', function () {
     $response = $this->postJson('/chat/stream', [
         'prompt' => 'Hello, World',
-        'model' => 'gemini-2.0-flash-lite',
+        'model' => 'gemini-2.5-flash-lite',
     ]);
 
     $response->assertOk();
@@ -40,7 +40,7 @@ test('usage is recorded when message is sent', function () {
         ->toBe(1);
 
     expect($messageUsage->metadata['model'])
-        ->toBe('gemini-2.0-flash-lite');
+        ->toBe('gemini-2.5-flash-lite');
 });
 
 test('quota blocks requests at limit', function () {
@@ -54,7 +54,7 @@ test('quota blocks requests at limit', function () {
 
     $response = $this->postJson('/chat/stream', [
         'prompt' => 'This should fail',
-        'model' => 'gemini-2.0-flash-lite',
+        'model' => 'gemini-2.5-flash-lite',
     ]);
 
     $response->assertStatus(403);
@@ -63,14 +63,22 @@ test('quota blocks requests at limit', function () {
 });
 
 test('cost calculation is accurate for ai responses', function () {
+    // Using gemini-2.5-flash: input_cost = 0.000075, output_cost = 0.0003
+    // 5000 input tokens + 5000 output tokens = 10000 total
+    // Cost = (5000/1000 * 0.000075) + (5000/1000 * 0.0003) = 0.000375 + 0.0015 = 0.001875
     $usage = UserUsage::record(
         userId: $this->user->id,
         type: 'ai_response',
-        tokens: 10000
+        tokens: 10000,
+        metadata: [
+            'model' => 'gemini-2.5-flash',
+            'input_tokens' => 5000,
+            'output_tokens' => 5000,
+        ]
     );
 
     expect($usage->cost)
-        ->toBe('1.0000');
+        ->toBe('0.0019'); // Rounded to 4 decimals
 });
 
 test('cost calculation is accurate for file uploads', function () {
