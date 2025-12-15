@@ -119,21 +119,31 @@ const uiMessages = computed(() => {
     }));
 })
 
+import { useStorage } from '@vueuse/core';
+const autoScrollEnabled = useStorage('settings_auto_scroll', true);
+
 const container = ref<HTMLElement | null>(null);
-const scrollToBottom = async () => {
+const scrollToBottom = async (force = false) => {
     await nextTick();
     if (!container.value)
         return;
 
-    container.value.scrollTop =
-        container.value.scrollHeight;
+    // Force scroll (e.g. user sent message) or if auto-scroll is enabled
+    if (force || autoScrollEnabled.value) {
+        container.value.scrollTop = container.value.scrollHeight;
+    }
 }
-watch(() => props.messages, scrollToBottom, { deep: true });
+
+// Watch messages: Auto scroll if enabled
+watch(() => props.messages, () => scrollToBottom(false), { deep: true });
 
 const streaming = ref('');
 const isStreaming = ref(false);
 watch(streaming, () => {
-    scrollToBottom();
+    // Always auto-scroll during streaming if enabled
+    if (autoScrollEnabled.value) {
+        scrollToBottom(false);
+    }
 });
 
 const handleSendMessage = async (text: string, files?: File[]) => {
@@ -240,13 +250,13 @@ const handleSendMessage = async (text: string, files?: File[]) => {
         router.reload({ only: ['chats'] });
     }
 
-    scrollToBottom();
+    scrollToBottom(true);
 };
 
 let echoControl: any = null;
 
 onMounted(() => {
-    scrollToBottom();
+    scrollToBottom(true);
 
     if (import.meta.env.VITE_REVERB_APP_KEY && props.chatId) {
         try {
