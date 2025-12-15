@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import Modal from '@/components/ui/Modal.vue';
 import { usePage, Link } from '@inertiajs/vue3';
+import { User, Settings, Sliders, Database, ArrowLeft, ChevronRight } from 'lucide-vue-next';
 
 defineProps<{
     show: boolean;
@@ -52,10 +53,10 @@ const mobileTitle = computed(() => {
 });
 
 const tabs = [
-    { id: 'account', label: 'Account', icon: 'i-solar-user-circle-linear' },
-    { id: 'behavior', label: 'Behavior', icon: 'i-solar-settings-minimalistic-linear' },
-    { id: 'customize', label: 'Customize', icon: 'i-solar-tuning-2-linear' },
-    { id: 'data', label: 'Data Control', icon: 'i-solar-database-linear' },
+    { id: 'account', label: 'Account', icon: User },
+    { id: 'behavior', label: 'Behavior', icon: Settings },
+    { id: 'customize', label: 'Customize', icon: Sliders },
+    { id: 'data', label: 'Data Control', icon: Database },
 ];
 
 const activeTab = ref('account');
@@ -85,13 +86,7 @@ const handleUpgrade = () => {
                         ]">
                         <div v-if="activeTab === tab.id" class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"></div>
 
-                        <i-solar-user-circle-linear v-if="tab.id === 'account'" class="text-lg shrink-0"
-                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
-                        <i-solar-settings-minimalistic-linear v-if="tab.id === 'behavior'" class="text-lg shrink-0"
-                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
-                        <i-solar-tuning-2-linear v-if="tab.id === 'customize'" class="text-lg shrink-0"
-                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
-                        <i-solar-database-linear v-if="tab.id === 'data'" class="text-lg shrink-0"
+                        <component :is="tab.icon" class="text-lg shrink-0"
                             :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
 
                         {{ tab.label }}
@@ -131,7 +126,7 @@ const handleUpgrade = () => {
             <div class="px-4 pb-4 flex items-center gap-3 shrink-0" v-if="mobileView === 'detail'">
                 <button @click="mobileView = 'list'"
                     class="text-muted-foreground hover:text-foreground transition-colors">
-                    <i-solar-arrow-left-linear class="text-xl" />
+                    <ArrowLeft class="size-5" />
                 </button>
                 <h3 class="text-lg font-space font-medium text-foreground">{{ mobileTitle }}</h3>
             </div>
