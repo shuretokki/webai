@@ -3,7 +3,9 @@ import { Link } from '@inertiajs/vue3';
 import Sidebar from '@/components/chat/Sidebar.vue';
 import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
+import SearchModal from '@/components/chat/SearchModal.vue';
 import { chat as Chat } from '@/routes/index'
+import { useEcho } from '@laravel/echo-vue'
 
 const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>,
@@ -18,6 +20,8 @@ const props = defineProps<{
     }>,
     chatId: number | null
 }>();
+
+const isSearchOpen = ref(false);
 
 const model = ref('gemini-2.5-flash-lite');
 const form = useForm({
@@ -160,8 +164,35 @@ const handleSendMessage = async (text: string, files?: File[]) => {
     scrollToBottom();
 };
 
+let echoControl: any = null;
+
 onMounted(() => {
     scrollToBottom();
+
+    if (props.chatId) {
+        echoControl = useEcho(
+            `chats.${props.chatId}`,
+            '.message.sent',
+            (event: any) => {
+                if (event.message && event.message.role === 'assistant') {
+                    props.messages.push({
+                        role: event.message.role,
+                        content: event.message.content,
+                        attachments: []
+                    });
+                    scrollToBottom();
+                }
+            },
+            [],
+            'private'
+        );
+    }
+});
+
+onUnmounted(() => {
+    if (echoControl) {
+        echoControl.leaveChannel();
+    }
 });
 
 </script>
@@ -204,6 +235,13 @@ onMounted(() => {
                             class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
                             <i-solar-menu-dots-linear class="text-xl" />
                         </button>
+                        <button
+                            @click="isSearchOpen = true"
+                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+                            title="Search (Cmd/Ctrl+K)"
+                        >
+                            <i-solar-magnifer-linear class="text-xl" />
+                        </button>
                         <Link :href="Chat().url"
                             class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
                         <i-solar-pen-new-square-linear class="text-xl" />
@@ -228,5 +266,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+
+        <!-- Search Modal -->
+        <SearchModal v-model:open="isSearchOpen" />
     </div>
 </template>
