@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 16:30:00] - Future Model Support & Restrictions
+
+### Changed
+- **File:** `config/ai.php`
+- **Description:** Updated with future/preview models (Gemini 3.0 Pro, Gemini 2.5 Pro, GPT-4.5, Claude 3.7 Sonnet) and set `gemini-2.5-flash` and `gemini-2.5-flash-lite` as the primary free models.
+- **Impact:** Prepares system for upcoming models and restricts access to certain models.
+
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Updated to handle new model restrictions and default model settings.
+- **Impact:** Ensures backend logic aligns with new model availability and restrictions.
+
+- **File:** `resources/js/components/chat/ChatInput.vue`
+- **Description:** Updated to enforce the "Under Progress" modal for non-Flash models.
+- **Impact:** Users will see a modal when trying to access restricted models.
+
+- **File:** `resources/js/components/chat/UpgradePlanModal.vue`
+- **Description:** Modal component prompting users to upgrade plan for restricted models.
+- **Impact:** Guides users to appropriate subscription plans based on model access.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Integrated model selector and upgrade plan modal.
+- **Impact:** Unified interface for chat and model management.
+
+### Why
+- **Feature Request:** Users requested ability to choose between different AI models (e.g., GPT-3.5, GPT-4).
+- **Flexibility:** Different models have different capabilities and costs; users should control this.
+- **Future-Proofing:** Easily add new models or change pricing in the future.
+
+---
+
 ## [2025-12-15 16:15:00] - Expanded Model Support
 
 ### Changed

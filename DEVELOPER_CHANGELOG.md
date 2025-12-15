@@ -6,21 +6,20 @@
 
 ---
 
-## [2025-12-15 16:15:00] - Expanded Model Support
+## [2025-12-15 16:30:00] - Future Model Support & Restrictions
 
 ### Summary
-Populated `config/ai.php` with a wide range of models across multiple providers. Updated `ChatController::stream` to map all new providers to `Prism\Prism\Enums\Provider`. Refactored `ChatInput.vue` model selector to a grouped "mega dropdown" layout for better usability. Updated tests to use `gemini-1.5-flash` as the default free model.
+Prepared the application for future AI model support and imposed temporary restrictions on model selection. Updated `config/ai.php` with placeholders for upcoming models. Modified the frontend to include a new modal component indicating models in progress. Adjusted the model selection logic to restrict users to specific models only.
 
 ### Why
-To offer a broader selection of AI models from various providers, improve the user interface for model selection, and ensure tests reflect the latest model offerings.
+To lay the groundwork for supporting new AI models from various providers and to manage user access to these models until they are officially supported.
 
 ### How
-1. **Config File:** Expanded `config/ai.php` to include additional models and providers.
-2. **Controller Updates:**
-    - Modified `ChatController::stream` method to accommodate new model-provider mappings.
-3. **Frontend Updates:**
-    - Refactored `ChatInput.vue` to implement a grid layout for the model selector.
-4. **Testing:** Updated `tests/Feature/ChatModelSelectionTest.php` to set `gemini-1.5-flash` as the default model for tests.
+1. **Config File:** Added placeholders for Gemini 3.0/2.5 Pro, GPT-4.5, and Claude 3.7 Sonnet in `config/ai.php`.
+2. **Frontend Updates:**
+    - Created `UnderProgressModal.vue` component to inform users about upcoming models.
+    - Modified `selectModel` function in `ChatInput.vue` to restrict model selection.
+3. **Controller & View Updates:** Changed default model in `ChatController` and `Index.vue` to `gemini-2.5-flash`.
 
 ---
 
@@ -30,8 +29,8 @@ To offer a broader selection of AI models from various providers, improve the us
 **Purpose:** Handle AI model selection and streaming response
 
 **Changes:**
-- Updated `match` statement to include new providers and models.
-- Ensured compatibility with the expanded model configuration.
+- Updated default model to `gemini-2.5-flash`.
+- Adjusted `match` statement to include new providers and models.
 
 ---
 
@@ -42,21 +41,32 @@ To offer a broader selection of AI models from various providers, improve the us
 
 **Changes:**
 - Populated with a wide range of models from multiple providers.
-- Example models:
-    - `gemini-1.5-flash`: Free model from Gemini.
-    - `gpt-3.5-turbo`: GPT-3.5 Turbo model.
-    - `gpt-4`: GPT-4 model.
+- Added placeholders for future models:
+    - `gemini-3.0-pro`: Upcoming Gemini 3.0 Pro model.
+    - `gpt-4.5`: Upcoming GPT-4.5 model.
+    - `claude-3.7-sonnet`: Upcoming Claude 3.7 Sonnet model.
 
 ---
 
 ### File: `resources/js/components/ChatInput.vue` (MODIFIED)
 
 **Location:** Template & Script Setup
-**Purpose:** Improve AI model selector UI
+**Purpose:** Improve AI model selector UI and restrict model selection
 
 **Changes:**
 - Refactored model selector to a "mega dropdown" grid layout.
 - Enhanced usability for selecting from many available models.
+- Modified `selectModel` function to block selection of any model except `gemini-2.5-flash` and `gemini-2.5-flash-lite`, showing the `UnderProgressModal` instead.
+
+---
+
+### File: `resources/js/components/UnderProgressModal.vue` (NEW)
+
+**Location:** New Component
+**Purpose:** Inform users about upcoming AI models
+
+**Changes:**
+- Created a new modal component to be displayed when a restricted model is selected.
 
 ---
 
@@ -66,14 +76,14 @@ To offer a broader selection of AI models from various providers, improve the us
 **Purpose:** Test AI model selection and cost calculation
 
 **Changes:**
-- Updated default model for tests to `gemini-1.5-flash`.
+- Updated default model for tests to `gemini-2.5-flash`.
 - Ensured tests cover new model-provider mappings and UI changes.
 
 ---
 
 ## Feature Completion Status
 
-### Expanded Model Support: ✅ 100% Complete
+### Future Model Support & Restrictions: ✅ 100% Complete
 
 **Backend:**
 - [x] Expanded config file for AI models
@@ -81,20 +91,22 @@ To offer a broader selection of AI models from various providers, improve the us
 
 **Frontend:**
 - [x] Refactored model selector in ChatInput.vue
+- [x] Created UnderProgressModal.vue component
 - [x] Tests updated for new model selection logic
 
 ---
 
 ## Testing Instructions
 
-### Manual Testing (Expanded Model Support)
-1. **Select AI Model:** Use the model selector in the chat input to choose from the expanded list of AI models.
+### Manual Testing (Future Model Support & Restrictions)
+1. **Select AI Model:** Use the model selector in the chat input to choose from the available AI models. Attempt to select restricted models to test the modal display.
 2. **Send Message:** Observe the response time and content based on the selected model.
 3. **Check Costs:** Verify the calculated cost corresponds to the model's pricing.
 
 ### Debugging
 - **Model not changing?** Ensure the model selector is correctly bound to the chat submission logic.
 - **Cost calculation issues?** Check the `config/ai.php` for correct pricing and the `UserUsage` model for calculation logic.
+- **Modal not appearing?** Verify the `UnderProgressModal` component is correctly implemented and displayed in the `ChatInput.vue`.
 
 ---
 
@@ -113,14 +125,14 @@ Same as previous session.
 If issues occur:
 1. Revert changes in `ChatController.php` and `UserUsage.php` to previous versions.
 2. Remove or restore `config/ai.php` file to previous state.
-3. Restore previous version of `ChatInput.vue`.
+3. Restore previous version of `ChatInput.vue` and remove `UnderProgressModal.vue`.
 4. Run `npm run build` to rebuild frontend.
 5. App works as before without expanded model support.
 
 ---
 
-**Total Files Modified:** 4 files (`ChatController.php`, `UserUsage.php`, `ChatInput.vue`, `package.json`)
-**Lines of Code Added:** ~150 lines
+**Total Files Modified:** 5 files (`ChatController.php`, `UserUsage.php`, `ChatInput.vue`, `UnderProgressModal.vue`, `package.json`)
+**Lines of Code Added:** ~180 lines
 **Backend Status:** ✅ Complete
 **Frontend Status:** ✅ Complete
 **Production Ready:** ⚠️ Requires testing in production environment
