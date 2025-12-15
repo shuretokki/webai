@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onKeyStroke, useDebounceFn } from '@vueuse/core';
+import { Search, Loader2, MessageSquare, ChevronRight } from 'lucide-vue-next';
 
 interface SearchResult {
     type: 'chat' | 'message';
@@ -138,7 +139,7 @@ const highlightMatch = (text: string, query: string): string => {
                         class="w-full max-w-2xl bg-[#2a2a2a] border border-white/10 rounded-lg shadow-2xl overflow-hidden">
                         <!-- Search Input -->
                         <div class="flex items-center gap-3 px-4 py-3 border-b border-white/10">
-                            <i-solar-magnifer-linear class="text-xl text-white/40" />
+                            <Search class="text-xl text-white/40 size-5" />
                             <input ref="searchInput" v-model="query" type="text" placeholder="Search chats..."
                                 class="flex-1 bg-transparent text-white placeholder:text-white/40 focus:outline-none" />
                             <div class="flex items-center gap-1 text-xs text-white/40">
@@ -151,20 +152,20 @@ const highlightMatch = (text: string, query: string): string => {
                         <div class="max-h-[60vh] overflow-y-auto">
                             <!-- Loading State -->
                             <div v-if="isLoading" class="p-8 text-center text-white/40">
-                                <i-solar-restart-circle-linear class="text-3xl animate-spin mx-auto mb-2" />
+                                <Loader2 class="text-3xl animate-spin mx-auto mb-2 size-8" />
                                 <p>Searching...</p>
                             </div>
 
                             <!-- Empty State (No Query) -->
                             <div v-else-if="!query.trim()" class="p-8 text-center text-white/40">
-                                <i-solar-magnifer-linear class="text-4xl mx-auto mb-2" />
+                                <Search class="text-4xl mx-auto mb-2 opacity-50 size-10" />
                                 <p class="text-sm">Type to search your chats</p>
                                 <p class="text-xs mt-1 text-white/20">Search by title or message content</p>
                             </div>
 
                             <!-- No Results -->
                             <div v-else-if="results.length === 0 && !isLoading" class="p-8 text-center text-white/40">
-                                <i-solar-magnifer-linear class="text-4xl mx-auto mb-2 opacity-50" />
+                                <Search class="text-4xl mx-auto mb-2 opacity-50 size-10" />
                                 <p class="text-sm">No chats found</p>
                                 <p class="text-xs mt-1 text-white/20">Try a different search term</p>
                             </div>
@@ -175,8 +176,8 @@ const highlightMatch = (text: string, query: string): string => {
                                     @click="selectChat(result)"
                                     class="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors flex items-start gap-3 group"
                                     :class="{ 'bg-white/10': index === selectedIndex }">
-                                    <i-solar-chat-round-dots-linear
-                                        class="text-xl text-white/40 group-hover:text-[#dbf156] transition-colors mt-0.5 shrink-0" />
+                                    <MessageSquare
+                                        class="text-xl text-white/40 group-hover:text-[#dbf156] transition-colors mt-0.5 shrink-0 size-5" />
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-baseline justify-between gap-2 mb-1">
                                             <h3 class="font-medium text-white truncate"
@@ -187,8 +188,8 @@ const highlightMatch = (text: string, query: string): string => {
                                         <p class="text-sm text-white/60 line-clamp-2"
                                             v-html="highlightMatch(result.subtitle, query)"></p>
                                     </div>
-                                    <i-solar-alt-arrow-right-linear
-                                        class="text-lg text-white/20 group-hover:text-white/40 transition-colors mt-1 shrink-0 opacity-0 group-hover:opacity-100" />
+                                    <ChevronRight
+                                        class="text-lg text-white/20 group-hover:text-white/40 transition-colors mt-1 shrink-0 opacity-0 group-hover:opacity-100 size-5" />
                                 </button>
                             </div>
                         </div>
