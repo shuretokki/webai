@@ -86,9 +86,9 @@
 
 ## 🎯 Next Steps Roadmap
 
-### **Priority 1: Email Notifications** 📧 (RECOMMENDED NEXT)
+### **Priority 1: Admin Panel Enhancements** 👑 (IN PROGRESS)
 
-**Goal:** Build usage dashboard for users to monitor quota
+**Goal:** Enhance Filament admin panel with revenue dashboard and system monitoring
 
 **Location:** `resources/js/pages/settings/Usage.vue`
 
@@ -343,7 +343,9 @@ Schedule::command('usage:weekly-summary')->weekly();
 
 ---
 
-### **Priority 8: Payment Integration** 💳
+### **Priority 3: Polish & Production Ready** ✨
+
+**Goal:** Production-ready improvements
 
 **Goal:** Monetize via subscriptions/credits
 
@@ -388,42 +390,41 @@ php artisan cashier:install
 
 ---
 
-### **Priority 9: Multi-Model Support** 🤖
+### **Priority 4: Email Notifications** 📧 (MOVED TO LAST)
 
-**Goal:** Let users choose different AI models
+**Goal:** Keep users informed
 
-**Current:** Hardcoded `gemini-2.0-flash-lite`
+**Scenarios:**
 
-**Improvement:**
+1. Quota warning (80%, 95%)
+2. Quota exceeded
+3. Weekly usage summary
+4. New features announcement
 
-```vue
-<select v-model="selectedModel">
-  <option value="gemini-2.0-flash-lite">Gemini Flash (Fast, Cheap)</option>
-  <option value="gemini-1.5-pro">Gemini Pro (Smart, Expensive)</option>
-  <option value="claude-3-sonnet">Claude Sonnet (Balanced)</option>
-</select>
-```
-
-**Backend:**
+**Implementation:**
 
 ```php
-$costs = [
-    'gemini-2.0-flash-lite' => 0.0001,
-    'gemini-1.5-pro' => 0.0002,
-    'claude-3-sonnet' => 0.00015,
-];
+// app/Observers/UserUsageObserver.php
+if ($stats['messages'] === 80) {
+    Mail::to($user)->send(new QuotaWarningMail(80));
+}
 
-UserUsage::record(
-    cost: $tokens * $costs[$model]
-);
+// app/Console/Commands/SendWeeklySummary.php
+Schedule::command('usage:weekly-summary')->weekly();
 ```
 
-**Estimated Time:** 1 hour
-**Value:** User choice, diversified providers
+**Templates:**
+
+- `emails/quota-warning.blade.php`
+- `emails/quota-exceeded.blade.php`
+- `emails/weekly-summary.blade.php`
+
+**Estimated Time:** 2 hours
+**Value:** User retention, upgrade prompts
 
 ---
 
-### **Priority 10: API Documentation** 📚
+### **Priority 5: API Documentation** 📚
 
 **Goal:** Document endpoints for mobile/third-party apps
 
