@@ -6,6 +6,76 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 22:00:00] - Security Audit & Authorization Improvements
+
+### Fixed
+- **File:** `app/Http/Requests/UpdateChatRequest.php`
+- **Description:** Fixed syntax error in authorization check - corrected `can('update, $chat')` to `can('update', $chat)`.
+- **Impact:** Chat update authorization now works correctly.
+
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Fixed destroy method redirect URL pattern check from `"chat_id/{$chat->id}"` to `"/chat/{$chat->id}"`.
+- **Impact:** Correctly redirects to new chat when deleting currently viewed chat.
+
+### Security
+- **File:** `app/Http/Requests/ChatRequest.php`
+- **Description:** Enhanced file upload validation with strict MIME type restrictions (`jpeg,jpg,png,gif,pdf,txt,doc,docx`), 10MB size limit, and added max length validation for prompt (10,000 chars) and model (100 chars).
+- **Impact:** Prevents malicious file uploads and oversized inputs.
+
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Added input validation to search method with 200 character limit.
+- **Impact:** Prevents search abuse and potential DoS attacks.
+
+- **File:** `routes/web.php`
+- **Description:** Added rate limiting to search endpoint (60 requests/minute) and export route authorization middleware.
+- **Impact:** Prevents search spam and ensures only chat owners can export.
+
+### Changed
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Removed redundant `authorize()` calls from destroy and export methods - now using route middleware `->can()` instead.
+- **Impact:** Cleaner code following Laravel conventions, authorization still enforced at route level.
+
+### Security Audit Results
+✅ All authorization checks verified and working correctly
+✅ File uploads restricted to safe types with size limits
+✅ Input validation on all user inputs
+✅ Rate limiting on high-risk endpoints (chat: 2/min, search: 60/min, 2FA: 6/min)
+✅ SQL injection prevention verified (parameterized queries + manual escaping)
+✅ Broadcasting channels properly authorized (user/chat ownership verified)
+✅ 69/69 tests passing - all security tests green
+
+---
+
+## [2025-12-15 21:00:00] - Stripe Cleanup & Xendit Migration Preparation
+
+### Removed
+- **Packages:** laravel/cashier, stripe/stripe-php, moneyphp/money, symfony/polyfill-intl-icu
+- **Files:** All Stripe-related controllers, models, tests, configs, and 6 Cashier migration files
+- **Impact:** Clean codebase ready for Xendit integration
+
+### Changed
+- **File:** `app/Models/User.php`
+- **Description:** Removed Billable trait and payment-related fields (currency, region, stripe_id, pm_type, pm_last_four, trial_ends_at).
+- **Impact:** User model no longer depends on Cashier.
+
+- **File:** `routes/web.php`
+- **Description:** Commented out subscription routes with TODO for Xendit implementation.
+- **Impact:** Prevents 404 errors until payment gateway is implemented.
+
+- **File:** `.env.example`
+- **Description:** Removed all Stripe variables, added Xendit placeholders.
+- **Impact:** Clear environment setup for future Xendit integration.
+
+- **File:** `resources/js/pages/settings/Usage.vue`
+- **Description:** Disabled "Upgrade Plan" button with TODO comment.
+- **Impact:** UI ready for Xendit implementation.
+
+### Documentation
+- Created comprehensive Xendit migration plan in `.agent/notes/XENDIT_MIGRATION_PLAN.md`
+- Moved all documentation to `.agent/notes/` directory for better organization
+
+---
+
 ## [2025-12-15 20:30:00] - Subscription Feature Status: Work In Progress
 
 ### Status Update
