@@ -39,7 +39,8 @@ Route::middleware(['auth', 'verified'])
             ->middleware('throttle:chat-messages');
 
         Route::get('/chat/search', [ChatController::class, 'search'])
-            ->name('chat.search');
+            ->name('chat.search')
+            ->middleware('throttle:60,1');
 
         Route::get('/chat/{chat}/export/{format?}', [ChatController::class, 'export'])
             ->name('chat.export')
