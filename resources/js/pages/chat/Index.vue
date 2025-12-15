@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { AnimatePresence } from 'motion-v';
 import Sidebar from '@/components/chat/Sidebar.vue';
 import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
 import SearchModal from '@/components/chat/SearchModal.vue';
+import Modal from '@/components/ui/Modal.vue';
 import { chat as Chat } from '@/routes/index'
 import { useEcho } from '@laravel/echo-vue'
 import { usePage } from '@inertiajs/vue3';
@@ -37,6 +39,42 @@ const exportChat = (format: 'pdf' | 'md') => {
     if (!props.chatId) return;
     window.location.href = `/chat/${props.chatId}/export/${format}`;
     isMenuOpen.value = false;
+};
+
+const showEditModal = ref(false);
+const editForm = useForm({
+    title: ''
+});
+
+const openEditModal = () => {
+    if (!props.chatId) return;
+    const currentChat = props.chats.find(c => c.id === props.chatId);
+    if (currentChat) {
+        editForm.title = currentChat.title;
+        showEditModal.value = true;
+        isMenuOpen.value = false;
+    }
+};
+
+const saveTitle = () => {
+    if (!props.chatId) return;
+    editForm.patch(`/chat/${props.chatId}`, {
+        onSuccess: () => {
+            showEditModal.value = false;
+        }
+    });
+};
+
+const deleteChat = () => {
+    if (!props.chatId) return;
+    if (confirm('Are you sure you want to delete this chat?')) {
+        router.delete(`/chat/${props.chatId}`, {
+            preserveState: true,
+            onSuccess: () => {
+                isMenuOpen.value = false;
+            }
+        });
+    }
 };
 
 const model = ref('gemini-2.5-flash');
@@ -147,12 +185,20 @@ const handleSendMessage = async (text: string, files?: File[]) => {
                 if (!trimmed || !trimmed.startsWith('data: '))
                     continue
 
-                const data = line.slice(6);
-                if (data === '[Done]')
+                const data = line.slice(6).trim();
+                if (data === '[Done]' || data === '[DONE]')
                     continue;
 
                 try {
                     const json = JSON.parse(data);
+
+                    // Handle error response from backend
+                    if (json.error) {
+                        console.error('Stream error:', json.error);
+                        streaming.value += '\n\n⚠️ Error: ' + json.error;
+                        continue;
+                    }
+
                     if (!json.chat_id) {
                         streaming.value += json.text;
                     } else {
@@ -195,12 +241,19 @@ onMounted(() => {
             '.message.sent',
             (event: any) => {
                 if (event.message && event.message.role === 'assistant') {
-                    props.messages.push({
-                        role: event.message.role,
-                        content: event.message.content,
-                        attachments: []
-                    });
-                    scrollToBottom();
+                    // Deduplicate: only add if not already present from streaming
+                    const isDuplicate = props.messages.some(
+                        m => m.role === 'assistant' && m.content === event.message.content
+                    );
+
+                    if (!isDuplicate) {
+                        props.messages.push({
+                            role: event.message.role,
+                            content: event.message.content,
+                            attachments: []
+                        });
+                        scrollToBottom();
+                    }
                 }
             },
             [],
@@ -217,14 +270,14 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div class="w-full h-screen relative flex flex-col items-center content-stretch overflow-hidden bg-[#1e1e1e]">
+    <div class="w-full h-screen relative flex flex-col items-center content-stretch overflow-hidden bg-background">
         <div class="absolute inset-0 pointer-events-none"></div>
 
         <div class=" w-full h-full shrink-0 relative flex items-start justify-center content-stretch overflow-hidden">
-            <Sidebar :chats="chats" class="hidden md:flex h-full border-r border-white/10" />
+            <Sidebar :chats="chats" class="hidden md:flex h-full border-r border-border" />
             <AnimatePresence>
                 <div v-if="isSidebarOpen" class="fixed inset-0 z-50 md:hidden flex">
-                    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="toggleSidebar"></div>
+                    <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="toggleSidebar"></div>
                     <Sidebar :chats="chats" class="h-full shadow-2xl" @close="toggleSidebar" />
                 </div>
             </AnimatePresence>
@@ -234,27 +287,15 @@ onUnmounted(() => {
 
                 <div class="w-full shrink-0 relative h-[60px] flex items-center justify-between px-4 md:px-6 py-0 z-10">
                     <button @click="toggleSidebar"
-                        class="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
+                        class="md:hidden text-foreground p-2 hover:bg-accent/10 rounded-none transition-colors">
                         <i-solar-hamburger-menu-linear class="text-2xl" />
                     </button>
 
                     <div class="flex items-center gap-3 ml-auto">
-                        <div
-                            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div class="relative group">
-                                <select v-model="model"
-                                    class="appearance-none bg-white/5 border border-white/10 hover:border-white/20 text-white text-sm rounded-lg pl-3 pr-8 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#dbf156]">
-                                    <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                                </select>
-                                <i-solar-alt-arrow-down-linear
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none text-xs" />
-                            </div>
-                        </div>
                         <div class="relative" ref="menuRef">
                             <button
                                 @click="isMenuOpen = !isMenuOpen"
-                                class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+                                class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
                                 :class="{ 'bg-white/10 text-white': isMenuOpen }"
                             >
                                 <i-solar-menu-dots-linear class="text-xl" />
@@ -262,8 +303,30 @@ onUnmounted(() => {
 
                             <div
                                 v-if="isMenuOpen"
-                                class="absolute right-0 top-full mt-2 w-48 bg-[#2a2a2a] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50 py-1"
+                                class="absolute right-0 top-full mt-2 w-48 bg-[#2a2a2a] border border-white/10 rounded-none shadow-xl overflow-hidden z-50 py-1"
                             >
+                                <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider">
+                                    Chat Options
+                                </div>
+                                <button
+                                    @click="openEditModal"
+                                    class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
+                                    :disabled="!chatId"
+                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
+                                >
+                                    <i-solar-pen-linear class="text-lg" />
+                                    <span>Rename Chat</span>
+                                </button>
+                                <button
+                                    @click="deleteChat"
+                                    class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
+                                    :disabled="!chatId"
+                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
+                                >
+                                    <i-solar-trash-bin-trash-linear class="text-lg" />
+                                    <span>Delete Chat</span>
+                                </button>
+                                <div class="h-px bg-white/10 my-1"></div>
                                 <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider">
                                     Export Chat
                                 </div>
@@ -289,13 +352,13 @@ onUnmounted(() => {
                         </div>
                         <button
                             @click="isSearchOpen = true"
-                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+                            class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
                             title="Search (Cmd/Ctrl+K)"
                         >
                             <i-solar-magnifer-linear class="text-xl" />
                         </button>
                         <Link :href="Chat().url"
-                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
+                            class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors">
                         <i-solar-pen-new-square-linear class="text-xl" />
                         </Link>
                     </div>
@@ -322,5 +385,28 @@ onUnmounted(() => {
 
         <!-- Search Modal -->
         <SearchModal v-model:open="isSearchOpen" />
+
+        <Modal :show="showEditModal" title="Edit Chat Title" @close="showEditModal = false">
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label
+                        class="block text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">Title</label>
+                    <input v-model="editForm.title" type="text"
+                        class="w-full bg-muted border border-border rounded-none px-4 py-2 text-foreground focus:border-primary focus:outline-none transition-colors"
+                        placeholder="Enter chat title..." @keydown.enter="saveTitle" autoFocus />
+                </div>
+
+                <div class="flex justify-end gap-2 mt-2">
+                    <button @click="showEditModal = false"
+                        class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                        Cancel
+                    </button>
+                    <button @click="saveTitle" :disabled="editForm.processing"
+                        class="px-4 py-2 rounded-none bg-primary text-primary-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
