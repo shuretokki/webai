@@ -1,9 +1,9 @@
 <?php
 
-use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
-use Prism\Prism\ValueObjects\Usage;
+use Prism\Prism\Facades\Prism;
 use Prism\Prism\Testing\TextResponseFake;
+use Prism\Prism\ValueObjects\Usage;
 
 it('can generate text', function () {
     $fakeResponse = TextResponseFake::make()

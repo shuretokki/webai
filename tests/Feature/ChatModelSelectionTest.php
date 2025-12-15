@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\Chat;
-use Illuminate\Support\Facades\Config;
+use App\Models\User;
 
 test('free user can use free models', function () {
     $user = User::factory()->create(['subscription_tier' => 'free']);
