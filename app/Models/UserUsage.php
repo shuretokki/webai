@@ -42,7 +42,7 @@ class UserUsage extends Model
             'messages' => $messages,
             'bytes' => $bytes,
             'cost' => self::calculateCost(
-                $type, $tokens, $messages, $bytes),
+                $type, $tokens, $messages, $bytes, $metadata),
             'metadata' => $metadata,
         ]);
     }
@@ -51,10 +51,33 @@ class UserUsage extends Model
         string $type,
         int $tokens,
         int $messages,
-        int $bytes
+        int $bytes,
+        array $metadata = []
     ): float {
+        if ($type === 'ai_response') {
+            $modelId = $metadata['model'] ?? 'gemini-2.5-flash';
+            $models = config('ai.models', []);
+            $modelConfig = collect($models)->firstWhere('id', $modelId);
+
+            if (!$modelConfig) {
+                return $tokens * 0.0001; // Fallback
+            }
+
+            // Simplified calculation (assuming tokens are total, or split 50/50 if not specified)
+            // Ideally we should track input/output tokens separately.
+            // For now, let's just use input_cost as a base or average.
+            // Or better, check if metadata has input_tokens and output_tokens
+
+            $inputTokens = $metadata['input_tokens'] ?? $tokens;
+            $outputTokens = $metadata['output_tokens'] ?? 0;
+
+            $cost = ($inputTokens / 1000) * $modelConfig['input_cost']
+                  + ($outputTokens / 1000) * $modelConfig['output_cost'];
+
+            return $cost;
+        }
+
         return match ($type) {
-            'ai_response' => $tokens * 0.0001,
             'file_upload' => $bytes * 0.00000001,
             default => 0,
         };
