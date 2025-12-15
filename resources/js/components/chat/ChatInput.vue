@@ -115,48 +115,10 @@ defineOptions({
 
 <template>
     <div v-bind="$attrs" class="w-full max-w-[600px] flex flex-col gap-2">
-        <!-- Model Selector -->
-        <div class="relative self-start" ref="modelMenuRef" v-if="models && models.length > 0">
-            <button type="button" @click="isModelMenuOpen = !isModelMenuOpen"
-                class="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-none text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm">
-                <i-solar-stars-minimalistic-linear class="text-sm" />
-                <span>{{ currentModelName }}</span>
-                <i-solar-alt-arrow-down-linear class="text-[10px]" />
-            </button>
-
-            <div v-if="isModelMenuOpen"
-                class="absolute bottom-full left-0 mb-2 w-[600px] max-h-[400px] overflow-y-auto bg-popover border border-border rounded-none shadow-xl z-50 flex flex-col custom-scrollbar">
-                <div class="p-4 grid grid-cols-2 gap-6">
-                    <div v-for="(models, provider) in groupedModels" :key="provider" class="flex flex-col gap-2">
-                        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
-                            {{ provider }}
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <button v-for="model in models" :key="model.id" @click="selectModel(model)"
-                                class="w-full px-3 py-2 text-left text-sm text-foreground hover:bg-accent/50 rounded-none flex items-center justify-between gap-2 transition-colors group"
-                                :class="{ 'opacity-50': !model.is_free && !['plus', 'enterprise'].includes(userTier || 'free') }">
-                                <div class="flex flex-col min-w-0">
-                                    <span class="truncate"
-                                        :class="{ 'text-primary': modelValue === model.id }">{{ model.name }}</span>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <div v-if="!model.is_free && !['plus', 'enterprise'].includes(userTier || 'free')"
-                                        class="px-1.5 py-0.5 bg-muted rounded-none text-[10px] text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                                        PRO
-                                    </div>
-                                    <i-solar-check-circle-bold v-if="modelValue === model.id" class="text-primary" />
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <form @submit.prevent="submit"
             class="w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50">
             <button type="button" @click="triggerFileInput"
-                class="shrink-0 p-3 text-muted-foreground hover:text-primary cursor-pointer transition-colors rounded-none hover:bg-accent/10 h-[48px] w-[48px] flex items-center justify-center">
+                class="shrink-0 p-3 text-muted-foreground hover:text-primary cursor-pointer transition-colors rounded-none h-[48px] w-[48px] flex items-center justify-center">
                 <i-solar-paperclip-linear class="text-xl" />
             </button>
 
@@ -185,6 +147,45 @@ defineOptions({
                 <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..."
                     @keydown="handleKeydown"
                     class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
+            </div>
+
+            <!-- Model Selector inside Input -->
+            <div class="relative shrink-0 mb-2" ref="modelMenuRef" v-if="models && models.length > 0">
+                <button type="button" @click="isModelMenuOpen = !isModelMenuOpen"
+                    class="flex items-center gap-2 px-2 py-1.5 bg-transparent rounded-none text-xs text-muted-foreground hover:text-foreground transition-all">
+                    <i-solar-stars-minimalistic-linear class="text-sm" />
+                    <span class="hidden sm:inline">{{ currentModelName }}</span>
+                    <i-solar-alt-arrow-down-linear class="text-[10px]" />
+                </button>
+
+                <div v-if="isModelMenuOpen"
+                    class="absolute bottom-full right-0 mb-2 w-[calc(100vw-32px)] sm:w-80 md:w-96 max-h-[400px] overflow-y-auto bg-popover border border-border rounded-none shadow-xl z-50 flex flex-col custom-scrollbar">
+                    <div class="p-4 grid grid-cols-1 gap-4">
+                        <div v-for="(models, provider) in groupedModels" :key="provider" class="flex flex-col gap-2">
+                            <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
+                                {{ provider }}
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <button v-for="model in models" :key="model.id" @click="selectModel(model)"
+                                    class="w-full px-3 py-2 text-left text-sm text-foreground hover:bg-accent/50 rounded-none flex items-center justify-between gap-2 transition-colors group"
+                                    :class="{ 'opacity-50': !model.is_free && !['plus', 'enterprise'].includes(userTier || 'free') }">
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="truncate"
+                                            :class="{ 'text-primary': modelValue === model.id }">{{ model.name }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <div v-if="!model.is_free && !['plus', 'enterprise'].includes(userTier || 'free')"
+                                            class="px-1.5 py-0.5 bg-muted rounded-none text-[10px] text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                            PRO
+                                        </div>
+                                        <i-solar-check-circle-bold v-if="modelValue === model.id"
+                                            class="text-primary" />
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" :disabled="(!input.trim() && attachments.length === 0) || isStreaming"
