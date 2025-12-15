@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateChatRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\UserUsage;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -303,5 +304,28 @@ class ChatController extends Controller
 
         return response()
             ->json(['results' => $results]);
+    }
+
+    public function export(Chat $chat, string $format = 'md')
+    {
+        $this->authorize('view', $chat);
+
+        if ($format === 'pdf') {
+            $pdf = Pdf::loadView('chat.export', ['chat' => $chat]);
+            return $pdf->download("chat-{$chat->id}.pdf");
+        }
+
+        return response()->streamDownload(function () use ($chat) {
+            echo "# {$chat->title}\n\n";
+            echo "Exported on " . now()->toDateTimeString() . "\n\n";
+            
+            foreach ($chat->messages as $message) {
+                $role = ucfirst($message->role);
+                $time = $message->created_at->format('Y-m-d H:i');
+                echo "### {$role} ({$time})\n\n";
+                echo "{$message->content}\n\n";
+                echo "---\n\n";
+            }
+        }, "chat-{$chat->id}.md");
     }
 }
