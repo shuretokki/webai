@@ -12,14 +12,6 @@ return [
             'output_cost' => 0.015,
         ],
         [
-            'id' => 'gemini-2.5-pro',
-            'name' => 'Gemini 2.5 Pro',
-            'provider' => 'gemini',
-            'is_free' => false,
-            'input_cost' => 0.0035,
-            'output_cost' => 0.0105,
-        ],
-        [
             'id' => 'gemini-2.5-flash',
             'name' => 'Gemini 2.5 Flash',
             'provider' => 'gemini',
@@ -38,74 +30,40 @@ return [
 
         // OpenAI
         [
-            'id' => 'gpt-4.5-preview',
-            'name' => 'GPT-4.5 Preview',
+            'id' => 'gpt-5.2',
+            'name' => 'GPT 5.2',
             'provider' => 'openai',
             'is_free' => false,
-            'input_cost' => 0.01,
-            'output_cost' => 0.03,
-        ],
-        [
-            'id' => 'gpt-4o',
-            'name' => 'GPT-4o',
-            'provider' => 'openai',
-            'is_free' => false,
-            'input_cost' => 0.005,
-            'output_cost' => 0.015,
-        ],
-        [
-            'id' => 'o1',
-            'name' => 'o1',
-            'provider' => 'openai',
-            'is_free' => false,
-            'input_cost' => 0.015,
+            'input_cost' => 0.02,
             'output_cost' => 0.06,
         ],
 
         // Anthropic
         [
-            'id' => 'claude-3-7-sonnet',
-            'name' => 'Claude 3.7 Sonnet',
+            'id' => 'claude-4.5-sonnet',
+            'name' => 'Claude 4.5 Sonnet',
             'provider' => 'anthropic',
             'is_free' => false,
-            'input_cost' => 0.003,
-            'output_cost' => 0.015,
+            'input_cost' => 0.005,
+            'output_cost' => 0.025,
         ],
         [
-            'id' => 'claude-3-5-sonnet',
-            'name' => 'Claude 3.5 Sonnet',
+            'id' => 'claude-4.5-opus',
+            'name' => 'Claude 4.5 Opus',
             'provider' => 'anthropic',
             'is_free' => false,
-            'input_cost' => 0.003,
-            'output_cost' => 0.015,
-        ],
-        [
-            'id' => 'claude-3-5-haiku',
-            'name' => 'Claude 3.5 Haiku',
-            'provider' => 'anthropic',
-            'is_free' => false,
-            'input_cost' => 0.00025,
-            'output_cost' => 0.00125,
+            'input_cost' => 0.03,
+            'output_cost' => 0.15,
         ],
 
         // xAI
         [
-            'id' => 'grok-2',
-            'name' => 'Grok 2',
+            'id' => 'grok-4',
+            'name' => 'Grok 4',
             'provider' => 'xai',
             'is_free' => false,
-            'input_cost' => 0.005,
-            'output_cost' => 0.015,
-        ],
-
-        // Mistral
-        [
-            'id' => 'mistral-large-2',
-            'name' => 'Mistral Large 2',
-            'provider' => 'mistral',
-            'is_free' => false,
-            'input_cost' => 0.002,
-            'output_cost' => 0.006,
+            'input_cost' => 0.01,
+            'output_cost' => 0.03,
         ],
 
         // DeepSeek
