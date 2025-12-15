@@ -22,6 +22,17 @@ const props = defineProps<{
 }>();
 
 const isSearchOpen = ref(false);
+const isMenuOpen = ref(false);
+const menuRef = ref<HTMLElement | null>(null);
+
+import { onClickOutside } from '@vueuse/core';
+onClickOutside(menuRef, () => isMenuOpen.value = false);
+
+const exportChat = (format: 'pdf' | 'md') => {
+    if (!props.chatId) return;
+    window.location.href = `/chat/${props.chatId}/export/${format}`;
+    isMenuOpen.value = false;
+};
 
 const model = ref('gemini-2.5-flash-lite');
 const form = useForm({
@@ -231,10 +242,42 @@ onUnmounted(() => {
                                     class="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none text-xs" />
                             </div>
                         </div>
-                        <button
-                            class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors">
-                            <i-solar-menu-dots-linear class="text-xl" />
-                        </button>
+                        <div class="relative" ref="menuRef">
+                            <button
+                                @click="isMenuOpen = !isMenuOpen"
+                                class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+                                :class="{ 'bg-white/10 text-white': isMenuOpen }"
+                            >
+                                <i-solar-menu-dots-linear class="text-xl" />
+                            </button>
+
+                            <div
+                                v-if="isMenuOpen"
+                                class="absolute right-0 top-full mt-2 w-48 bg-[#2a2a2a] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50 py-1"
+                            >
+                                <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider">
+                                    Export Chat
+                                </div>
+                                <button
+                                    @click="exportChat('pdf')"
+                                    class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
+                                    :disabled="!chatId"
+                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
+                                >
+                                    <i-solar-file-text-linear class="text-lg" />
+                                    <span>Export as PDF</span>
+                                </button>
+                                <button
+                                    @click="exportChat('md')"
+                                    class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
+                                    :disabled="!chatId"
+                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
+                                >
+                                    <i-solar-code-square-linear class="text-lg" />
+                                    <span>Export as Markdown</span>
+                                </button>
+                            </div>
+                        </div>
                         <button
                             @click="isSearchOpen = true"
                             class="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
