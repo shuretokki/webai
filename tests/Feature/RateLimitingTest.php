@@ -19,7 +19,7 @@ test('chat stream is blocked after 2 requests per minute', function () {
     $this->actingAs($user)
         ->postJson('/chat/stream', [
             'prompt' => 'Test 1',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 
@@ -27,7 +27,7 @@ test('chat stream is blocked after 2 requests per minute', function () {
     $this->actingAs($user)
         ->postJson('/chat/stream', [
             'prompt' => 'Test 2',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 
@@ -35,7 +35,7 @@ test('chat stream is blocked after 2 requests per minute', function () {
     $this->actingAs($user)
         ->postJson('/chat/stream', [
             'prompt' => 'Test 3',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertStatus(429)
         ->assertJson([
@@ -58,7 +58,7 @@ test('different users have independent rate limits', function () {
     $this->actingAs($user1)
         ->postJson('/chat/stream', [
             'prompt' => 'User 1 Test 1',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 
@@ -66,7 +66,7 @@ test('different users have independent rate limits', function () {
     $this->actingAs($user1)
         ->postJson('/chat/stream', [
             'prompt' => 'User 1 Test 2',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 
@@ -74,7 +74,7 @@ test('different users have independent rate limits', function () {
     $this->actingAs($user2)
         ->postJson('/chat/stream', [
             'prompt' => 'User 2 Test 1',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 
@@ -82,7 +82,7 @@ test('different users have independent rate limits', function () {
     $this->actingAs($user2)
         ->postJson('/chat/stream', [
             'prompt' => 'User 2 Test 2',
-            'model' => 'gemini-2.0-flash-lite',
+            'model' => 'gemini-2.5-flash-lite',
         ])
         ->assertOk();
 });
