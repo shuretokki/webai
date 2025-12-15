@@ -290,7 +290,7 @@ class ChatController extends Controller
         $chat->delete();
 
         $atDeleted = str_contains(
-            url()->previous(), "chat_id/{$chat->id}");
+            url()->previous(), "/chat/{$chat->id}");
 
         return $atDeleted
             ? to_route('chat')
