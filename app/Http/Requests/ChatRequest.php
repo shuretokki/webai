@@ -11,7 +11,18 @@ class ChatRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        if (! auth()->check()) {
+            return false;
+        }
+
+        // If chat_id provided, verify user owns it
+        if ($this->has('chat_id') && $this->input('chat_id')) {
+            $chat = \App\Models\Chat::find($this->input('chat_id'));
+
+            return $chat && $chat->user_id === auth()->id();
+        }
+
+        return true;
     }
 
     /**
@@ -22,10 +33,10 @@ class ChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prompt' => 'required|string',
+            'prompt' => 'required|string|max:10000',
             'chat_id' => 'nullable|exists:chats,id',
-            'model' => 'nullable|string',
-            'files.*' => 'nullable|file|max:10240',
+            'model' => 'nullable|string|max:100',
+            'files.*' => 'nullable|file|max:10240|mimes:jpeg,jpg,png,gif,pdf,txt,doc,docx',
         ];
     }
 }
