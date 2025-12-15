@@ -7,7 +7,7 @@ defineProps<{
     show: boolean;
 }>();
 
-import { useWindowSize } from '@vueuse/core';
+import { useWindowSize, useSwipe } from '@vueuse/core';
 import SettingsContent from './SettingsContent.vue';
 
 const emit = defineEmits(['close']);
@@ -15,6 +15,17 @@ const emit = defineEmits(['close']);
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value < 768);
 const mobileView = ref<'list' | 'detail'>('list');
+
+// Swipe to close logic
+const modalHeader = ref<HTMLElement | null>(null);
+const { isSwiping, direction } = useSwipe(modalHeader);
+
+watch(isSwiping, (newValue) => {
+    if (newValue && direction.value === 'down') {
+        closeModal();
+    }
+});
+
 
 const navigateToTab = (tabId: string) => {
     activeTab.value = tabId;
@@ -106,13 +117,9 @@ const handleUpgrade = () => {
         </div>
 
         <div class="md:hidden flex flex-col h-full bg-background overflow-hidden relative">
-            <div class="flex items-center justify-center pt-3 pb-4 relative shrink-0">
-                <div class="w-12 h-1.5 bg-border rounded-full"></div>
-
-                <button @click="closeModal"
-                    class="absolute right-4 top-3 text-muted-foreground hover:text-foreground p-1 transition-colors">
-                    <i-solar-close-circle-linear class="text-2xl" />
-                </button>
+            <div ref="modalHeader"
+                class="flex items-center justify-center pt-3 pb-4 relative shrink-0 cursor-grab active:cursor-grabbing touch-none">
+                <div class="w-12 h-1.5 bg-border/50 rounded-full"></div>
             </div>
 
             <div class="px-4 pb-4 flex items-center gap-3 shrink-0" v-if="mobileView === 'detail'">
@@ -140,7 +147,7 @@ const handleUpgrade = () => {
                         <p class="text-xs text-muted-foreground font-space truncate">{{ user?.email }}</p>
                     </div>
                     <button
-                        class="px-4 py-1.5 text-xs border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground">Manage</button>
+                        class="px-5 py-2.5 text-sm border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground font-medium">Manage</button>
                 </div>
 
                 <div class="flex items-center justify-between p-4 border-b border-border active:bg-white/5 transition-colors"
@@ -153,7 +160,7 @@ const handleUpgrade = () => {
                         <span class="font-space font-medium text-foreground">Get ECNELIS+</span>
                     </div>
                     <button
-                        class="px-4 py-1.5 rounded-full border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors">Upgrade</button>
+                        class="px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors font-medium">Upgrade</button>
                 </div>
 
                 <div class="flex flex-col">
