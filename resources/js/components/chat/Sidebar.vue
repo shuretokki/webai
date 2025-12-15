@@ -90,25 +90,22 @@ defineOptions({
 <template>
     <SettingsModal :show="showSettingsModal" @close="showSettingsModal = false" />
 
-    <Motion
-        v-bind="$attrs"
+    <Motion v-bind="$attrs"
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20"
-        :class="[isCollapsed ? 'items-center' : 'items-start']">
+        :class="[isCollapsed ? 'items-center' : 'items-start w-[300px]']">
         <div class="w-full shrink-0 relative h-[60px] flex items-center"
             :class="[isCollapsed ? 'justify-center' : 'pl-4 pr-4 justify-between']">
             <div class="h-8 flex items-center justify-center text-sidebar-foreground">
                 <AppLogoIcon class="size-8 text-sidebar-primary" />
             </div>
-            <button @click="$emit('close')" class="md:hidden text-sidebar-foreground" v-if="!isCollapsed">
-                <i-solar-close-circle-linear class="text-2xl" />
-            </button>
         </div>
 
         <div class="w-full shrink-0 flex flex-col gap-2 px-3 mt-2">
             <Link :href="Chat().url"
-                class="w-full relative flex items-center gap-3 p-2 rounded-none hover:bg-sidebar-accent cursor-pointer transition-colors group"
+                class="w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']">
-            <i-solar-pen-new-square-linear class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
+            <i-solar-pen-new-square-linear
+                class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
             <p v-if="!isCollapsed"
                 class="font-space font-normal text-[16px] text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
                 New Chat</p>
@@ -116,21 +113,23 @@ defineOptions({
         </div>
 
         <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-6 py-2 mt-4">
-            <p class="font-space font-normal text-sm text-sidebar-foreground/40 uppercase tracking-wider">Recent Chats</p>
+            <p class="font-space font-normal text-sm text-sidebar-foreground/40 uppercase tracking-wider">Recent Chats
+            </p>
         </div>
         <div v-else class="w-full h-px bg-sidebar-border my-4 mx-0"></div>
 
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-4 custom-scrollbar">
 
             <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat(chat.id).url" :preserve-state="false"
-                class="w-full flex items-center p-2 gap-3 hover:bg-sidebar-accent cursor-pointer transition-colors group relative"
+                class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
                 :class="[isCollapsed ? 'justify-left' : '']">
 
             <i-solar-chat-round-line-linear v-if="isCollapsed"
                 class="text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
 
             <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
-                <p class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1">
+                <p
+                    class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap">
                     {{ chat.title || 'Untitled' }}
                 </p>
             </div>
@@ -159,7 +158,8 @@ defineOptions({
                 </div>
             </Modal>
 
-            <div v-if="chats.length === 0 && !isCollapsed" class="px-4 py-8 text-center text-sidebar-foreground/20 text-xs">
+            <div v-if="chats.length === 0 && !isCollapsed"
+                class="px-4 py-8 text-center text-sidebar-foreground/20 text-xs">
                 No history yet.
             </div>
 
@@ -169,7 +169,8 @@ defineOptions({
             <div class="w-full flex items-center gap-2"
                 :class="[isCollapsed ? 'flex-col justify-center' : 'justify-between']">
 
-                <button @click="showSettingsModal = true" class="flex items-center gap-3 p-2 rounded-none hover:bg-sidebar-accent cursor-pointer transition-colors flex-1 min-w-0 text-left"
+                <button @click="showSettingsModal = true"
+                    class="flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors flex-1 min-w-0 text-left"
                     :class="[isCollapsed ? 'justify-center w-full' : '']">
                     <div
                         class="size-8 rounded-none bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
@@ -182,7 +183,17 @@ defineOptions({
                     </div>
                 </button>
 
-                <button @click.stop="toggleCollapse" class="p-2 rounded-none hover:bg-sidebar-accent text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
+                <!-- Modified logic: On mobile, arrow key ALWAYS closes the sidebar (emits close) -->
+                <button @click.stop="() => {
+                    // Check if mobile (md:hidden usually implies mobile view logic here,
+                    // but JS check is safer. However, simplified logic:
+                    if (window.innerWidth < 768) {
+                        $emit('close');
+                    } else {
+                        toggleCollapse();
+                    }
+                }"
+                    class="p-2 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
                     :class="[isCollapsed ? 'w-full flex justify-center' : '']">
                     <i-solar-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
                     <i-solar-alt-arrow-left-linear v-else class="text-xl" />
