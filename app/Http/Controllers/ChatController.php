@@ -287,8 +287,6 @@ class ChatController extends Controller
 
     public function destroy(Chat $chat)
     {
-        $this->authorize('delete', $chat);
-
         $chat->delete();
 
         $atDeleted = str_contains(
@@ -375,7 +373,6 @@ class ChatController extends Controller
 
     public function export(Chat $chat, string $format = 'md')
     {
-        $this->authorize('view', $chat);
 
         if ($format === 'pdf') {
             $pdf = Pdf::loadView('chat.export', ['chat' => $chat]);
