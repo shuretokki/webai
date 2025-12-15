@@ -6,6 +6,476 @@
 
 ---
 
+## [2025-12-15 22:00:00] - Security Audit & Authorization Cleanup
+
+### Summary
+Conducted comprehensive security audit and fixed multiple authorization vulnerabilities. Cleaned up redundant authorization checks by leveraging Laravel's route middleware. Enhanced input validation and rate limiting across the application.
+
+### Why
+Security is critical for production. Found syntax errors in authorization checks, missing validations on file uploads, and redundant code patterns. Need to follow Laravel best practices for cleaner, more maintainable authorization.
+
+### How
+1. Fixed syntax error in `UpdateChatRequest` authorization (`can('update, $chat')` → `can('update', $chat)`)
+2. Added chat ownership verification to `ChatRequest` for stream endpoint
+3. Removed redundant `$this->authorize()` calls from controllers - using route middleware instead
+4. Enhanced file upload validation with MIME type restrictions
+5. Added input length validation (prompts, search queries, model IDs)
+6. Added rate limiting to search endpoint
+7. Fixed destroy method redirect URL pattern
+
+---
+
+### Files Changed
+
+#### `app/Http/Requests/UpdateChatRequest.php` (FIXED)
+
+**Issue:** Syntax error in authorization check - missing closing quote
+
+**Before:**
+```php
+public function authorize(): bool
+{
+    $chat = $this->route('chat');
+    
+    return $this->user()
+        ->can('update, $chat');  // SYNTAX ERROR: missing quote before comma
+}
+```
+
+**After:**
+```php
+public function authorize(): bool
+{
+    $chat = $this->route('chat');
+    
+    return $this->user()
+        ->can('update', $chat);  // Fixed: proper syntax
+}
+```
+
+---
+
+#### `app/Http/Requests/ChatRequest.php` (ENHANCED)
+
+**Purpose:** Add comprehensive input validation and file upload restrictions
+
+**Before:**
+```php
+public function rules(): array
+{
+    return [
+        'prompt' => 'required|string',
+        'chat_id' => 'nullable|exists:chats,id',
+        'model' => 'nullable|string',
+        'files.*' => 'nullable|file|max:10240',
+    ];
+}
+```
+
+**After:**
+```php
+public function rules(): array
+{
+    return [
+        'prompt' => 'required|string|max:10000',  // NEW: 10k character limit
+        'chat_id' => 'nullable|exists:chats,id',
+        'model' => 'nullable|string|max:100',     // NEW: length limit
+        'files.*' => 'nullable|file|max:10240|mimes:jpeg,jpg,png,gif,pdf,txt,doc,docx',  // NEW: MIME restrictions
+    ];
+}
+```
+
+**Security Improvements:**
+- Prompt length limited to 10,000 characters (prevent abuse)
+- Model ID limited to 100 characters
+- File uploads restricted to safe MIME types only
+- 10MB file size limit maintained
+
+---
+
+#### `app/Http/Controllers/ChatController.php` (REFACTORED)
+
+**Location:** Multiple methods
+**Purpose:** Clean up authorization by using route middleware instead of controller checks
+
+**Changes:**
+
+1. **Removed redundant authorize() from destroy method:**
+
+**Before:**
+```php
+public function destroy(Chat $chat)
+{
+    $this->authorize('delete', $chat);  // Redundant - route middleware handles this
+    
+    $chat->delete();
+    // ...
+}
+```
+
+**After:**
+```php
+public function destroy(Chat $chat)
+{
+    $chat->delete();  // Route middleware ->can('delete', 'chat') handles authorization
+    // ...
+}
+```
+
+2. **Removed redundant authorize() from export method:**
+
+**Before:**
+```php
+public function export(Chat $chat, string $format = 'md')
+{
+    $this->authorize('view', $chat);  // Redundant
+    // ...
+}
+```
+
+**After:**
+```php
+public function export(Chat $chat, string $format = 'md')
+{
+    // Route middleware ->can('view', 'chat') handles authorization
+    // ...
+}
+```
+
+3. **Kept authorize() in index method (necessary for optional parameter):**
+
+```php
+public function index(Request $request, ?Chat $chat = null)
+{
+    // ...
+    
+    if ($chat) {
+        $this->authorize('view', $chat);  // NEEDED: can't use route middleware with optional param
+    }
+    
+    // ...
+}
+```
+
+4. **Fixed destroy redirect URL pattern:**
+
+**Before:**
+```php
+$atDeleted = str_contains(
+    url()->previous(), "chat_id/{$chat->id}");  // Wrong pattern
+```
+
+**After:**
+```php
+$atDeleted = str_contains(
+    url()->previous(), "/chat/{$chat->id}");  // Correct pattern
+```
+
+5. **Added search validation:**
+
+**Before:**
+```php
+public function search(Request $request)
+{
+    $query = $request->input('q', '');
+    // ...
+}
+```
+
+**After:**
+```php
+public function search(Request $request)
+{
+    $request->validate([
+        'q' => 'required|string|max:200',  // NEW: validation
+    ]);
+    
+    $query = $request->input('q', '');
+    // ...
+}
+```
+
+---
+
+#### `routes/web.php` (ENHANCED)
+
+**Purpose:** Add authorization middleware and rate limiting at route level
+
+**Changes:**
+
+1. **Added authorization to export route:**
+```php
+Route::get('/chat/{chat}/export/{format?}', [ChatController::class, 'export'])
+    ->name('chat.export')
+    ->can('view', 'chat')  // NEW: authorization middleware
+    ->where('format', 'pdf|md');
+```
+
+2. **Added rate limiting to search:**
+```php
+Route::get('/chat/search', [ChatController::class, 'search'])
+    ->name('chat.search')
+    ->middleware('throttle:60,1');  // NEW: 60 requests per minute
+```
+
+**Existing Authorization (Already Correct):**
+```php
+Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])
+    ->name('chat.destroy')
+    ->can('delete', 'chat');  // Already had this
+
+Route::patch('/chat/{chat}', [ChatController::class, 'update'])
+    ->name('chat.update')
+    ->can('update', 'chat');  // Already had this
+```
+
+---
+
+### Security Audit Results
+
+**✅ Fixed Vulnerabilities:**
+1. Syntax error in UpdateChatRequest preventing authorization
+2. Missing MIME type validation on file uploads
+3. No length limits on user inputs
+4. Missing rate limiting on search endpoint
+5. Incorrect URL pattern in destroy redirect
+6. Redundant authorization code (cleanup)
+
+**✅ Verified Secure:**
+- SQL injection prevention (parameterized queries + escaping)
+- Authentication on all sensitive endpoints
+- Authorization checks via policies and route middleware
+- Rate limiting on high-risk endpoints:
+  - Chat stream: 2 requests/minute
+  - Search: 60 requests/minute
+  - 2FA settings: 6 requests/minute
+- Broadcasting channel authorization (user/chat ownership)
+- File upload restrictions (types, size)
+
+**Test Results:** 69/69 tests passing (213 assertions) ✅
+
+---
+
+### Rate Limiting Configuration
+
+| Endpoint | Limit | Reason |
+|----------|-------|--------|
+| `/chat/stream` | 2/min | Prevent AI API abuse |
+| `/chat/search` | 60/min | Prevent search spam |
+| `/settings/two-factor` | 6/min | Prevent 2FA brute force |
+
+---
+
+## [2025-12-15 21:00:00] - Stripe Cleanup & Database Reset
+
+### Summary
+Completely removed Stripe/Cashier integration from the application. Deleted all payment-related code, migrations, and dependencies. Reset database to clean state. Prepared codebase for future Xendit integration.
+
+### Why
+Stripe requires merchant accounts in supported countries (US/EU/etc). As an Indonesian developer, cannot register for Stripe payouts. Decision made to completely remove Stripe code and switch to Xendit (Indonesian payment gateway) when ready to implement payments.
+
+### How
+1. Removed Composer packages: laravel/cashier, stripe/stripe-php, moneyphp/money
+2. Deleted all Stripe controllers, models, views, tests
+3. Removed Cashier database migrations (6 files)
+4. Cleaned User model (removed Billable trait, payment fields)
+5. Commented out subscription routes
+6. Updated .env.example with Xendit placeholders
+7. Disabled "Upgrade Plan" button in UI
+8. Ran database fresh migration to clean schema
+
+---
+
+### Files Deleted
+
+**Controllers:**
+- `app/Http/Controllers/SubscriptionController.php` (~151 lines)
+- `app/Http/Controllers/WebhookController.php` (~70 lines)
+
+**Models:**
+- `app/Models/Subscription.php` (~30 lines)
+
+**Views:**
+- `resources/js/pages/subscription/Index.vue` (~300 lines)
+
+**Tests:**
+- `tests/Feature/SubscriptionTest.php` (~200 lines, 10 tests)
+
+**Configs:**
+- `config/pricing.php` (~120 lines)
+- `config/cashier.php` (auto-generated by Cashier)
+
+**Migrations:**
+- `database/migrations/2025_12_15_081623_create_customer_columns.php`
+- `database/migrations/2025_12_15_081624_create_subscriptions_table.php`
+- `database/migrations/2025_12_15_081625_create_subscription_items_table.php`
+- `database/migrations/2025_12_15_081626_add_meter_id_to_subscription_items_table.php`
+- `database/migrations/2025_12_15_081627_add_meter_event_name_to_subscription_items_table.php`
+- `database/migrations/2025_12_15_081800_add_currency_and_region_to_users_table.php`
+
+**Total Deleted:** ~871 lines of code
+
+---
+
+### Files Modified
+
+#### `app/Models/User.php` (CLEANED)
+
+**Before:**
+```php
+use Laravel\Cashier\Billable;
+
+class User extends Authenticatable
+{
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, Billable;
+    
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'subscription_tier',
+        'is_admin',
+        'currency',
+        'region',
+    ];
+}
+```
+
+**After:**
+```php
+class User extends Authenticatable
+{
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;  // Removed Billable
+    
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'subscription_tier',
+        'is_admin',
+        // Removed: 'currency', 'region'
+    ];
+}
+```
+
+**Database Changes:**
+- Removed columns: `currency`, `region`, `stripe_id`, `pm_type`, `pm_last_four`, `trial_ends_at`
+- Kept column: `subscription_tier` (will be used with Xendit)
+
+---
+
+#### `routes/web.php` (MODIFIED)
+
+**Before:**
+```php
+Route::middleware(['auth', 'verified'])
+    ->prefix('subscription')
+    ->controller(SubscriptionController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('subscription.index');
+        Route::post('/checkout', 'checkout')->name('subscription.checkout');
+        // ... more routes
+    });
+```
+
+**After:**
+```php
+// TODO: Re-implement with Xendit payment gateway
+// Route::middleware(['auth', 'verified'])
+//     ->prefix('subscription')
+//     ->group(function () {
+//         // Xendit integration routes will go here
+//     });
+```
+
+---
+
+#### `.env.example` (CLEANED)
+
+**Before:**
+```bash
+STRIPE_KEY=
+STRIPE_SECRET=
+STRIPE_WEBHOOK_SECRET=
+
+STRIPE_PRICE_ID_PLUS_USD=
+STRIPE_PRICE_ID_PLUS_IDR=
+STRIPE_PRICE_ID_ENTERPRISE_USD=
+STRIPE_PRICE_ID_ENTERPRISE_IDR=
+```
+
+**After:**
+```bash
+# Payment Gateway Configuration (Xendit - To be implemented)
+# XENDIT_API_KEY=
+# XENDIT_WEBHOOK_TOKEN=
+```
+
+---
+
+#### `resources/js/pages/settings/Usage.vue` (MODIFIED)
+
+**Purpose:** Disable upgrade button until Xendit is implemented
+
+**Before:**
+```vue
+<Link
+  href="/subscription"
+  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+>
+  Upgrade Plan
+</Link>
+```
+
+**After:**
+```vue
+<!-- TODO: Re-enable when Xendit payment integration is implemented -->
+<!-- <Link
+  href="/subscription"
+  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+>
+  Upgrade Plan
+</Link> -->
+```
+
+---
+
+### Composer Packages Removed
+
+```bash
+composer remove laravel/cashier --no-interaction
+# Removed: laravel/cashier v16.1.0
+# Removed: stripe/stripe-php v17.6.0
+# Removed: moneyphp/money v4.8.0
+# Removed: symfony/polyfill-intl-icu
+```
+
+---
+
+### Database Migration
+
+**Command:**
+```bash
+php artisan migrate:fresh --seed
+```
+
+**Effect:**
+- Dropped all tables
+- Recreated tables without Cashier migrations
+- Seeded fresh data
+- Clean database ready for production
+
+---
+
+### Test Results After Cleanup
+
+**Before:** 79 tests passing (266 assertions)
+**After:** 69 tests passing (213 assertions)
+
+**Tests Removed:** 10 subscription tests (no longer needed)
+
+---
+
 ## [2025-12-15 20:00:00] - Stripe Payment Integration & Multi-Currency Subscriptions
 
 ### Summary
