@@ -3,14 +3,14 @@ import UserInfo from '@/components/UserInfo.vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Laptop, Sun, Moon } from 'lucide-vue-next';
+import { LogOut, Laptop, Sun, Moon, CreditCard } from 'lucide-vue-next';
+import { useColorMode } from '@vueuse/core';
 
 interface Props {
     user: User;
@@ -21,21 +21,28 @@ const handleLogout = () => {
 };
 
 defineProps<Props>();
+
+const mode = useColorMode({
+    emitAuto: true,
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: 'light',
+});
 </script>
 
 <template>
-
     <DropdownMenuGroup>
         <DropdownMenuItem as-child>
             <Link :href="edit()" class="w-full cursor-pointer">
             Account settings
             </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-            API tokens
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-            View profile
+
+        <DropdownMenuItem as-child>
+            <Link href="/settings/usage" class="w-full cursor-pointer flex items-center gap-2">
+            Billing & usage
+            </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>
 
@@ -68,13 +75,16 @@ defineProps<Props>();
     <div class="px-2 py-1.5 flex items-center justify-between text-sm">
         <span class="text-muted-foreground">Theme</span>
         <div class="flex items-center gap-1 border border-white/10 rounded-md p-1">
-            <button class="p-1 rounded hover:bg-white/10 text-foreground">
+            <button @click="mode = 'auto'" class="p-1 rounded hover:bg-white/10 transition-colors"
+                :class="mode === 'auto' ? 'text-foreground bg-white/10' : 'text-muted-foreground'">
                 <Laptop class="h-3 w-3" />
             </button>
-            <button class="p-1 rounded hover:bg-white/10 text-muted-foreground">
+            <button @click="mode = 'light'" class="p-1 rounded hover:bg-white/10 transition-colors"
+                :class="mode === 'light' ? 'text-foreground bg-white/10' : 'text-muted-foreground'">
                 <Sun class="h-3 w-3" />
             </button>
-            <button class="p-1 rounded hover:bg-white/10 text-muted-foreground">
+            <button @click="mode = 'dark'" class="p-1 rounded hover:bg-white/10 transition-colors"
+                :class="mode === 'dark' ? 'text-foreground bg-white/10' : 'text-muted-foreground'">
                 <Moon class="h-3 w-3" />
             </button>
         </div>
