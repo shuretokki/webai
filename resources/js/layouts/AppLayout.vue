@@ -22,25 +22,7 @@ withDefaults(defineProps<Props>(), {
 const page = usePage();
 const user = page.props.auth.user;
 
-const navItems = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit', // Keeping original link or updating if needed
-        icon: Folder,
-        external: true,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue', // Keeping original link
-        icon: BookOpen,
-        external: true,
-    },
-];
+
 </script>
 
 <template>
