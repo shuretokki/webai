@@ -41,10 +41,9 @@ const selectModel = (model: any) => {
         return;
     }
 
-    if (!model.is_free && !['pro', 'enterprise'].includes(props.userTier || 'free')) {
-        showUpgradeModal.value = true;
-        isModelMenuOpen.value = false;
-        return;
+    if (!model.is_free && !['plus', 'enterprise'].includes(props.userTier || 'free')) {
+        showUpgradeModal.value = true
+        return
     }
     emit('update:modelValue', model.id);
     isModelMenuOpen.value = false;
@@ -109,40 +108,42 @@ const handleKeydown = (e: KeyboardEvent) => {
     }
 };
 
-
+defineOptions({
+    inheritAttrs: false
+});
 </script>
 
 <template>
-    <div class="w-full max-w-[600px] flex flex-col gap-2">
+    <div v-bind="$attrs" class="w-full max-w-[600px] flex flex-col gap-2">
         <!-- Model Selector -->
         <div class="relative self-start" ref="modelMenuRef" v-if="models && models.length > 0">
             <button type="button" @click="isModelMenuOpen = !isModelMenuOpen"
-                class="flex items-center gap-2 px-3 py-1.5 bg-[#1e1e1e] border border-white/10 rounded-full text-xs text-white/60 hover:text-white hover:border-white/20 transition-all shadow-lg">
+                class="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-none text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all shadow-sm">
                 <i-solar-stars-minimalistic-linear class="text-sm" />
                 <span>{{ currentModelName }}</span>
                 <i-solar-alt-arrow-down-linear class="text-[10px]" />
             </button>
 
             <div v-if="isModelMenuOpen"
-                class="absolute bottom-full left-0 mb-2 w-[600px] max-h-[400px] overflow-y-auto bg-[#2a2a2a] border border-white/10 rounded-xl shadow-xl z-50 flex flex-col custom-scrollbar">
+                class="absolute bottom-full left-0 mb-2 w-[600px] max-h-[400px] overflow-y-auto bg-popover border border-border rounded-none shadow-xl z-50 flex flex-col custom-scrollbar">
                 <div class="p-4 grid grid-cols-2 gap-6">
                     <div v-for="(models, provider) in groupedModels" :key="provider" class="flex flex-col gap-2">
-                        <div class="text-xs font-medium text-white/40 uppercase tracking-wider px-2">
+                        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
                             {{ provider }}
                         </div>
                         <div class="flex flex-col gap-1">
                             <button v-for="model in models" :key="model.id" @click="selectModel(model)"
-                                class="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/5 rounded-lg flex items-center justify-between gap-2 transition-colors group"
-                                :class="{ 'opacity-50': !model.is_free && !['pro', 'enterprise'].includes(userTier || 'free') }">
+                                class="w-full px-3 py-2 text-left text-sm text-foreground hover:bg-accent/50 rounded-none flex items-center justify-between gap-2 transition-colors group"
+                                :class="{ 'opacity-50': !model.is_free && !['plus', 'enterprise'].includes(userTier || 'free') }">
                                 <div class="flex flex-col min-w-0">
-                                    <span class="truncate" :class="{ 'text-[#dbf156]': modelValue === model.id }">{{ model.name }}</span>
+                                    <span class="truncate" :class="{ 'text-primary': modelValue === model.id }">{{ model.name }}</span>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <div v-if="!model.is_free && !['pro', 'enterprise'].includes(userTier || 'free')"
-                                        class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-white/60 group-hover:bg-[#dbf156] group-hover:text-black transition-colors">
+                                    <div v-if="!model.is_free && !['plus', 'enterprise'].includes(userTier || 'free')"
+                                        class="px-1.5 py-0.5 bg-muted rounded-none text-[10px] text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                         PRO
                                     </div>
-                                    <i-solar-check-circle-bold v-if="modelValue === model.id" class="text-[#dbf156]" />
+                                    <i-solar-check-circle-bold v-if="modelValue === model.id" class="text-primary" />
                                 </div>
                             </button>
                         </div>
@@ -152,9 +153,9 @@ const handleKeydown = (e: KeyboardEvent) => {
         </div>
 
         <form @submit.prevent="submit"
-            class="w-full shrink-0 relative flex items-end gap-2 bg-[#1e1e1e] border-l-4 border-[#abb463] rounded-none shadow-lg transition-all focus-within:ring-1 focus-within:ring-[#abb463]/50">
+            class="w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50">
             <button type="button" @click="triggerFileInput"
-                class="shrink-0 p-3 text-white/60 hover:text-[#dbf156] cursor-pointer transition-colors rounded-none hover:bg-white/5 h-[48px] w-[48px] flex items-center justify-center">
+                class="shrink-0 p-3 text-muted-foreground hover:text-primary cursor-pointer transition-colors rounded-none hover:bg-accent/10 h-[48px] w-[48px] flex items-center justify-center">
                 <i-solar-paperclip-linear class="text-xl" />
             </button>
 
@@ -164,36 +165,36 @@ const handleKeydown = (e: KeyboardEvent) => {
                     <div v-for="(item, index) in attachments" :key="index" class="relative group">
                         <!-- Image Preview -->
                         <img v-if="item.type === 'image'" :src="item.preview"
-                            class="h-16 w-16 rounded-md object-cover border border-white/20" />
+                            class="h-16 w-16 rounded-none object-cover border border-border" />
 
                         <!-- File Icon -->
                         <div v-else
-                            class="h-16 w-16 rounded-md border border-white/20 bg-white/5 flex items-center justify-center">
-                            <i-solar-file-text-linear class="text-2xl text-white/60" />
+                            class="h-16 w-16 rounded-none border border-border bg-muted flex items-center justify-center">
+                            <i-solar-file-text-linear class="text-2xl text-muted-foreground" />
                         </div>
 
                         <!-- Remove Button -->
                         <button type="button" @click="removeAttachment(index)"
-                            class="absolute -top-2 -right-2 bg-black text-white rounded-full p-0.5 border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                            class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 border border-border opacity-0 group-hover:opacity-100 transition-opacity">
                             <i-solar-close-circle-bold class="text-lg" />
                         </button>
                     </div>
                 </div>
 
                 <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..." @keydown="handleKeydown"
-                    class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-[#f8ffd7] placeholder-white/30 focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
+                    class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
             </div>
 
             <button type="submit" :disabled="!input.trim() && attachments.length === 0"
-                class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-gradient-to-br from-[#dbf156] to-[#acb564] text-black hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
+                class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
                 <div class="absolute inset-0 opacity-30">
                     <div
                         class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/50 via-transparent to-transparent scale-0 group-hover:scale-150 transition-transform duration-500">
                     </div>
                     <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 Q 50 50 100 100" stroke="white" stroke-width="2" fill="none" opacity="0.2" />
-                        <path d="M-20 100 Q 50 30 120 100" stroke="white" stroke-width="2" fill="none" opacity="0.2" />
-                        <path d="M-40 100 Q 50 10 140 100" stroke="white" stroke-width="2" fill="none" opacity="0.2" />
+                        <path d="M0 100 Q 50 50 100 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
+                        <path d="M-20 100 Q 50 30 120 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
+                        <path d="M-40 100 Q 50 10 140 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
                     </svg>
                 </div>
 
