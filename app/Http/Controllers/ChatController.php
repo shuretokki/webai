@@ -45,24 +45,27 @@ class ChatController extends Controller
 
     public function stream(ChatRequest $request)
     {
+        $modelId = $request->input('model', 'gemini-2.5-flash-lite');
+        $models = config('ai.models');
+        $modelConfig = collect($models)->firstWhere('id', $modelId);
 
-        $model = $request
-            ->input(
-                'model',
-                'gemini-2.5-flash-lite'
-            );
+        if (! $modelConfig) {
+            return response()->json(['error' => 'Invalid model selected.'], 400);
+        }
 
-        $chatId = $request
-            ->input('chat_id');
+        $user = auth()->user();
 
-        $user = auth()
-            ->user();
+        if (! $modelConfig['is_free'] && ! in_array($user->subscription_tier, ['pro', 'enterprise'])) {
+            return response()->json(['error' => 'Upgrade required for this model.'], 403);
+        }
 
         if ($user->hasExceededQuota('messages', 100)) {
             return response()->json([
                 'error' => 'You have reached your monthly message limit. Upgrade your plan to increase limit.',
             ], 403);
         }
+
+        $chatId = $request->input('chat_id');
 
         $chat = $chatId
             ? Chat::where('user_id', $user->id)
@@ -138,44 +141,70 @@ class ChatController extends Controller
             messages: 1,
             metadata: [
                 'chat_id' => $chat->id,
-                'model' => $model,
+                'model' => $modelId,
                 'has_attachments' => ! empty($attachmentsData),
             ]
         );
 
-        return response()->stream(function () use ($chat, $history, $model, $user) {
+        return response()->stream(function () use ($chat, $history, $modelId, $user, $modelConfig) {
             echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
-            try {
-                $stream = Prism::text()
-                    ->using(Provider::Gemini, $model)
-                    ->withMessages($history)
-                    ->asStream();
 
-                $fullResponse = '';
-                $totalTokens = 0;
+            $fullResponse = '';
+            $totalTokens = 0;
 
-                foreach ($stream as $chunk) {
-                    $text = $chunk->delta ?? '';
+            if (! $modelConfig['is_free']) {
+                // Demo mode for paid models
+                $fullResponse = "Model usage under progress.\n\n(Simulated response for {$modelConfig['name']})";
+                $totalTokens = 50; // Fake tokens
 
-                    if (empty($text)) {
-                        continue;
-                    }
-
-                    $fullResponse .= $text;
-                    $totalTokens += (int) (\strlen($text) / 4);
-
+                // Simulate streaming delay
+                $words = explode(' ', $fullResponse);
+                foreach ($words as $word) {
+                    $text = $word . ' ';
                     echo 'data: '.json_encode(['text' => $text])."\n\n";
-
                     if (ob_get_level() > 0) {
                         ob_flush();
                     }
-
                     flush();
+                    usleep(50000); // 50ms delay
                 }
-            } catch (\Throwable $e) {
-                \Log::error($e);
-                echo 'data: '.json_encode([
-                    'error' => $e->getMessage()])."\n\n";
+            } else {
+                try {
+                    $provider = match ($modelConfig['provider']) {
+                        'gemini' => Provider::Gemini,
+                        'openai' => Provider::OpenAI,
+                        'anthropic' => Provider::Anthropic,
+                        default => Provider::Gemini,
+                    };
+
+                    $stream = Prism::text()
+                        ->using($provider, $modelId)
+                        ->withMessages($history)
+                        ->asStream();
+
+                    foreach ($stream as $chunk) {
+                        $text = $chunk->delta ?? '';
+
+                        if (empty($text)) {
+                            continue;
+                        }
+
+                        $fullResponse .= $text;
+                        $totalTokens += (int) (\strlen($text) / 4);
+
+                        echo 'data: '.json_encode(['text' => $text])."\n\n";
+
+                        if (ob_get_level() > 0) {
+                            ob_flush();
+                        }
+
+                        flush();
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error($e);
+                    echo 'data: '.json_encode([
+                        'error' => $e->getMessage()])."\n\n";
+                }
             }
 
             $assistantMessage = $chat->messages()->create([
@@ -191,7 +220,7 @@ class ChatController extends Controller
                 tokens: $totalTokens,
                 metadata: [
                     'chat_id' => $chat->id,
-                    'model' => $model,
+                    'model' => $modelId,
                     'response_length' => \strlen($fullResponse),
                 ]
             );
@@ -318,7 +347,7 @@ class ChatController extends Controller
         return response()->streamDownload(function () use ($chat) {
             echo "# {$chat->title}\n\n";
             echo "Exported on " . now()->toDateTimeString() . "\n\n";
-            
+
             foreach ($chat->messages as $message) {
                 $role = ucfirst($message->role);
                 $time = $message->created_at->format('Y-m-d H:i');
