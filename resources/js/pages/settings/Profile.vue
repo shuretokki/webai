@@ -163,7 +163,7 @@ const handleAvatarChange = (event: Event) => {
                     <h3 class="text-2xl font-normal text-foreground mb-6">Profile Details</h3>
                     <div class="bg-blue-900/10 border border-blue-500/30 p-6 rounded-none">
                         <div class="flex gap-4">
-                            <i-solar-pen-new-square-linear class="text-blue-400 text-xl mt-1" />
+                            <SquarePen class="text-blue-400 text-xl mt-1 size-5" />
                             <div>
                                 <h4 class="text-blue-400 font-medium mb-1">Update other details</h4>
                                 <p class="text-blue-300/80 text-sm leading-relaxed">

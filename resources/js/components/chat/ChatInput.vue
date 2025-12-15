@@ -191,17 +191,8 @@ defineOptions({
             <button type="submit" :disabled="(!input.trim() && attachments.length === 0) || isStreaming"
                 class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
                 <div class="absolute inset-0 opacity-30">
-                    <div
-                        class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/50 via-transparent to-transparent scale-0 group-hover:scale-150 transition-transform duration-500">
+                    <div class="absolute inset-0 scale-0 group-hover:scale-150 transition-transform duration-500">
                     </div>
-                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 Q 50 50 100 100" stroke="currentColor" stroke-width="2" fill="none"
-                            opacity="0.2" />
-                        <path d="M-20 100 Q 50 30 120 100" stroke="currentColor" stroke-width="2" fill="none"
-                            opacity="0.2" />
-                        <path d="M-40 100 Q 50 10 140 100" stroke="currentColor" stroke-width="2" fill="none"
-                            opacity="0.2" />
-                    </svg>
                 </div>
 
                 <ArrowRight class="size-6 relative z-10" />
@@ -209,7 +200,6 @@ defineOptions({
         </form>
     </div>
 
-    <!-- Update accept and add multiple -->
     <input type="file" ref="fileInput" class="hidden" multiple accept="image/*,application/pdf"
         @change="handleFileChange" />
 

@@ -174,15 +174,11 @@ const handleUpgrade = () => {
                         @click="navigateToTab(tab.id)"
                         class="flex items-center justify-between p-4 border-b border-border text-left group active:bg-white/5 transition-colors">
                         <div class="flex items-center gap-3">
-                            <i-solar-settings-minimalistic-linear v-if="tab.id === 'behavior'"
-                                class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
-                            <i-solar-tuning-2-linear v-if="tab.id === 'customize'"
-                                class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
-                            <i-solar-database-linear v-if="tab.id === 'data'"
+                            <component :is="tab.icon"
                                 class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
                             <span class="font-space text-lg text-foreground">{{ tab.label }}</span>
                         </div>
-                        <i-solar-alt-arrow-right-linear class="text-xl text-muted-foreground" />
+                        <ChevronRight class="size-5 text-muted-foreground" />
                     </button>
                 </div>
             </div>

@@ -73,7 +73,7 @@ const motionExit = computed(() => {
                     <div v-if="!hideHeader" class="flex items-center justify-between px-6 py-4 border-b border-border">
                         <h3 class="text-lg font-space text-popover-foreground">{{ title }}</h3>
                         <button @click="close" class="text-muted-foreground hover:text-foreground transition-colors">
-                            <i-solar-close-circle-linear class="text-xl" />
+                            <X class="size-6" />
                         </button>
                     </div>
 

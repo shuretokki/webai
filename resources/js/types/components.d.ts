@@ -14,6 +14,7 @@ declare module 'vue' {
     ISolarAltArrowDownLinear: typeof import('~icons/solar/alt-arrow-down-linear')['default']
     ISolarAltArrowLeftLinear: typeof import('~icons/solar/alt-arrow-left-linear')['default']
     ISolarAltArrowRightLinear: typeof import('~icons/solar/alt-arrow-right-linear')['default']
+    ISolarArrowLeftLinear: typeof import('~icons/solar/arrow-left-linear')['default']
     ISolarArrowRightLinear: typeof import('~icons/solar/arrow-right-linear')['default']
     ISolarChartSquareLinear: typeof import('~icons/solar/chart-square-linear')['default']
     ISolarChatRoundDotsLinear: typeof import('~icons/solar/chat-round-dots-linear')['default']
@@ -23,6 +24,8 @@ declare module 'vue' {
     ISolarCloseCircleLinear: typeof import('~icons/solar/close-circle-linear')['default']
     ISolarCodeSquareLinear: typeof import('~icons/solar/code-square-linear')['default']
     ISolarCopyLinear: typeof import('~icons/solar/copy-linear')['default']
+    ISolarDangerTriangleLinear: typeof import('~icons/solar/danger-triangle-linear')['default']
+    ISolarDatabaseLinear: typeof import('~icons/solar/database-linear')['default']
     ISolarDownloadLinear: typeof import('~icons/solar/download-linear')['default']
     ISolarFileTextLinear: typeof import('~icons/solar/file-text-linear')['default']
     ISolarHamburgerMenuLinear: typeof import('~icons/solar/hamburger-menu-linear')['default']
@@ -34,7 +37,10 @@ declare module 'vue' {
     ISolarPenNewSquareLinear: typeof import('~icons/solar/pen-new-square-linear')['default']
     ISolarRestartCircleLinear: typeof import('~icons/solar/restart-circle-linear')['default']
     ISolarRestartLinear: typeof import('~icons/solar/restart-linear')['default']
+    ISolarSettingsMinimalisticLinear: typeof import('~icons/solar/settings-minimalistic-linear')['default']
     ISolarStarsMinimalisticLinear: typeof import('~icons/solar/stars-minimalistic-linear')['default']
     ISolarTrashBinTrashLinear: typeof import('~icons/solar/trash-bin-trash-linear')['default']
+    ISolarTuning2Linear: typeof import('~icons/solar/tuning2-linear')['default']
+    ISolarUserCircleLinear: typeof import('~icons/solar/user-circle-linear')['default']
   }
 }

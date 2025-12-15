@@ -77,7 +77,7 @@ const handleDeleteAllChats = () => {
     <!-- Customize Tab (Placeholder) -->
     <div v-if="activeTab === 'customize'"
       class="h-full flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-right-4 duration-300">
-      <i-solar-pallete-2-linear class="text-4xl mb-4 opacity-50" />
+      <Palette class="text-4xl mb-4 opacity-50 size-10" />
       <p class="font-space text-sm">Theme customization coming soon</p>
     </div>
 
@@ -87,7 +87,7 @@ const handleDeleteAllChats = () => {
         <h4 class="font-space text-sm font-medium text-foreground">Usage</h4>
         <div class="flex items-center justify-between py-4 border-b border-border">
           <div class="flex items-center gap-3">
-            <i-solar-chart-square-linear class="text-xl text-muted-foreground" />
+            <BarChart2 class="text-xl text-muted-foreground size-5" />
             <span class="text-lg md:text-sm font-space font-medium text-foreground">Data Usage</span>
           </div>
           <Link href="/settings/usage"
@@ -99,7 +99,7 @@ const handleDeleteAllChats = () => {
         <h4 class="font-space text-sm font-medium text-foreground mt-4">Sensitive</h4>
         <div class="flex items-center justify-between py-4 border-b border-border">
           <div class="flex items-center gap-3 text-destructive">
-            <i-solar-trash-bin-trash-linear class="text-xl" />
+            <Trash2 class="text-xl size-5" />
             <span class="text-lg md:text-sm font-space font-medium">Delete all chats</span>
           </div>
           <button @click="handleDeleteAllChats"
