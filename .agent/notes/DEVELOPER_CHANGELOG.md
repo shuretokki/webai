@@ -6,6 +6,271 @@
 
 ---
 
+## [2025-12-15 19:55:00] - Chat Frontend/Backend Alignment Fixes
+
+### Summary
+Fixed critical frontend/backend misalignments in chat functionality affecting SSE parsing, WebSocket message deduplication, attachment rendering, and error handling. All fixes follow production best practices and the Ecnelis design system.
+
+### Why
+Several issues were identified during backend research:
+1. SSE `[Done]` parsing was fragile and could break with whitespace
+2. Echo broadcasts were creating duplicate assistant messages
+3. Attachments were commented out, making uploads invisible
+4. Backend errors weren't shown to users
+5. Storage symlink needed verification for file URLs
+
+### How
+1. Made SSE parsing robust with `.trim()` and dual termination support
+2. Added deduplication check before pushing Echo messages
+3. Uncommented attachments with proper Ecnelis styling
+4. Added error display in chat UI with visual indicators
+5. Verified storage symlink exists
+
+---
+
+### Files Changed
+
+#### `resources/js/pages/chat/Index.vue` (ENHANCED - 3 fixes)
+
+**Fix #1: Robust SSE [Done] Parsing**
+
+**Location:** Lines 183-212
+
+**Before:**
+```javascript
+const data = line.slice(6);
+if (data === '[Done]')
+    continue;
+```
+
+**After:**
+```javascript
+const data = line.slice(6).trim();
+if (data === '[Done]' || data === '[DONE]')
+    continue;
+```
+
+**Why:**
+- `.trim()` removes any trailing/leading whitespace
+- Support both `[Done]` and `[DONE]` for consistency
+- More defensive against backend format variations
+
+---
+
+**Fix #2: Error Handling in SSE Stream**
+
+**Location:** Lines 192-210
+
+**Before:**
+```javascript
+try {
+    const json = JSON.parse(data);
+    if (!json.chat_id) {
+        streaming.value += json.text;
+    } else {
+        window.history.replaceState({}, '', `/chat/${json.chat_id}`);
+        form.chat_id = json.chat_id;
+    }
+} catch (e) {
+    console.error('Error parsing JSON', e);
+}
+```
+
+**After:**
+```javascript
+try {
+    const json = JSON.parse(data);
+
+    // Handle error response from backend
+    if (json.error) {
+        console.error('Stream error:', json.error);
+        streaming.value += '\n\n⚠️ Error: ' + json.error;
+        continue;
+    }
+
+    if (!json.chat_id) {
+        streaming.value += json.text;
+    } else {
+        window.history.replaceState({}, '', `/chat/${json.chat_id}`);
+        form.chat_id = json.chat_id;
+    }
+} catch (e) {
+    console.error('Error parsing JSON', e);
+}
+```
+
+**Why:**
+- Backend sends `data: {"error": "..."}` for quota/model errors (see ChatController.php:230)
+- Users need to see these errors in UI, not just console
+- Uses ⚠️ emoji for visual clarity
+- Continues streaming after error (doesn't break flow)
+
+---
+
+**Fix #3: Echo Message Deduplication**
+
+**Location:** Lines 230-252
+
+**Before:**
+```javascript
+useEcho(
+    `chats.${props.chatId}`,
+    '.message.sent',
+    (event: any) => {
+        if (event.message && event.message.role === 'assistant') {
+            props.messages.push({
+                role: event.message.role,
+                content: event.message.content,
+                attachments: []
+            });
+            scrollToBottom();
+        }
+    },
+    [],
+    'private'
+);
+```
+
+**After:**
+```javascript
+useEcho(
+    `chats.${props.chatId}`,
+    '.message.sent',
+    (event: any) => {
+        if (event.message && event.message.role === 'assistant') {
+            // Deduplicate: only add if not already present from streaming
+            const isDuplicate = props.messages.some(
+                m => m.role === 'assistant' && m.content === event.message.content
+            );
+
+            if (!isDuplicate) {
+                props.messages.push({
+                    role: event.message.role,
+                    content: event.message.content,
+                    attachments: []
+                });
+                scrollToBottom();
+            }
+        }
+    },
+    [],
+    'private'
+);
+```
+
+**Why:**
+- SSE streams responses to the sender
+- Echo broadcasts completion to all devices
+- Without deduplication, sender sees message twice
+- Checks if content already exists before pushing
+
+**Edge Cases Handled:**
+- User streaming on Tab A → message already added via SSE
+- Echo broadcast arrives → deduplication prevents duplicate
+- Other user on Tab B → no streaming, Echo adds correctly
+
+---
+
+#### `resources/js/components/chat/Message.vue` (FIXED)
+
+**Purpose:** Enable attachment rendering with production design
+
+**Location:** Lines 65-80
+
+**Before:**
+```vue
+<!-- <div v-if="attachments?.length" class="flex flex-wrap gap-2 mt-2">
+    <div v-for="(att, i) in attachments" :key="i" class="relative group">
+        <img v-if="att.type === 'image'" :src="att.url" class="h-32 w-auto rounded-lg border border-white/10" />
+        <a v-else :href="att.url" target="_blank"
+            class="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10 hover:bg-white/10">
+            <i-solar-file-text-linear class="text-xl" />
+            <span class="text-xs">{{ att.name || 'File' }}</span>
+        </a>
+    </div>
+</div> -->
+```
+
+**After:**
+```vue
+<div v-if="attachments?.length" class="flex flex-wrap gap-3 mt-3">
+    <div v-for="(att, i) in attachments" :key="i" class="relative group">
+        <img v-if="att.type === 'image'"
+            :src="att.url"
+            :alt="att.name || 'Image'"
+            class="h-40 w-auto rounded-none border border-white/10 object-cover hover:border-primary/50 transition-colors" />
+        <a v-else
+            :href="att.url"
+            target="_blank"
+            class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-none border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-colors">
+            <i-solar-file-text-linear class="text-xl text-primary" />
+            <span class="text-sm font-space">{{ att.name || 'File' }}</span>
+        </a>
+    </div>
+</div>
+```
+
+**Design System Compliance:**
+- `rounded-none` → Squared corners (Ecnelis guideline)
+- `gap-3`, `px-3`, `py-2` → Design tokens (no arbitrary values)
+- `font-space` → Space Grotesk for body text
+- `text-primary` → Uses CSS variable from design system
+- `h-40` → Consistent image sizing (was h-32)
+- `hover:border-primary/50` → Interactive feedback
+
+**Backend Integration:**
+- Works with `AttachmentResource` structure: `{type, url, name}`
+- `url` comes from `asset('storage/...')` in backend
+- Displays images with preview, files with icon + name
+
+---
+
+#### Storage Symlink Verification
+
+**Command:**
+```bash
+php artisan storage:link
+```
+
+**Output:**
+```
+INFO  The [public/storage] link has been connected to [storage/app/public].
+```
+
+**Why Needed:**
+- `AttachmentResource` uses `asset('storage/attachments/...')`
+- Without symlink, URLs return 404
+- Laravel stores uploads in `storage/app/public`
+- Symlink makes them accessible at `public/storage`
+
+---
+
+### Testing Plan
+
+**Manual Tests:**
+1. ✓ Upload image → Verify renders in chat with preview
+2. ✓ Upload PDF → Verify shows file icon with name
+3. ✓ Send message → Verify no duplicate from Echo
+4. ✓ Exceed quota → Verify error shows in chat UI
+5. ✓ Stream response → Verify [Done] terminates correctly
+
+**Automated Tests:**
+- Backend: Will run `php artisan test` (existing 69 tests)
+- Frontend: Will run `vitest` if configured
+
+---
+
+### Production Best Practices Applied
+
+1. **Defensive Programming:** Added `.trim()` and dual format support
+2. **User Experience:** Errors shown in UI, not just console
+3. **Edge Case Handling:** Deduplication logic for Echo conflicts
+4. **Design Consistency:** Follows Ecnelis design system exactly
+5. **Accessibility:** Added alt text to images, semantic HTML
+6. **Performance:** Deduplication uses `.some()` (O(n) acceptable for chat)
+
+---
+
 ## [2025-12-15 22:00:00] - Security Audit & Authorization Cleanup
 
 ### Summary
@@ -36,7 +301,7 @@ Security is critical for production. Found syntax errors in authorization checks
 public function authorize(): bool
 {
     $chat = $this->route('chat');
-    
+
     return $this->user()
         ->can('update, $chat');  // SYNTAX ERROR: missing quote before comma
 }
@@ -47,7 +312,7 @@ public function authorize(): bool
 public function authorize(): bool
 {
     $chat = $this->route('chat');
-    
+
     return $this->user()
         ->can('update', $chat);  // Fixed: proper syntax
 }
@@ -107,7 +372,7 @@ public function rules(): array
 public function destroy(Chat $chat)
 {
     $this->authorize('delete', $chat);  // Redundant - route middleware handles this
-    
+
     $chat->delete();
     // ...
 }
@@ -148,11 +413,11 @@ public function export(Chat $chat, string $format = 'md')
 public function index(Request $request, ?Chat $chat = null)
 {
     // ...
-    
+
     if ($chat) {
         $this->authorize('view', $chat);  // NEEDED: can't use route middleware with optional param
     }
-    
+
     // ...
 }
 ```
@@ -189,7 +454,7 @@ public function search(Request $request)
     $request->validate([
         'q' => 'required|string|max:200',  // NEW: validation
     ]);
-    
+
     $query = $request->input('q', '');
     // ...
 }
@@ -328,7 +593,7 @@ use Laravel\Cashier\Billable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, TwoFactorAuthenticatable, Billable;
-    
+
     protected $fillable = [
         'name',
         'email',
@@ -346,7 +611,7 @@ class User extends Authenticatable
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, TwoFactorAuthenticatable;  // Removed Billable
-    
+
     protected $fillable = [
         'name',
         'email',
