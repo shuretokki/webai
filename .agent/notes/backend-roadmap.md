@@ -6,75 +6,140 @@
 
 ## ✅ Completed Features
 
-| Feature | Status | Tests | Lines of Code | Note Location |
-|---------|--------|-------|---------------|---------------|
-| **File Cleanup System** | ✅ Done | ✅ 3 tests | ~120 | `rate-limiting-implementation.md` |
-| **Rate Limiting** | ✅ Done | ⏳ Pending | ~60 | `rate-limiting-implementation.md` |
-| **Usage Tracking** | ✅ Done | ✅ 8 tests | ~200 | `usage-tracking-implementation.md` |
+| Feature                       | Status  | Tests         | Lines of Code | Note Location                              |
+| ----------------------------- | ------- | ------------- | ------------- | ------------------------------------------ |
+| **File Cleanup System**       | ✅ Done | ✅ 3 tests    | ~120          | `rate-limiting-implementation.md`          |
+| **Rate Limiting**             | ✅ Done | ✅ 2 tests    | ~60           | `rate-limiting-implementation.md`          |
+| **Usage Tracking**            | ✅ Done | ✅ 8 tests    | ~200          | `usage-tracking-implementation.md`         |
+| **Authorization Policies**    | ✅ Done | ✅ 4 tests    | ~150          | `authorization-policies-implementation.md` |
+| **Admin Panel (Filament)**    | ✅ Done | N/A (UI)      | ~540          | `filament-admin-panel-implementation.md`   |
+| **Search Backend (LIKE)**     | ✅ Done | ✅ 7 tests    | ~50           | `search-frontend-todo.md`                  |
+| **Usage Dashboard (Frontend)**| ✅ Done | N/A (UI)      | ~150          | `usage-tracking-implementation.md`         |
+| **Testing Suite**             | ✅ Done | ✅ 79 tests   | ~600          | See CHANGELOG.md                           |
+| **Real-time Updates**         | ✅ Done | N/A (WebSocket) | ~285        | Below (WebSocket Implementation Notes)     |
+| **Frontend Search UI**        | ✅ Done | N/A (UI)      | ~250          | `resources/js/components/chat/SearchModal.vue` |
+| **Export Functionality**      | ✅ Done | N/A (Feature) | ~150          | `app/Http/Controllers/ChatController.php` |
+| **Multi-Model Support**       | ✅ Done | ✅ 3 tests    | ~400          | `config/ai.php`, `ChatController.php`      |
+| **Real Token Tracking**       | ✅ Done | ✅ Tested     | ~50           | `ChatController.php` (Prism API integration) |
+| **Admin Dashboard Widgets**   | ✅ Done | N/A (UI)      | ~450          | Revenue, User Stats, System Usage widgets   |
+| **Stripe Subscriptions**      | ⏸️ Paused | ✅ 10 tests | ~600          | Blocked: Need Xendit (Indonesia support)   |
 
-**Total Backend Code:** ~380 lines
-**Test Coverage:** ~60% (11/13 tests passing)
-**Production Ready:** File Cleanup ✅ | Usage Tracking ✅ | Rate Limiting ⏳
+**Total Backend Code:** ~3,655 lines
+**Test Coverage:** 100% pass rate (79/79 tests, 266 assertions)
+**Admin Resources:** 3 (User, Chat, UserUsage)
+**Admin Widgets:** 3 (Revenue, User Stats, System Usage)
+**Frontend Pages:** 3 (Chat, Usage Dashboard, Subscription)
+**Real-time Features:** WebSocket broadcasting with Laravel Reverb
+**Payment Integration:** ⏸️ Paused - Switching from Stripe to Xendit
+**Production Ready:** Core features ✅ (Payment pending)
+
+---
+
+## 💳 Payment Gateway Migration Plan
+
+**Current Status:** Stripe integration built but cannot be used (Indonesian merchant account required)
+
+**Target:** Xendit Payment Gateway
+- **Why Xendit:** Supports Indonesian merchants, local payment methods, IDR currency
+- **Supported Payments:** Credit Cards, Bank Transfer, GoPay, OVO, DANA, ShopeePay
+- **Integration Approach:** Replace Stripe/Cashier with Xendit SDK
+
+**Migration Steps:**
+1. Remove Laravel Cashier dependency
+2. Install Xendit PHP SDK: `composer require xendit/xendit-php`
+3. Update `SubscriptionController` to use Xendit API
+4. Update `WebhookController` for Xendit webhooks
+5. Update frontend to support Xendit payment methods
+6. Update tests for Xendit integration
+7. Configure Xendit dashboard and webhooks
+
+**Estimated Time:** 2-3 days
+
+**References:**
+- Xendit Docs: https://docs.xendit.co/
+- Xendit PHP SDK: https://github.com/xendit/xendit-php
+- Recurring Payments: https://docs.xendit.co/recurring-payments/
+
+---
+
+## 📡 WebSocket Implementation Notes
+
+**Technology Stack:**
+- Backend: Laravel Reverb (WebSocket server)
+- Frontend: Laravel Echo Vue (`@laravel/echo-vue` v2.2.6)
+- Transport: Pusher protocol with Reverb
+
+**Key Implementation Details:**
+
+1. **Event Naming Convention:**
+   - When using `broadcastAs()` in your event class, the frontend must listen with a **leading dot** (`.`)
+   - Example: `broadcastAs() { return 'message.sent'; }` → Frontend listens to `.message.sent`
+   - The dot prefix tells Laravel Echo to ignore the PHP namespace
+
+2. **Backend Event Structure:**
+   ```php
+   class MessageSent implements ShouldBroadcast {
+       public function broadcastOn(): array {
+           return [new PrivateChannel('chats.' . $this->chat->id)];
+       }
+
+       public function broadcastAs(): string {
+           return 'message.sent'; // Custom event name
+       }
+   }
+   ```
+
+3. **Frontend Listener (Vue Composable):**
+   ```typescript
+   import { useEcho } from '@laravel/echo-vue';
+
+   useEcho(
+       `chats.${chatId}`,     // Channel name
+       '.message.sent',       // Event name (note the dot prefix)
+       (event) => { ... },    // Callback
+       [],                    // Dependencies
+       'private'              // Channel type
+   );
+   ```
+
+4. **Configuration:**
+   - Echo is configured globally in `resources/js/app.ts` using `configureEcho()`
+   - No need for `window.Echo` - use Vue composables instead
+   - Reverb runs on port 8080 (configurable in `.env`)
+
+5. **Private Channels:**
+   - Require authentication via `routes/channels.php`
+   - Use `Broadcast::channel()` to define authorization logic
+   - Example: `Broadcast::channel('chats.{id}', fn($user, $id) => ...)`
+
+**Verified Working:** Real-time message updates in chat interface ✅
 
 ---
 
 ## 🎯 Next Steps Roadmap
 
-### **Priority 1: Complete Testing Suite** ⭐ (IN PROGRESS)
+### **Priority 1: Admin Panel Enhancements** 👑 (IN PROGRESS)
 
-**Goal:** Achieve 95%+ test coverage across all features
-
-**Tasks:**
-- [x] UsageTrackingTest.php (8 tests) ✅
-- [ ] AttachmentObserverTest.php (3 tests)
-- [ ] RateLimitingTest.php (2 tests)
-
-**Estimated Time:** 30-40 minutes
-**Value:** Confidence in all features, safe refactoring, professional portfolio
-
-**Tests to Write:**
-
-#### **1. AttachmentObserverTest.php**
-
-```php
-test('file is deleted from disk when attachment is force deleted')
-test('file persists when attachment is soft deleted')
-test('file is eventually deleted after 30 days')
-```
-
-#### **2. RateLimitingTest.php**
-
-```php
-test('chat stream is blocked after 2 requests per minute')
-test('different users have independent rate limits')
-```
-
-**Expected Outcome:**
-- 13 total tests (8 existing + 5 new)
-- ~95% backend coverage
-- All critical paths tested
-
----
-
-### **Priority 2: Frontend Dashboard** 🎨
-
-**Goal:** Build usage dashboard for users to monitor quota
+**Goal:** Enhance Filament admin panel with revenue dashboard and system monitoring
 
 **Location:** `resources/js/pages/settings/Usage.vue`
 
 **Features:**
+
 - Current month stats display
 - Progress bars (messages, tokens, storage)
 - Cost breakdown
 - Daily usage chart (optional)
 
 **API Endpoints Needed:**
+
 ```php
 Route::get('/api/usage/current', [UsageController::class, 'current']);
 Route::get('/api/usage/history', [UsageController::class, 'history']);
 ```
 
 **Components to Build:**
+
 1. `UsageDashboard.vue` - Main page
 2. `StatCard.vue` - Reusable stat display
 3. `ProgressBar.vue` - Quota visualization
@@ -84,6 +149,7 @@ Route::get('/api/usage/history', [UsageController::class, 'history']);
 **Value:** Professional UX, users understand limits
 
 **Mockup:**
+
 ```
 ┌─────────────────────────────────────┐
 │     Your Usage This Month           │
@@ -97,13 +163,14 @@ Route::get('/api/usage/history', [UsageController::class, 'history']);
 
 ---
 
-### **Priority 3: Search Functionality** 🔍
+### **Priority 2: Search Functionality** 🔍 (COMPLETED)
 
 **Goal:** Full-text search through chat history
 
 **Implementation Options:**
 
 #### **Option A: Database LIKE (Simple)**
+
 ```php
 $chats = Chat::where('user_id', auth()->id())
     ->whereHas('messages', function($q) use ($search) {
@@ -116,6 +183,7 @@ $chats = Chat::where('user_id', auth()->id())
 **Cons:** Slow with 1000+ messages
 
 #### **Option B: Laravel Scout + Meilisearch (Production)**
+
 ```bash
 composer require laravel/scout meilisearch/meilisearch-php
 ```
@@ -124,12 +192,14 @@ composer require laravel/scout meilisearch/meilisearch-php
 **Cons:** Requires external service
 
 **Features:**
+
 - Search across all chats
 - Highlight matching text
 - Filter by date/model
 - Sort by relevance
 
-**UI Changes:**
+**UI Changes:	**
+
 ```vue
 <input
   v-model="searchQuery"
@@ -143,21 +213,24 @@ composer require laravel/scout meilisearch/meilisearch-php
 
 ---
 
-### **Priority 4: Export Functionality** 📄
+### **Priority 3: Export Functionality** 📄
 
 **Goal:** Export chat history as PDF/Markdown
 
 **Features:**
+
 1. Export single chat as Markdown
 2. Export single chat as PDF
 3. Export all chats as ZIP
 
 **Libraries:**
+
 ```bash
 composer require barryvdh/laravel-dompdf  # PDF generation
 ```
 
 **Implementation:**
+
 ```php
 Route::get('/chat/{chat}/export', [ChatController::class, 'export']);
 
@@ -175,6 +248,7 @@ public function export(Chat $chat, string $format = 'md')
 ```
 
 **UI:**
+
 ```vue
 <button @click="exportChat('pdf')">
   <i-solar-download-linear /> Export as PDF
@@ -191,6 +265,7 @@ public function export(Chat $chat, string $format = 'md')
 **Goal:** Live updates without page refresh
 
 **Use Cases:**
+
 - See when AI is typing
 - Other device sends message → auto-update
 - Usage quota updates live
@@ -198,6 +273,7 @@ public function export(Chat $chat, string $format = 'md')
 **Stack Options:**
 
 #### **Option A: Laravel Reverb (Recommended - Laravel 11+)**
+
 ```bash
 php artisan install:broadcasting
 composer require laravel/reverb
@@ -205,11 +281,13 @@ php artisan reverb:start
 ```
 
 **Option B: Pusher (Managed Service)**
+
 ```bash
 composer require pusher/pusher-php-server
 ```
 
 **Implementation:**
+
 ```php
 // Backend
 event(new MessageSent($chat, $message));
@@ -231,12 +309,14 @@ Echo.private(`chats.${chatId}`)
 **Goal:** Monitor users, usage, revenue
 
 **Features:**
+
 - User list with usage stats
 - Revenue dashboard
 - Quota management (manual overrides)
 - System health monitoring
 
 **Tech Stack:**
+
 - **Option A:** Laravel Nova (official, paid)
 - **Option B:** Filament PHP (free, modern)
 - **Option C:** Custom build
@@ -249,6 +329,7 @@ php artisan filament:install --panels
 ```
 
 **Resources to Build:**
+
 ```php
 UserResource::class
 ChatResource::class
@@ -265,12 +346,14 @@ UserUsageResource::class
 **Goal:** Keep users informed
 
 **Scenarios:**
+
 1. Quota warning (80%, 95%)
 2. Quota exceeded
 3. Weekly usage summary
 4. New features announcement
 
 **Implementation:**
+
 ```php
 // app/Observers/UserUsageObserver.php
 if ($stats['messages'] === 80) {
@@ -282,6 +365,7 @@ Schedule::command('usage:weekly-summary')->weekly();
 ```
 
 **Templates:**
+
 - `emails/quota-warning.blade.php`
 - `emails/quota-exceeded.blade.php`
 - `emails/weekly-summary.blade.php`
@@ -291,19 +375,23 @@ Schedule::command('usage:weekly-summary')->weekly();
 
 ---
 
-### **Priority 8: Payment Integration** 💳
+### **Priority 3: Polish & Production Ready** ✨
+
+**Goal:** Production-ready improvements
 
 **Goal:** Monetize via subscriptions/credits
 
 **Provider:** Stripe (recommended per our discussion)
 
 **Implementation:**
+
 ```bash
 composer require laravel/cashier
 php artisan cashier:install
 ```
 
 **Tiers:**
+
 ```php
 'free' => [
     'messages' => 100,
@@ -323,6 +411,7 @@ php artisan cashier:install
 ```
 
 **Features:**
+
 - Subscription checkout
 - Usage-based billing (per token)
 - Invoice generation
@@ -333,44 +422,46 @@ php artisan cashier:install
 
 ---
 
-### **Priority 9: Multi-Model Support** 🤖
+### **Priority 4: Email Notifications** 📧 (MOVED TO LAST)
 
-**Goal:** Let users choose different AI models
+**Goal:** Keep users informed
 
-**Current:** Hardcoded `gemini-2.0-flash-lite`
+**Scenarios:**
 
-**Improvement:**
-```vue
-<select v-model="selectedModel">
-  <option value="gemini-2.0-flash-lite">Gemini Flash (Fast, Cheap)</option>
-  <option value="gemini-1.5-pro">Gemini Pro (Smart, Expensive)</option>
-  <option value="claude-3-sonnet">Claude Sonnet (Balanced)</option>
-</select>
-```
+1. Quota warning (80%, 95%)
+2. Quota exceeded
+3. Weekly usage summary
+4. New features announcement
 
-**Backend:**
+**Implementation:**
+
 ```php
-$costs = [
-    'gemini-2.0-flash-lite' => 0.0001,
-    'gemini-1.5-pro' => 0.0002,
-    'claude-3-sonnet' => 0.00015,
-];
+// app/Observers/UserUsageObserver.php
+if ($stats['messages'] === 80) {
+    Mail::to($user)->send(new QuotaWarningMail(80));
+}
 
-UserUsage::record(
-    cost: $tokens * $costs[$model]
-);
+// app/Console/Commands/SendWeeklySummary.php
+Schedule::command('usage:weekly-summary')->weekly();
 ```
 
-**Estimated Time:** 1 hour
-**Value:** User choice, diversified providers
+**Templates:**
+
+- `emails/quota-warning.blade.php`
+- `emails/quota-exceeded.blade.php`
+- `emails/weekly-summary.blade.php`
+
+**Estimated Time:** 2 hours
+**Value:** User retention, upgrade prompts
 
 ---
 
-### **Priority 10: API Documentation** 📚
+### **Priority 5: API Documentation** 📚
 
 **Goal:** Document endpoints for mobile/third-party apps
 
 **Tools:**
+
 - **Scribe:** Auto-generate docs from code
 - **Swagger/OpenAPI:** Industry standard
 
@@ -405,18 +496,18 @@ php artisan scribe:generate
 
 ## 📊 Recommended Order (Based on Value)
 
-| Priority | Feature | Business Value | Technical Debt | Effort |
-|----------|---------|----------------|----------------|--------|
-| 1 | Testing Suite | ⭐⭐⭐⭐⭐ | Prevents bugs | Low |
-| 2 | Frontend Dashboard | ⭐⭐⭐⭐⭐ | Users see value | Med |
-| 3 | Payment Integration | ⭐⭐⭐⭐⭐ | REVENUE | High |
-| 4 | Email Notifications | ⭐⭐⭐⭐ | Retention | Low |
-| 5 | Search | ⭐⭐⭐⭐ | Better UX | Med |
-| 6 | Admin Panel | ⭐⭐⭐⭐ | Operations | High |
-| 7 | Export | ⭐⭐⭐ | User request | Low |
-| 8 | Real-time | ⭐⭐⭐ | Modern UX | High |
-| 9 | Multi-Model | ⭐⭐ | Flexibility | Low |
-| 10 | API Docs | ⭐⭐ | Future-proof | Med |
+| Priority | Feature             | Business Value | Technical Debt  | Effort |
+| -------- | ------------------- | -------------- | --------------- | ------ |
+| 1        | Testing Suite       | ⭐⭐⭐⭐⭐     | Prevents bugs   | Low    |
+| 2        | Frontend Dashboard  | ⭐⭐⭐⭐⭐     | Users see value | Med    |
+| 3        | Payment Integration | ⭐⭐⭐⭐⭐     | REVENUE         | High   |
+| 4        | Email Notifications | ⭐⭐⭐⭐       | Retention       | Low    |
+| 5        | Search              | ⭐⭐⭐⭐       | Better UX       | Med    |
+| 6        | Admin Panel         | ⭐⭐⭐⭐       | Operations      | High   |
+| 7        | Export              | ⭐⭐⭐         | User request    | Low    |
+| 8        | Real-time           | ⭐⭐⭐         | Modern UX       | High   |
+| 9        | Multi-Model         | ⭐⭐           | Flexibility     | Low    |
+| 10       | API Docs            | ⭐⭐           | Future-proof    | Med    |
 
 ---
 
@@ -425,14 +516,16 @@ php artisan scribe:generate
 Before launching to real users:
 
 ### **Backend:**
-- [x] File cleanup
-- [x] Rate limiting
-- [x] Usage tracking
+
+- [X] File cleanup
+- [X] Rate limiting
+- [X] Usage tracking
 - [ ] Testing (90%+ coverage)
 - [ ] Payment integration
 - [ ] Email notifications
 
 ### **Frontend:**
+
 - [ ] Usage dashboard
 - [ ] Upgrade prompts
 - [ ] Error handling
@@ -440,6 +533,7 @@ Before launching to real users:
 - [ ] Mobile responsive
 
 ### **DevOps:**
+
 - [ ] Laravel Forge / Vapor setup
 - [ ] Database backups
 - [ ] Monitoring (Sentry)
@@ -447,6 +541,7 @@ Before launching to real users:
 - [ ] SSL certificate
 
 ### **Legal:**
+
 - [ ] Privacy policy
 - [ ] Terms of service
 - [ ] GDPR compliance
@@ -467,6 +562,7 @@ Before launching to real users:
 ### **Performance Optimizations**
 
 #### **1. Database Query Optimization**
+
 ```php
 // Current: N+1 query problem
 $chats = Chat::all();
@@ -482,6 +578,7 @@ foreach ($chats as $chat) {
 ```
 
 #### **2. Redis Caching for Usage Stats**
+
 ```bash
 composer require predis/predis
 ```
@@ -511,6 +608,7 @@ UserUsage::created(function($usage) {
 ---
 
 #### **3. Lazy Loading Prevention**
+
 ```php
 // Add to AppServiceProvider
 Model::preventLazyLoading(! app()->isProduction());
@@ -521,6 +619,7 @@ Throws exception in dev if you forget `->with()`, forces good habits.
 ---
 
 #### **4. Database Indexing**
+
 ```php
 // Add to existing migrations
 Schema::table('user_usages', function (Blueprint $table) {
@@ -537,6 +636,7 @@ Schema::table('messages', function (Blueprint $table) {
 ---
 
 #### **5. Chunk Large Deletes**
+
 ```php
 // Instead of: Chat::where('user_id', $id)->delete();
 Chat::where('user_id', $id)->chunkById(100, function($chats) {
@@ -551,6 +651,7 @@ Prevents memory exhaustion on large operations.
 ### **Security Enhancements**
 
 #### **6. Authorization Policies**
+
 ```php
 // app/Policies/ChatPolicy.php
 class ChatPolicy
@@ -577,6 +678,7 @@ public function destroy(Chat $chat)
 ---
 
 #### **7. Rate Limiting by IP + User**
+
 ```php
 RateLimiter::for('chat-messages', function (Request $request) {
     $key = $request->user()
@@ -592,6 +694,7 @@ Prevents abuse from both logged-in and guest users.
 ---
 
 #### **8. Input Sanitization**
+
 ```bash
 composer require htmlpurifier/htmlpurifier
 ```
@@ -606,6 +709,7 @@ $request->validate([
 ---
 
 #### **9. Content Moderation**
+
 ```php
 // Integrate OpenAI Moderation API
 $response = Http::post('https://api.openai.com/v1/moderations', [
@@ -622,6 +726,7 @@ if ($response['results'][0]['flagged']) {
 ### **Monitoring & Observability**
 
 #### **10. Error Tracking (Sentry)**
+
 ```bash
 composer require sentry/sentry-laravel
 ```
@@ -632,6 +737,7 @@ Sentry::captureException($exception);
 ```
 
 **Dashboard shows:**
+
 - Error trends
 - User-affected count
 - Stack traces
@@ -639,6 +745,7 @@ Sentry::captureException($exception);
 ---
 
 #### **11. Performance Monitoring**
+
 ```bash
 composer require spatie/laravel-ray
 ```
@@ -652,6 +759,7 @@ ray($user->currentMonthUsage())->red();
 ---
 
 #### **12. Health Checks**
+
 ```php
 // routes/web.php
 Route::get('/health', function() {
@@ -669,6 +777,7 @@ Route::get('/health', function() {
 ### **Scalability Improvements**
 
 #### **13. Horizontal Scaling with Load Balancer**
+
 ```
      [Load Balancer]
          /    \
@@ -680,6 +789,7 @@ Route::get('/health', function() {
 ```
 
 **Requirements:**
+
 - Stateless sessions (database/Redis)
 - Shared file storage (S3, not local)
 - Centralized queue (Redis/SQS)
@@ -687,6 +797,7 @@ Route::get('/health', function() {
 ---
 
 #### **14. Read Replicas**
+
 ```php
 // config/database.php
 'mysql' => [
@@ -704,6 +815,7 @@ Route::get('/health', function() {
 ---
 
 #### **15. CDN for Static Assets**
+
 ```php
 // Use Cloudflare/CloudFront
 'asset_url' => env('ASSET_URL', 'https://cdn.yourapp.com'),
@@ -714,6 +826,7 @@ Route::get('/health', function() {
 ## 🆕 Additional Feature Ideas
 
 ### **11. Chat Sharing**
+
 ```php
 Route::get('/chat/{chat}/share', [ChatController::class, 'share']);
 
@@ -739,6 +852,7 @@ public function share(Chat $chat)
 ---
 
 ### **12. AI Model Comparison**
+
 ```vue
 <button @click="compareModels(['gemini-2.0-flash', 'gpt-4'])">
   Compare Responses
@@ -750,6 +864,7 @@ Show side-by-side responses from different models.
 ---
 
 ### **13. Voice Input (Speech-to-Text)**
+
 ```javascript
 // Frontend
 const recognition = new webkitSpeechRecognition();
@@ -762,6 +877,7 @@ recognition.start();
 ---
 
 ### **14. Chat Templates**
+
 ```php
 // Pre-defined prompts
 ChatTemplate::create([
@@ -774,6 +890,7 @@ ChatTemplate::create([
 ---
 
 ### **15. Feedback System**
+
 ```vue
 <button @click="rate(message, 'good')">👍</button>
 <button @click="rate(message, 'bad')">👎</button>
@@ -784,6 +901,7 @@ Track which responses users find helpful.
 ---
 
 ### **16. Dark Mode / Themes**
+
 ```vue
 <button @click="toggleTheme()">
   <i-solar-sun v-if="!dark" />
@@ -794,6 +912,7 @@ Track which responses users find helpful.
 ---
 
 ### **17. Keyboard Shortcuts**
+
 ```javascript
 // Cmd+K = New Chat
 // Cmd+/ = Search
@@ -809,6 +928,7 @@ document.addEventListener('keydown', (e) => {
 ---
 
 ### **18. Chat Folders**
+
 ```php
 $user->chatFolders()->create(['name' => 'Work']);
 $chat->update(['folder_id' => $folderId]);
@@ -819,6 +939,7 @@ Organize chats like email folders.
 ---
 
 ### **19. AI Personas**
+
 ```php
 // Change AI personality
 'system_prompt' => match($persona) {
@@ -831,6 +952,7 @@ Organize chats like email folders.
 ---
 
 ### **20. Collaborative Chats**
+
 ```php
 // Share chat with team members
 $chat->collaborators()->attach($userId);
@@ -900,17 +1022,20 @@ Multiple users in same chat.
 ## 🏁 Launch Strategy
 
 ### **Phase 1: Beta (Invite-Only)**
+
 - 50-100 users
 - Free tier only
 - Gather feedback
 - Fix critical bugs
 
 ### **Phase 2: Public Launch**
+
 - Open registration
 - Introduce Pro tier ($9.99/mo)
 - Marketing push (ProductHunt, HackerNews)
 
 ### **Phase 3: Growth**
+
 - Referral program (10% discount)
 - Enterprise tier ($49.99/mo)
 - API access ($99/mo)
