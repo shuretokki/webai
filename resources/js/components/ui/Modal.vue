@@ -6,6 +6,8 @@ const props = defineProps<{
     title?: string;
     maxWidth?: string;
     contentClass?: string;
+    hideHeader?: boolean;
+    align?: 'center' | 'bottom';
 }>();
 
 const emit = defineEmits(['close']);
@@ -33,18 +35,42 @@ const maxWidthClass = computed(() => {
         default: return 'max-w-md';
     }
 });
+
+const containerClasses = computed(() => {
+    if (props.align === 'bottom') {
+        return 'items-end justify-center sm:items-center px-0 sm:px-4';
+    }
+    return 'items-center justify-center px-4';
+});
+
+const motionInitial = computed(() => {
+    return props.align === 'bottom'
+        ? { opacity: 0, y: '100%' }
+        : { opacity: 0, scale: 0.95, y: 10 };
+});
+
+const motionAnimate = computed(() => {
+    return props.align === 'bottom'
+        ? { opacity: 1, y: 0 }
+        : { opacity: 1, scale: 1, y: 0 };
+});
+
+const motionExit = computed(() => {
+    return props.align === 'bottom'
+        ? { opacity: 0, y: '100%' }
+        : { opacity: 0, scale: 0.95, y: 10 };
+});
 </script>
 <template>
     <Teleport to="body">
         <AnimatePresence>
-            <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div v-if="show" class="fixed inset-0 z-50 flex" :class="containerClasses">
                 <Motion :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :exit="{ opacity: 0 }"
                     class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="close" />
-                <Motion :initial="{ opacity: 0, scale: 0.95, y: 10 }" :animate="{ opacity: 1, scale: 1, y: 0 }"
-                    :exit="{ opacity: 0, scale: 0.95, y: 10 }"
+                <Motion :initial="motionInitial" :animate="motionAnimate" :exit="motionExit"
                     class="relative w-full bg-popover border border-border rounded-none shadow-2xl overflow-hidden"
-                    :class="maxWidthClass">
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+                    :class="[maxWidthClass, align === 'bottom' ? 'rounded-t-xl border-b-0' : '']">
+                    <div v-if="!hideHeader" class="flex items-center justify-between px-6 py-4 border-b border-border">
                         <h3 class="text-lg font-space text-popover-foreground">{{ title }}</h3>
                         <button @click="close" class="text-muted-foreground hover:text-foreground transition-colors">
                             <i-solar-close-circle-linear class="text-xl" />
