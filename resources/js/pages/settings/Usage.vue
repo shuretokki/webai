@@ -90,109 +90,97 @@ onUnmounted(() => {
   <AppLayout>
     <div class="max-w-4xl mx-auto px-4 py-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-3xl font-space font-bold text-foreground">
           Usage & Billing
         </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-muted-foreground font-space">
           Track your AI usage and manage your subscription
         </p>
       </div>
 
       <div v-if="loading" class="text-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Loading usage data...</p>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p class="mt-4 text-muted-foreground font-space">Loading usage data...</p>
       </div>
 
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p class="text-red-800">{{ error }}</p>
+      <div v-else-if="error" class="bg-destructive/10 border border-destructive/20 rounded-none p-4">
+        <p class="text-destructive font-space">{{ error }}</p>
       </div>
 
       <div v-else-if="usage" class="space-y-6">
         <div class="flex items-center justify-between">
           <div>
             <span
-              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+              class="inline-flex items-center px-3 py-1 rounded-none text-sm font-space font-medium bg-primary/10 text-primary border border-primary/20">
               {{ usage.tier.toUpperCase() }} Plan
             </span>
           </div>
-          <div v-if="showWarning"
-            class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+          <div v-if="showWarning" class="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded-none">
             <div class="flex">
               <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clip-rule="evenodd" />
-                </svg>
+                <i-solar-danger-triangle-linear class="text-yellow-500 text-xl" />
               </div>
               <div class="ml-3">
-                <p class="text-sm text-yellow-700 dark:text-yellow-200">
+                <p class="text-sm text-yellow-500 font-space">
                   {{ warningMessage }}
                 </p>
               </div>
             </div>
           </div>
-          <!-- TODO: Re-enable when Xendit payment integration is implemented -->
-          <!-- <Link
-            href="/subscription"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition inline-block"
-          >
-            Upgrade Plan
-          </Link> -->
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-card/30 border border-border rounded-none p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h3 class="text-lg font-space font-semibold text-foreground">
               Messages
             </h3>
-            <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <span class="text-2xl font-space font-bold text-foreground">
               {{ usage.stats.messages }} / {{ usage.limits.messages }}
             </span>
           </div>
 
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-            <div class="h-3 rounded-full transition-all duration-300"
-              :class="usage.percentage >= 90 ? 'bg-red-600' : usage.percentage >= 70 ? 'bg-yellow-500' : 'bg-green-500'"
+          <div class="w-full bg-secondary rounded-none h-3 overflow-hidden">
+            <div class="h-3 rounded-none transition-all duration-300"
+              :class="usage.percentage >= 90 ? 'bg-destructive' : usage.percentage >= 70 ? 'bg-yellow-500' : 'bg-primary'"
               :style="{ width: usage.percentage + '%' }"></div>
           </div>
 
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p class="mt-2 text-sm text-muted-foreground font-space">
             {{ usage.percentage }}% of monthly quota used
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6"> <!-- Tokens -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-card/30 border border-border rounded-none p-6">
+            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
               AI Tokens Used
             </h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <p class="text-3xl font-space font-bold text-foreground">
               {{ usage.stats.tokens.toLocaleString() }}
             </p>
           </div>
 
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+          <div class="bg-card/30 border border-border rounded-none p-6">
+            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
               Storage Used
             </h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <p class="text-3xl font-space font-bold text-foreground">
               {{ usage.stats.bytes }}
             </p>
           </div>
 
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+          <div class="bg-card/30 border border-border rounded-none p-6">
+            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
               Estimated Cost
             </h3>
-            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <p class="text-3xl font-space font-bold text-foreground">
               ${{ usage.stats.cost }}
             </p>
           </div>
         </div>
 
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <p class="text-sm text-blue-800 dark:text-blue-200">
+        <div class="bg-primary/5 border border-primary/20 rounded-none p-4">
+          <p class="text-sm text-foreground font-space">
             <strong>Billing Cycle:</strong> Resets on the 1st of each month
           </p>
         </div>
