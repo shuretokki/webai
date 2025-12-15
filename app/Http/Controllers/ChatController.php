@@ -287,6 +287,8 @@ class ChatController extends Controller
 
     public function destroy(Chat $chat)
     {
+        $this->authorize('delete', $chat);
+
         $chat->delete();
 
         $atDeleted = str_contains(
@@ -299,6 +301,10 @@ class ChatController extends Controller
 
     public function search(Request $request)
     {
+        $request->validate([
+            'q' => 'required|string|max:200',
+        ]);
+
         $query = $request->input('q', '');
         $user = auth()->user();
 
