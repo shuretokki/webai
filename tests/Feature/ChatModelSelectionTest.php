@@ -32,8 +32,8 @@ test('free user cannot use paid models', function () {
     $response->assertStatus(403);
 });
 
-test('pro user can use paid models (demo mode)', function () {
-    $user = User::factory()->create(['subscription_tier' => 'pro']);
+test('plus user can use paid models (demo mode)', function () {
+    $user = User::factory()->create(['subscription_tier' => 'plus']);
     $chat = Chat::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)
