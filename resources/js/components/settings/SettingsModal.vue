@@ -86,8 +86,15 @@ const handleUpgrade = () => {
                         ]">
                         <div v-if="activeTab === tab.id" class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"></div>
 
-                        <component :is="tab.icon" class="text-lg shrink-0"
+                        <i-solar-user-circle-linear v-if="tab.id === 'account'" class="text-lg shrink-0"
                             :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
+                        <i-solar-settings-minimalistic-linear v-if="tab.id === 'behavior'" class="text-lg shrink-0"
+                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
+                        <i-solar-tuning-2-linear v-if="tab.id === 'customize'" class="text-lg shrink-0"
+                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
+                        <i-solar-database-linear v-if="tab.id === 'data'" class="text-lg shrink-0"
+                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
+
                         {{ tab.label }}
                     </button>
                 </div>
@@ -168,7 +175,11 @@ const handleUpgrade = () => {
                         @click="navigateToTab(tab.id)"
                         class="flex items-center justify-between p-4 border-b border-border text-left group active:bg-white/5 transition-colors">
                         <div class="flex items-center gap-3">
-                            <component :is="tab.icon"
+                            <i-solar-settings-minimalistic-linear v-if="tab.id === 'behavior'"
+                                class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
+                            <i-solar-tuning-2-linear v-if="tab.id === 'customize'"
+                                class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
+                            <i-solar-database-linear v-if="tab.id === 'data'"
                                 class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
                             <span class="font-space text-lg text-foreground">{{ tab.label }}</span>
                         </div>
