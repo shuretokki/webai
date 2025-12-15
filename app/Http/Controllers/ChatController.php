@@ -45,7 +45,7 @@ class ChatController extends Controller
 
     public function stream(ChatRequest $request)
     {
-        $modelId = $request->input('model', 'gemini-2.5-flash-lite');
+        $modelId = $request->input('model', 'gemini-1.5-flash');
         $models = config('ai.models');
         $modelConfig = collect($models)->firstWhere('id', $modelId);
 
@@ -174,6 +174,11 @@ class ChatController extends Controller
                         'gemini' => Provider::Gemini,
                         'openai' => Provider::OpenAI,
                         'anthropic' => Provider::Anthropic,
+                        'ollama' => Provider::Ollama,
+                        'mistral' => Provider::Mistral,
+                        'groq' => Provider::Groq,
+                        'xai' => Provider::XAI,
+                        'deepseek' => Provider::DeepSeek,
                         default => Provider::Gemini,
                     };
 
