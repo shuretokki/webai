@@ -364,6 +364,18 @@ onUnmounted(() => {
                 <div class="w-full flex-1 relative flex flex-col items-center overflow-y-auto overflow-x-hidden px-4 pb-32 scroll-smooth"
                     ref="container">
                     <div class="w-full max-w-3xl flex flex-col gap-4 py-4">
+                        <div v-if="uiMessages.length === 0"
+                            class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+                            <div class="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                                <i-solar-stars-minimalistic-linear class="text-3xl text-primary" />
+                            </div>
+                            <h2 class="text-2xl font-space font-medium text-foreground mb-2">How can I help you today?
+                            </h2>
+                            <p class="text-sm text-muted-foreground font-space max-w-md">
+                                I can help you write code, analyze data, or even just chat.
+                            </p>
+                        </div>
+
                         <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
                             :content="msg.content" />
 
