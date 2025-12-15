@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-16 02:00:00] - Social Login & Login Redesign
+
+### Added
+- **Authentication:** Added "Login with GitHub" and "Login with Google" buttons to the valid login page.
+- **Documentation:** Updated backend notes with Socialite integration requirements.
+
+### Changed
+- **UI:** Redesigned the Login page to match the application's premium "Ecnelis" aesthetic (Dark mode, squared inputs).
+
+---
+
 ## [2025-12-16 01:40:00] - Icon System Migration
 
 ### Changed

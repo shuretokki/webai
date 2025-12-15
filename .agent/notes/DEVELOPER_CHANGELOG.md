@@ -6,6 +6,29 @@
 
 ---
 
+## [2025-12-16 02:00:00] - Social Login UI & Redesign
+
+### Summary
+Redesigned the Login page (`resources/js/pages/auth/Login.vue`) to align with the "Ecnelis" design system (dark mode, squared corners, Lucide icons). Added "Login with GitHub" and "Login with Google" buttons. Updated backend documentation to support these new authentication flows.
+
+### Files Changed
+
+#### `resources/js/pages/auth/Login.vue` (REDESIGNED)
+- **UI:** Converted all inputs/buttons to `rounded-none`.
+- **Style:** Applied `bg-white/5` and `border-white/10` to inputs for a premium dark look.
+- **Added:** Two social login buttons (GitHub, Google) using `lucide-vue-next` icons.
+- **Added:** Divider "Or continue with".
+- **Refactor:** Removed default styling in favor of custom design tokens.
+
+#### `BACKEND_NOTES.md` (UPDATED)
+- **Added:** Section "Authentication (Login with Social)" detailing required routes (`/auth/github/redirect`, etc.) and merge logic.
+
+### Technical Details
+- **Architecture:** Frontend-only implementation. Routes point to standard Laravel Socialite endpoints (`/auth/{provider}/redirect`).
+- **Icons:** Used `Github` and `Globe` from `lucide-vue-next`.
+
+---
+
 ## [2025-12-16 01:40:00] - Icon System Migration
 
 ### Summary
