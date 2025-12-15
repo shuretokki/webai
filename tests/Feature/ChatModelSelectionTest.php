@@ -12,7 +12,7 @@ test('free user can use free models', function () {
         ->postJson('/chat/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
-            'model' => 'gemini-2.5-flash-lite',
+            'model' => 'gemini-1.5-flash',
         ]);
 
     $response->assertStatus(200);
