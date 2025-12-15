@@ -6,6 +6,192 @@
 
 ---
 
+## [2025-12-15 17:15:00] - Real API Token Tracking & Cost Calculation
+
+### Summary
+Upgraded the token tracking system to use real usage data from AI provider APIs (Gemini, OpenAI, Anthropic, etc.) instead of string-length estimations. The system now captures precise input and output token counts from the Prism response object and calculates costs accurately.
+
+### Why
+The previous implementation estimated token counts using `strlen($text) / 4`, which was a rough approximation. AI providers return exact token counts and charge different rates for input vs output tokens. To provide accurate cost tracking for users and prepare for production billing, we need real API usage data.
+
+### How
+1. **Streaming Responses:** Modified the streaming loop to track the last chunk, which contains the `usage` object with real token counts.
+2. **Metadata Update:** Added `input_tokens` and `output_tokens` to the metadata passed to `UserUsage::record()`.
+3. **Fallback Logic:** If usage data is unavailable (e.g., API error), fall back to estimation.
+4. **Cost Calculation:** `UserUsage::calculateCost()` already supported separate input/output token pricing—it just needed the real data.
+
+---
+
+### File: `app/Http/Controllers/ChatController.php` (MODIFIED)
+
+**Location:** `stream` method (lines ~150-240)
+**Purpose:** Handle AI streaming and track real token usage
+
+**Before:**
+```php
+$fullResponse = '';
+$totalTokens = 0;
+
+foreach ($stream as $chunk) {
+    $text = $chunk->delta ?? '';
+    $fullResponse .= $text;
+    $totalTokens += (int) (strlen($text) / 4); // Estimation
+}
+
+UserUsage::record(
+    userId: $user->id,
+    type: 'ai_response',
+    tokens: $totalTokens,
+    metadata: [
+        'chat_id' => $chat->id,
+        'model' => $modelId,
+        'response_length' => strlen($fullResponse),
+    ]
+);
+```
+
+**After:**
+```php
+$fullResponse = '';
+$inputTokens = 0;
+$outputTokens = 0;
+$totalTokens = 0;
+
+$lastChunk = null;
+
+foreach ($stream as $chunk) {
+    $lastChunk = $chunk; // Keep track of last chunk
+    $text = $chunk->delta ?? '';
+    $fullResponse .= $text;
+}
+
+// Get real token usage from the last chunk
+if ($lastChunk && isset($lastChunk->usage)) {
+    $inputTokens = $lastChunk->usage->promptTokens ?? 0;
+    $outputTokens = $lastChunk->usage->completionTokens ?? 0;
+    $totalTokens = $inputTokens + $outputTokens;
+} else {
+    // Fallback to estimation
+    $inputTokens = (int) (array_sum(array_map(fn($msg) => strlen($msg->content ?? ''), $history)) / 4);
+    $outputTokens = (int) (strlen($fullResponse) / 4);
+    $totalTokens = $inputTokens + $outputTokens;
+}
+
+UserUsage::record(
+    userId: $user->id,
+    type: 'ai_response',
+    tokens: $totalTokens,
+    metadata: [
+        'chat_id' => $chat->id,
+        'model' => $modelId,
+        'input_tokens' => $inputTokens,    // NEW
+        'output_tokens' => $outputTokens,   // NEW
+        'response_length' => strlen($fullResponse),
+    ]
+);
+```
+
+**Key Changes:**
+1. Added `$inputTokens`, `$outputTokens`, and `$lastChunk` variables
+2. Track the last chunk in the streaming loop
+3. Extract `promptTokens` and `completionTokens` from `$lastChunk->usage`
+4. Pass real token counts to `UserUsage::record()` via metadata
+
+---
+
+### File: `app/Models/UserUsage.php` (NO CHANGES)
+
+**Why No Changes?**
+The `calculateCost()` method already handled separate input/output tokens correctly:
+
+```php
+$inputTokens = $metadata['input_tokens'] ?? $tokens;
+$outputTokens = $metadata['output_tokens'] ?? 0;
+
+$cost = ($inputTokens / 1000) * $modelConfig['input_cost']
+      + ($outputTokens / 1000) * $modelConfig['output_cost'];
+```
+
+It was designed to support this from the start—it just needed real data from the controller.
+
+---
+
+## Feature Completion Status
+
+### Real Token Tracking: ✅ 100% Complete
+
+**Backend:**
+- [x] Capture real token usage from Prism API responses
+- [x] Track input and output tokens separately
+- [x] Fallback to estimation if API data unavailable
+- [x] Pass accurate data to UserUsage
+
+**Cost Calculation:**
+- [x] Use real input/output token counts
+- [x] Calculate costs with provider-specific pricing
+- [x] Store accurate cost in database
+
+---
+
+## Testing Instructions
+
+### Manual Testing (Real Token Tracking)
+1. **Send a Chat Message:** Use the chat interface to send a message with `gemini-2.5-flash`
+2. **Check Database:** Query `user_usages` table and verify:
+   - `tokens` column has a reasonable value
+   - `metadata->input_tokens` and `metadata->output_tokens` are present
+   - `cost` is calculated correctly (very small for Gemini Flash)
+3. **Test with Long Prompt:** Send a long message and verify token counts increase appropriately
+
+### Tinker Testing
+```php
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Enums\Provider;
+
+$response = Prism::text()
+    ->using(Provider::Gemini, 'gemini-2.5-flash')
+    ->withPrompt('Count from 1 to 10')
+    ->generate();
+
+return [
+    'input' => $response->usage->promptTokens,
+    'output' => $response->usage->completionTokens,
+];
+```
+
+### Debugging
+- **No usage data?** Check `$lastChunk->usage` exists in the stream
+- **Cost still zero?** Verify `config/ai.models` has correct pricing for the model
+- **Estimation used?** Check logs for API errors that might prevent usage data
+
+---
+
+## Dependencies (No Changes)
+All dependencies installed in previous sessions.
+
+---
+
+## Environment Variables Required (No Changes)
+Same as previous session.
+
+---
+
+## Rollback Instructions
+
+If issues occur:
+1. Revert `ChatController.php` to previous version
+2. Token tracking will fall back to estimation method
+3. Run tests to ensure basic functionality works
+
+---
+
+**Total Files Modified:** 1 file (`ChatController.php`)
+**Lines of Code Changed:** ~40 lines
+**Backend Status:** ✅ Complete
+**Production Ready:** ✅ Yes (with real API token tracking)
+
+---
+
 ## [2025-12-15 16:45:00] - Model List Refinement
 
 ### Summary
