@@ -31,7 +31,6 @@ const handleDeleteAllChats = () => {
 
 <template>
   <div class="h-full">
-    <!-- Account Tab -->
     <div v-if="activeTab === 'account'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div class="flex items-center p-4 border border-border bg-card/20 rounded-none gap-4">
         <div
@@ -64,9 +63,7 @@ const handleDeleteAllChats = () => {
       </div>
     </div>
 
-    <!-- Behavior Tab -->
     <div v-if="activeTab === 'behavior'" class="space-y-1 animate-in fade-in slide-in-from-right-4 duration-300">
-      <!-- Setting Item -->
       <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
         <span class="text-sm font-space text-foreground">Enable Auto Scroll</span>
         <button @click="settings.autoScroll = !settings.autoScroll"
@@ -105,7 +102,6 @@ const handleDeleteAllChats = () => {
 
       <div class="h-px bg-border my-2"></div>
 
-      <!-- Disabled/Experimental -->
       <div
         class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
         <span class="text-sm font-space text-foreground">Enable #1</span>
@@ -132,14 +128,12 @@ const handleDeleteAllChats = () => {
       </div>
     </div>
 
-    <!-- Customize Tab (Placeholder) -->
     <div v-if="activeTab === 'customize'"
       class="h-full flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-right-4 duration-300">
       <i-solar-pallete-2-linear class="text-4xl mb-4 opacity-50" />
       <p class="font-space text-sm">Theme customization coming soon</p>
     </div>
 
-    <!-- Data Control Tab -->
     <div v-if="activeTab === 'data'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div class="space-y-1">
         <h4 class="font-space text-sm font-medium text-foreground">Usage</h4>
