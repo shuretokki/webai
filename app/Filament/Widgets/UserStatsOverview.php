@@ -12,7 +12,7 @@ class UserStatsOverview extends BaseWidget
     {
         $totalUsers = User::count();
         $freeUsers = User::where('subscription_tier', 'free')->count();
-        $proUsers = User::where('subscription_tier', 'pro')->count();
+        $plusUsers = User::where('subscription_tier', 'plus')->count();
         $enterpriseUsers = User::where('subscription_tier', 'enterprise')->count();
 
         $newUsersThisMonth = User::whereYear('created_at', now()->year)
@@ -31,7 +31,7 @@ class UserStatsOverview extends BaseWidget
                 ->color('success'),
 
             Stat::make('Subscription Breakdown', '')
-                ->description("Free: $freeUsers | Pro: $proUsers | Enterprise: $enterpriseUsers")
+                ->description("Free: $freeUsers | Plus: $plusUsers | Enterprise: $enterpriseUsers")
                 ->descriptionIcon('heroicon-o-chart-pie')
                 ->color('info'),
         ];
