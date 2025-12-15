@@ -19,7 +19,7 @@
 | **Real-time Updates**         | ✅ Done | N/A (WebSocket) | ~285        | Below (WebSocket Implementation Notes)     |
 | **Frontend Search UI**        | ✅ Done | N/A (UI)      | ~250          | `resources/js/components/chat/SearchModal.vue` |
 | **Export Functionality**      | ✅ Done | N/A (Feature) | ~150          | `app/Http/Controllers/ChatController.php` |
-| **Multi-Model Support**       | ✅ Done | ✅ 3 tests    | ~250          | `config/ai.php`, `ChatController.php`      |
+| **Multi-Model Support**       | ✅ Done | ✅ 3 tests    | ~350          | `config/ai.php`, `ChatController.php`      |
 
 **Total Backend Code:** ~1,815 lines
 **Test Coverage:** 100% pass rate (66/66 tests, 207 assertions)
