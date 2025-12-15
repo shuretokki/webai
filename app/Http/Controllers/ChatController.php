@@ -55,8 +55,11 @@ class ChatController extends Controller
 
         $user = auth()->user();
 
-        if (! $modelConfig['is_free'] && ! in_array($user->subscription_tier, ['pro', 'enterprise'])) {
-            return response()->json(['error' => 'Upgrade required for this model.'], 403);
+        if (! $modelConfig['is_free'] && ! in_array($user->subscription_tier, ['plus', 'enterprise'])) {
+            return response()->json(
+                ['error' => 'This model requires a Plus or Enterprise subscription.'],
+                403
+            );
         }
 
         if ($user->hasExceededQuota('messages', 100)) {
@@ -164,7 +167,7 @@ class ChatController extends Controller
                 // Simulate streaming delay
                 $words = explode(' ', $fullResponse);
                 foreach ($words as $word) {
-                    $text = $word . ' ';
+                    $text = $word.' ';
                     echo 'data: '.json_encode(['text' => $text])."\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();
@@ -218,7 +221,7 @@ class ChatController extends Controller
                         $totalTokens = $inputTokens + $outputTokens;
                     } else {
                         // Fallback to estimation if usage data not available
-                        $inputTokens = (int) (array_sum(array_map(fn($msg) => strlen($msg->content ?? ''), $history)) / 4);
+                        $inputTokens = (int) (array_sum(array_map(fn ($msg) => strlen($msg->content ?? ''), $history)) / 4);
                         $outputTokens = (int) (strlen($fullResponse) / 4);
                         $totalTokens = $inputTokens + $outputTokens;
                     }
@@ -228,7 +231,7 @@ class ChatController extends Controller
                         'error' => $e->getMessage()])."\n\n";
 
                     // Set fallback token counts on error
-                    $inputTokens = (int) (array_sum(array_map(fn($msg) => strlen($msg->content ?? ''), $history)) / 4);
+                    $inputTokens = (int) (array_sum(array_map(fn ($msg) => strlen($msg->content ?? ''), $history)) / 4);
                     $outputTokens = (int) (strlen($fullResponse) / 4);
                     $totalTokens = $inputTokens + $outputTokens;
                 }
@@ -370,12 +373,13 @@ class ChatController extends Controller
 
         if ($format === 'pdf') {
             $pdf = Pdf::loadView('chat.export', ['chat' => $chat]);
+
             return $pdf->download("chat-{$chat->id}.pdf");
         }
 
         return response()->streamDownload(function () use ($chat) {
             echo "# {$chat->title}\n\n";
-            echo "Exported on " . now()->toDateTimeString() . "\n\n";
+            echo 'Exported on '.now()->toDateTimeString()."\n\n";
 
             foreach ($chat->messages as $message) {
                 $role = ucfirst($message->role);

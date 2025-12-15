@@ -16,5 +16,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
  */
 Broadcast::channel('chats.{chatId}', function ($user, $chatId) {
     $chat = Chat::find($chatId);
+
     return $chat && $chat->user_id === $user->id;
 });

@@ -21,7 +21,7 @@ class SystemUsageOverview extends BaseWidget
 
         return [
             Stat::make('Total Messages', number_format($totalMessages))
-                ->description($messagesThisMonth . ' this month')
+                ->description($messagesThisMonth.' this month')
                 ->descriptionIcon('heroicon-o-chat-bubble-left-right')
                 ->color('success'),
 
@@ -40,12 +40,13 @@ class SystemUsageOverview extends BaseWidget
     private function formatBytes(int $bytes): string
     {
         if ($bytes >= 1073741824) {
-            return number_format($bytes / 1073741824, 2) . ' GB';
+            return number_format($bytes / 1073741824, 2).' GB';
         } elseif ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2) . ' MB';
+            return number_format($bytes / 1048576, 2).' MB';
         } elseif ($bytes >= 1024) {
-            return number_format($bytes / 1024, 2) . ' KB';
+            return number_format($bytes / 1024, 2).' KB';
         }
-        return $bytes . ' B';
+
+        return $bytes.' B';
     }
 }

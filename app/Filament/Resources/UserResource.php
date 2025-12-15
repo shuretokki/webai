@@ -86,7 +86,7 @@ class UserResource extends Resource
 
                 Tables\Columns\TextColumn::make('usage_stats.total_cost')
                     ->label('Total Cost')
-                    ->getStateUsing(fn ($record) => '$' . number_format($record->usages()->sum('cost'), 2))
+                    ->getStateUsing(fn ($record) => '$'.number_format($record->usages()->sum('cost'), 2))
                     ->sortable()
                     ->toggleable(),
 

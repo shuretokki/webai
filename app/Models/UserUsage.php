@@ -59,7 +59,7 @@ class UserUsage extends Model
             $models = config('ai.models', []);
             $modelConfig = collect($models)->firstWhere('id', $modelId);
 
-            if (!$modelConfig) {
+            if (! $modelConfig) {
                 return $tokens * 0.0001; // Fallback
             }
 

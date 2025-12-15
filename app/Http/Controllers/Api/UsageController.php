@@ -20,8 +20,8 @@ class UsageController extends Controller
 
         $limit = match ($user->subscription_tier ?? 'free') {
             'free' => 100,
-            'pro' => 1000,
-            'enterprise' => 9999999,
+            'plus' => 1000,
+            'enterprise' => PHP_INT_MAX,
             default => 100,
         };
 

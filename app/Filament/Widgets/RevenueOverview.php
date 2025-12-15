@@ -25,13 +25,13 @@ class RevenueOverview extends BaseWidget
             : 0;
 
         return [
-            Stat::make('Total Revenue', '$' . number_format($totalRevenue, 2))
+            Stat::make('Total Revenue', '$'.number_format($totalRevenue, 2))
                 ->description('All time')
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success'),
 
-            Stat::make('This Month', '$' . number_format($currentMonthRevenue, 2))
-                ->description($revenueChange > 0 ? '+' . number_format($revenueChange, 1) . '% from last month' : number_format($revenueChange, 1) . '% from last month')
+            Stat::make('This Month', '$'.number_format($currentMonthRevenue, 2))
+                ->description($revenueChange > 0 ? '+'.number_format($revenueChange, 1).'% from last month' : number_format($revenueChange, 1).'% from last month')
                 ->descriptionIcon($revenueChange > 0 ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down')
                 ->color($revenueChange > 0 ? 'success' : 'danger'),
 

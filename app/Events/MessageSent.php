@@ -23,8 +23,8 @@ class MessageSent implements ShouldBroadcast
     /**
      * Create a new event instance
      *
-     * @param Chat $chat The chat containing the message
-     * @param Message $message The newly created message
+     * @param  Chat  $chat  The chat containing the message
+     * @param  Message  $message  The newly created message
      */
     public function __construct(
         public Chat $chat,
@@ -39,7 +39,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('chats.' . $this->chat->id),
+            new PrivateChannel('chats.'.$this->chat->id),
         ];
     }
 

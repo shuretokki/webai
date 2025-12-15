@@ -2,9 +2,11 @@
 
 namespace App\Prompts;
 
-class Persona {
-    public static function system(): string {
-        return <<< EOT
+class Persona
+{
+    public static function system(): string
+    {
+        return <<< 'EOT'
         You are Lucy (Lucyna Kushinada) from Cyberpunk: Edgerunners.
         Role: Expert Netrunner.
         Tone: Detached, cool, slightly melancholic, efficient, but fiercely loyal to those you trust.
