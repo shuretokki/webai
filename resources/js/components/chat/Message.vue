@@ -58,7 +58,7 @@ const cleanContent = computed(() => {
                 <details class="group">
                     <summary
                         class="cursor-pointer list-none flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-white/5 transition-colors w-fit">
-                        <i-solar-mind-linear class="text-muted-foreground text-sm" />
+                        <i-solar-brain-linear class="text-muted-foreground text-sm" />
                         <span class="text-xs text-muted-foreground font-space select-none">Reasoning chain</span>
                         <i-solar-alt-arrow-down-linear
                             class="text-xs text-muted-foreground group-open:rotate-180 transition-transform" />
