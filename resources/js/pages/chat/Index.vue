@@ -309,7 +309,7 @@ onUnmounted(() => {
                     <div class="flex items-center gap-3 ml-auto">
                         <div class="relative" ref="menuRef">
                             <button @click="isMenuOpen = !isMenuOpen"
-                                class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors"
+                                class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors"
                                 :class="{ 'text-white': isMenuOpen }">
                                 <i-solar-menu-dots-linear class="text-xl" />
                             </button>
@@ -350,12 +350,12 @@ onUnmounted(() => {
                             </div>
                         </div>
                         <button @click="isSearchOpen = true"
-                            class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors"
+                            class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors"
                             title="Search (Cmd/Ctrl+K)">
                             <i-solar-magnifer-linear class="text-xl" />
                         </button>
                         <Link :href="Chat().url"
-                            class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors">
+                            class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors">
                         <i-solar-pen-new-square-linear class="text-xl" />
                         </Link>
                     </div>
