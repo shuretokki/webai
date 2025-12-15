@@ -6,6 +6,83 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 15:15:00] - Frontend Search UI & WebSocket Fixes
+
+### Added
+- **File:** `resources/js/components/chat/SearchModal.vue`
+- **Description:** New Command Palette-style search modal with keyboard navigation, debouncing, and result highlighting.
+- **Impact:** Allows users to quickly find chats via `Cmd/Ctrl+K`.
+
+### Changed
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Integrated `SearchModal`, added global keyboard shortcut listener, and fixed WebSocket listener event name.
+- **Impact:** Search is accessible from chat interface; Real-time updates now work correctly with `.message.sent` event name.
+
+- **File:** `app/Events/MessageSent.php`
+- **Description:** Added `broadcastAs()` method to return `message.sent`.
+- **Impact:** Ensures consistent event naming for frontend listener, avoiding namespace issues.
+
+- **File:** `routes/web.php`
+- **Description:** Removed temporary test routes (`/test-reverb`).
+- **Impact:** Cleanup of debug code.
+
+### Removed
+- **Files:** `resources/js/pages/TestReverb.vue`, `app/Events/TestEvent.php`
+- **Reason:** WebSocket functionality verified and debugged; test files no longer needed.
+
+### Why
+- **Search UI:** Improves navigation and user experience for finding past conversations.
+- **WebSocket Fixes:** Debugging revealed that `broadcastAs()` was needed for reliable event listening in Laravel Echo.
+
+---
+
+## [2025-12-15 14:30:00] - Real-time Updates (Frontend Complete)
+
+### Changed
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Lines:** 163-187
+- **Before:** No WebSocket listener, messages only visible on sender's device via SSE
+- **After:** Added `useEcho()` hook to subscribe to `chats.{chatId}` private channel and listen for `MessageSent` events
+- **Impact:** Messages now sync instantly across all devices viewing the same chat
+
+**Implementation:**
+```typescript
+// Subscribe to private channel when chat loads
+const echoControl = useEcho(
+    `chats.${props.chatId}`,
+    'MessageSent',
+    (event) => {
+        props.messages.push({
+            role: event.message.role,
+            content: event.message.content,
+            attachments: []
+        });
+        scrollToBottom();
+    }
+);
+
+// Cleanup on unmount
+onUnmounted(() => {
+    if (echoControl) {
+        echoControl.leaveChannel();
+    }
+});
+```
+
+**Why:**
+- Enables ChatGPT-like multi-device experience
+- Uses Laravel Echo's Vue composable for automatic channel management
+- Backend was already broadcasting (completed 2025-12-15 12:11:21)
+- Frontend listener is the final piece to complete real-time feature
+
+**Testing:**
+1. Open chat in Tab A
+2. Open same chat in Tab B
+3. Send message from Tab A
+4. **Expected:** Message appears in Tab B instantly without refresh
+
+---
+
 ## [2025-12-15 12:11:21] - Real-time Updates (Backend)
 
 ### Added

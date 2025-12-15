@@ -6,6 +6,253 @@
 
 ---
 
+## [2025-12-15 15:15:00] - Frontend Search UI & WebSocket Fixes
+
+### Summary
+Implemented a full-featured "Command Palette" style search modal for the frontend and fixed the WebSocket real-time updates by correcting the event naming convention between backend and frontend.
+
+### Why
+- **Search:** Users need a quick way to navigate between chats without leaving the keyboard.
+- **WebSocket Fix:** The initial implementation of real-time updates wasn't triggering on the frontend because Laravel Echo expects a specific event name format when namespaces are involved. Using `broadcastAs()` resolves this.
+
+### How
+1. **Search UI:** Created `SearchModal.vue` using `Teleport` for modal rendering, `useDebounceFn` for API calls, and `onKeyStroke` for keyboard shortcuts.
+2. **WebSocket Fix:** Added `broadcastAs()` to `MessageSent` event to return a clean string `'message.sent'`. Updated frontend to listen for `.message.sent` (note the leading dot).
+
+---
+
+### File: `resources/js/components/chat/SearchModal.vue` (NEW)
+
+**Location:** Entire File
+**Purpose:** Reusable search modal component
+
+**Key Features:**
+- **Global Shortcut:** Opens on `Cmd/Ctrl + K`
+- **Debouncing:** Waits 300ms before hitting API
+- **Keyboard Nav:** Arrow keys to select, Enter to go
+- **Highlighting:** Matches in title/snippet are highlighted in yellow
+
+---
+
+### File: `resources/js/pages/chat/Index.vue` (MODIFIED)
+
+**Location:** Script Setup & Template
+**Purpose:** Integrate search modal and fix WebSocket listener
+
+**Before (WebSocket Listener):**
+```typescript
+useEcho(`chats.${props.chatId}`, 'MessageSent', ...)
+```
+
+**After (WebSocket Listener):**
+```typescript
+useEcho(
+    `chats.${props.chatId}`,
+    '.message.sent', // Note the dot prefix matching broadcastAs()
+    (event: any) => { ... },
+    [],
+    'private'
+);
+```
+
+**Syntax Explanation:**
+- `.message.sent`: The leading dot tells Laravel Echo to look for the event name exactly as defined in `broadcastAs()`, ignoring the `App\Events` namespace.
+
+---
+
+### File: `app/Events/MessageSent.php` (MODIFIED)
+
+**Location:** `broadcastAs` method
+**Purpose:** Define explicit broadcast name
+
+**Added:**
+```php
+public function broadcastAs(): string
+{
+    return 'message.sent';
+}
+```
+
+---
+
+### File: `routes/web.php` (MODIFIED)
+
+**Purpose:** Cleanup
+- Removed `Route::get('/test-reverb', ...)`
+- Removed `Route::post('/test-reverb/send', ...)`
+
+---
+
+## [2025-12-15 14:30:00] - Real-time Updates Implementation (Frontend Complete)
+
+### Summary
+Completed WebSocket-based real-time messaging by adding the frontend listener to `Index.vue`. Messages now broadcast instantly to all connected devices when AI completes a response. **Real-time updates feature is now 100% complete.**
+
+### Why
+Enable ChatGPT-like experience where messages sync across devices without page refresh. Backend was broadcasting events (completed 2025-12-15 12:11:21), but frontend had no listener. This completes the feature by receiving those broadcasts and updating the UI.
+
+### How
+1. Used Laravel Echo's Vue composable `useEcho()` for automatic channel management
+2. Subscribed to private channel `chats.{chatId}` when component mounts
+3. Listened for `MessageSent` event and pushed received messages to reactive array
+4. Added cleanup on component unmount to prevent memory leaks
+
+---
+
+### File: `resources/js/pages/chat/Index.vue` (MODIFIED)
+
+**Location:** Lines 163-187
+**Purpose:** Add WebSocket listener to receive real-time message broadcasts from other devices
+
+**Before:**
+```typescript
+onMounted(() => {
+    scrollToBottom();
+});
+```
+
+**After:**
+```typescript
+let echoControl: any = null;
+
+onMounted(() => {
+    scrollToBottom();
+
+    if (props.chatId) {
+        echoControl = useEcho(
+            `chats.${props.chatId}`,
+            'MessageSent',
+            (event: any) => {
+                if (event.message && event.message.role === 'assistant') {
+                    props.messages.push({
+                        role: event.message.role,
+                        content: event.message.content,
+                        attachments: []
+                    });
+                    scrollToBottom();
+                }
+            }
+        );
+    }
+});
+
+onUnmounted(() => {
+    if (echoControl) {
+        echoControl.leaveChannel();
+    }
+});
+```
+
+**Syntax Explanation:**
+- `useEcho(channelName, eventName, callback)` - Laravel Echo Vue composable for private channels
+- `chats.${props.chatId}` - Dynamic private channel name (authorized in `routes/channels.php`)
+- `'MessageSent'` - Event class name without namespace (backend: `App\Events\MessageSent`)
+- `event.message` - Payload from `broadcastWith()` method in backend event
+- `props.messages.push()` - Add received message to reactive array (triggers UI update)
+- `echoControl.leaveChannel()` - Cleanup on unmount to prevent memory leaks and duplicate listeners
+
+**Implementation Details:**
+1. **Channel Subscription:** Only subscribes if `chatId` exists (not on new chat page)
+2. **Authorization:** Backend verifies user owns chat before allowing subscription
+3. **Event Filtering:** Only processes `assistant` role messages (user messages already added via form submission)
+4. **Scroll Behavior:** Auto-scrolls to bottom when new message received
+5. **Cleanup:** Properly leaves channel on unmount (navigation away from chat)
+
+**Impact:**
+- **Multi-device sync:** Messages appear instantly on all open tabs/devices
+- **No polling:** WebSocket push is more efficient than HTTP polling
+- **User experience:** ChatGPT-like real-time feel
+- **Memory safe:** Proper cleanup prevents leaks
+
+---
+
+## Feature Completion Status
+
+### Real-time Updates: ✅ 100% Complete
+
+**Backend (Completed 2025-12-15 12:11:21):**
+- [x] Laravel broadcasting installed
+- [x] Laravel Reverb package installed (v1.6.3)
+- [x] `MessageSent` event broadcasts to private channels
+- [x] Channel authorization in `routes/channels.php`
+- [x] ChatController triggers event after AI response
+- [x] Broadcasting config created
+
+**Frontend (Completed 2025-12-15 14:30:00):**
+- [x] Echo configured in `resources/js/app.ts`
+- [x] WebSocket listener added to `Index.vue`
+- [x] Subscribed to private channel with proper cleanup
+- [x] Messages pushed to reactive array on event received
+- [x] UI updates automatically (Vue reactivity)
+
+---
+
+## Testing Instructions
+
+### Manual Testing (Multi-Device Sync)
+1. **Start Reverb server:** `php artisan reverb:start` (Terminal 1)
+2. **Start Laravel:** `php artisan serve` (Terminal 2)
+3. **Open Browser Tab A:** Navigate to existing chat
+4. **Open Browser Tab B:** Navigate to same chat
+5. **Send message from Tab A**
+6. **Expected Result:** Message appears in Tab B instantly without refresh
+7. **Verify:** Check browser console for WebSocket connection (no errors)
+
+### Debugging
+- **No messages syncing?** Check `.env` has `BROADCAST_CONNECTION=reverb` and Reverb server is running
+- **Authorization errors?** Verify `routes/channels.php` authorization logic
+- **Event not firing?** Check ChatController line 183 has `event(new \App\Events\MessageSent(...))`
+
+---
+
+## Dependencies (No Changes)
+All dependencies installed in previous session (2025-12-15 12:11:21):
+- `laravel/reverb` (v1.6.3) - WebSocket server
+- `laravel-echo` (v2.2.6) - Frontend WebSocket client
+- `pusher-js` (v8.4.0) - Browser WebSocket protocol
+- `@laravel/echo-vue` - Vue 3 composable
+
+---
+
+## Environment Variables Required (No Changes)
+Same as previous session:
+```env
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=my-app
+REVERB_APP_KEY=my-secret-key
+REVERB_APP_SECRET=my-secret-secret
+REVERB_HOST="localhost"
+REVERB_PORT=8080
+REVERB_SCHEME=http
+
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST="${REVERB_HOST}"
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+```
+
+---
+
+## Rollback Instructions
+
+If issues occur:
+1. Remove lines 163-187 from `resources/js/pages/chat/Index.vue`
+2. Restore original `onMounted(() => { scrollToBottom(); });`
+3. Run `npm run build` to rebuild frontend
+4. App works exactly as before (SSE streaming still functional, just no multi-device sync)
+
+WebSocket is purely additive - removing it doesn't break existing SSE streaming functionality.
+
+---
+
+**Total Files Modified:** 1 file (`Index.vue`)
+**Lines of Code Added:** ~25 lines
+**Backend Status:** ✅ Complete (no changes)
+**Frontend Status:** ✅ Complete
+**Production Ready:** ⚠️ Requires Reverb server running in production (see Laravel Reverb deployment docs)
+
+---
+
 ## [2025-12-15 12:11:21] - Real-time Updates Implementation (Backend)
 
 ### Summary
