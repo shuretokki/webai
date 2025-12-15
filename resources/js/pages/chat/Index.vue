@@ -39,7 +39,7 @@ const exportChat = (format: 'pdf' | 'md') => {
     isMenuOpen.value = false;
 };
 
-const model = ref('gemini-1.5-flash');
+const model = ref('gemini-2.5-flash');
 const form = useForm({
     prompt: '',
     chat_id: props.chatId,
