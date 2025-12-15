@@ -18,6 +18,9 @@ Route::inertia('/settings/usage', 'settings/Usage')
     ->name('settings.usage')
     ->middleware(['auth', 'verified']);
 
+Route::inertia('/pricing', 'Pricing')
+    ->name('pricing');
+
 Route::middleware(['auth', 'verified'])
     ->prefix('api')
     ->group(function () {
