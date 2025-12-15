@@ -65,16 +65,29 @@ const saveTitle = () => {
     });
 };
 
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+
+const confirmDelete = () => {
+    if (!props.chatId) return;
+
+    isDeleting.value = true;
+    router.delete(`/chat/${props.chatId}`, {
+        preserveState: true,
+        onSuccess: () => {
+            isMenuOpen.value = false;
+            showDeleteModal.value = false;
+            isDeleting.value = false;
+        },
+        onError: () => {
+            isDeleting.value = false;
+        }
+    });
+};
+
 const deleteChat = () => {
     if (!props.chatId) return;
-    if (confirm('Are you sure you want to delete this chat?')) {
-        router.delete(`/chat/${props.chatId}`, {
-            preserveState: true,
-            onSuccess: () => {
-                isMenuOpen.value = false;
-            }
-        });
-    }
+    showDeleteModal.value = true;
 };
 
 const model = ref('gemini-2.5-flash');
@@ -337,12 +350,12 @@ onUnmounted(() => {
                             </div>
                         </div>
                         <button @click="isSearchOpen = true"
-                            class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
+                            class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors"
                             title="Search (Cmd/Ctrl+K)">
                             <i-solar-magnifer-linear class="text-xl" />
                         </button>
                         <Link :href="Chat().url"
-                            class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors">
+                            class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors">
                         <i-solar-pen-new-square-linear class="text-xl" />
                         </Link>
                     </div>
@@ -388,6 +401,24 @@ onUnmounted(() => {
                     <button @click="saveTitle" :disabled="editForm.processing"
                         class="px-4 py-2 rounded-none bg-primary text-primary-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
                         Save Changes
+                    </button>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm">
+            <div class="flex flex-col gap-4">
+                <p class="text-sm font-space text-muted-foreground">
+                    Are you sure you want to delete this chat? This action cannot be undone.
+                </p>
+                <div class="flex justify-end gap-2">
+                    <button @click="showDeleteModal = false"
+                        class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                        Cancel
+                    </button>
+                    <button @click="confirmDelete" :disabled="isDeleting"
+                        class="px-4 py-2 rounded-none bg-destructive text-destructive-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
+                        Delete
                     </button>
                 </div>
             </div>
