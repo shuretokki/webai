@@ -383,7 +383,7 @@ onUnmounted(() => {
                     class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
 
                     <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" v-model:modelValue="model"
-                        :models="models" :userTier="userTier" />
+                        :models="models" :userTier="userTier" :is-streaming="isStreaming" />
                 </div>
             </div>
         </div>
