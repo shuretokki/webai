@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 16:45:00] - Model List Refinement
+
+### Changed
+- **File:** `config/ai.php`
+- **Description:** Updated to feature specific future models: GPT 5.2, Grok 4, Claude 4.5 Sonnet/Opus. Removed Gemini 2.5 Pro, Mistral, Groq, and Ollama providers.
+- **Impact:** Narrows model focus to select future options, removing older or less relevant models.
+
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Cleaned up provider matching logic to align with updated model list.
+- **Impact:** Streamlines backend logic for model selection.
+
+### Why
+- **Feature Request:** Users requested ability to choose between different AI models (e.g., GPT-3.5, GPT-4).
+- **Flexibility:** Different models have different capabilities and costs; users should control this.
+- **Future-Proofing:** Easily add new models or change pricing in the future.
+
+---
+
 ## [2025-12-15 16:30:00] - Future Model Support & Restrictions
 
 ### Changed

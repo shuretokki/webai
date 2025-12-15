@@ -6,20 +6,17 @@
 
 ---
 
-## [2025-12-15 16:30:00] - Future Model Support & Restrictions
+## [2025-12-15 16:45:00] - Model List Refinement
 
 ### Summary
-Prepared the application for future AI model support and imposed temporary restrictions on model selection. Updated `config/ai.php` with placeholders for upcoming models. Modified the frontend to include a new modal component indicating models in progress. Adjusted the model selection logic to restrict users to specific models only.
+Refined the list of AI models in the application configuration and code. Removed references to certain providers and models that are no longer relevant or available. Added placeholders for hypothetical future models.
 
 ### Why
-To lay the groundwork for supporting new AI models from various providers and to manage user access to these models until they are officially supported.
+To ensure the application only references available and relevant AI models, and to prepare for the potential addition of new models in the future.
 
 ### How
-1. **Config File:** Added placeholders for Gemini 3.0/2.5 Pro, GPT-4.5, and Claude 3.7 Sonnet in `config/ai.php`.
-2. **Frontend Updates:**
-    - Created `UnderProgressModal.vue` component to inform users about upcoming models.
-    - Modified `selectModel` function in `ChatInput.vue` to restrict model selection.
-3. **Controller & View Updates:** Changed default model in `ChatController` and `Index.vue` to `gemini-2.5-flash`.
+1. **Config File:** Updated `config/ai.php` to remove Mistral, Groq, Ollama, and Gemini 2.5 Pro. Added hypothetical future models (GPT 5.2, Grok 4, Claude 4.5).
+2. **Controller Updates:** Removed unused providers (Ollama, Mistral, Groq) from `ChatController::stream` match statement.
 
 ---
 
@@ -29,8 +26,7 @@ To lay the groundwork for supporting new AI models from various providers and to
 **Purpose:** Handle AI model selection and streaming response
 
 **Changes:**
-- Updated default model to `gemini-2.5-flash`.
-- Adjusted `match` statement to include new providers and models.
+- Removed unused providers (Ollama, Mistral, Groq) from `match` statement in the `stream` method.
 
 ---
 
@@ -40,11 +36,15 @@ To lay the groundwork for supporting new AI models from various providers and to
 **Purpose:** Define available AI models and their costs
 
 **Changes:**
-- Populated with a wide range of models from multiple providers.
-- Added placeholders for future models:
-    - `gemini-3.0-pro`: Upcoming Gemini 3.0 Pro model.
-    - `gpt-4.5`: Upcoming GPT-4.5 model.
-    - `claude-3.7-sonnet`: Upcoming Claude 3.7 Sonnet model.
+- Removed models that are no longer relevant:
+    - `mistral`: Removed Mistral model.
+    - `groq`: Removed Groq model.
+    - `ollama`: Removed Ollama model.
+    - `gemini-2.5-pro`: Removed Gemini 2.5 Pro model.
+- Added hypothetical future models:
+    - `gpt-5.2`: Placeholder for future GPT 5.2 model.
+    - `grok-4`: Placeholder for future Grok 4 model.
+    - `claude-4.5`: Placeholder for future Claude 4.5 model.
 
 ---
 
@@ -54,19 +54,17 @@ To lay the groundwork for supporting new AI models from various providers and to
 **Purpose:** Improve AI model selector UI and restrict model selection
 
 **Changes:**
-- Refactored model selector to a "mega dropdown" grid layout.
-- Enhanced usability for selecting from many available models.
-- Modified `selectModel` function to block selection of any model except `gemini-2.5-flash` and `gemini-2.5-flash-lite`, showing the `UnderProgressModal` instead.
+- No changes in this update.
 
 ---
 
-### File: `resources/js/components/UnderProgressModal.vue` (NEW)
+### File: `resources/js/components/UnderProgressModal.vue` (UNCHANGED)
 
 **Location:** New Component
 **Purpose:** Inform users about upcoming AI models
 
 **Changes:**
-- Created a new modal component to be displayed when a restricted model is selected.
+- No changes in this update.
 
 ---
 
@@ -76,29 +74,26 @@ To lay the groundwork for supporting new AI models from various providers and to
 **Purpose:** Test AI model selection and cost calculation
 
 **Changes:**
-- Updated default model for tests to `gemini-2.5-flash`.
-- Ensured tests cover new model-provider mappings and UI changes.
+- Updated tests to reflect removal of certain models and addition of hypothetical future models.
 
 ---
 
 ## Feature Completion Status
 
-### Future Model Support & Restrictions: ✅ 100% Complete
+### Model List Refinement: ✅ 100% Complete
 
 **Backend:**
-- [x] Expanded config file for AI models
-- [x] Updated ChatController for new model-provider mappings
+- [x] Updated ChatController for removed providers
+- [x] Config file updated to reflect current AI models
 
 **Frontend:**
-- [x] Refactored model selector in ChatInput.vue
-- [x] Created UnderProgressModal.vue component
-- [x] Tests updated for new model selection logic
+- [x] No frontend changes in this update.
 
 ---
 
 ## Testing Instructions
 
-### Manual Testing (Future Model Support & Restrictions)
+### Manual Testing (Model List Refinement)
 1. **Select AI Model:** Use the model selector in the chat input to choose from the available AI models. Attempt to select restricted models to test the modal display.
 2. **Send Message:** Observe the response time and content based on the selected model.
 3. **Check Costs:** Verify the calculated cost corresponds to the model's pricing.
