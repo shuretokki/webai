@@ -6,6 +6,7 @@ import ChatInput from '@/components/chat/ChatInput.vue';
 import SearchModal from '@/components/chat/SearchModal.vue';
 import { chat as Chat } from '@/routes/index'
 import { useEcho } from '@laravel/echo-vue'
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>,
@@ -20,6 +21,10 @@ const props = defineProps<{
     }>,
     chatId: number | null
 }>();
+
+const page = usePage<any>();
+const models = computed(() => page.props.ai?.models || []);
+const userTier = computed(() => page.props.auth?.user?.subscription_tier || 'free');
 
 const isSearchOpen = ref(false);
 const isMenuOpen = ref(false);
@@ -39,6 +44,10 @@ const form = useForm({
     prompt: '',
     chat_id: props.chatId,
     model: model.value,
+});
+
+watch(model, (newModel) => {
+    form.model = newModel;
 });
 
 watch(() => props.chatId, (newId) => {
@@ -305,7 +314,8 @@ onUnmounted(() => {
                 <div
                     class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
 
-                    <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" />
+                    <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" v-model:modelValue="model"
+                        :models="models" :userTier="userTier" />
                 </div>
             </div>
         </div>
