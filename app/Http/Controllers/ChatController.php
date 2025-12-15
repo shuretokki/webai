@@ -45,7 +45,7 @@ class ChatController extends Controller
 
     public function stream(ChatRequest $request)
     {
-        $modelId = $request->input('model', 'gemini-1.5-flash');
+        $modelId = $request->input('model', 'gemini-2.5-flash');
         $models = config('ai.models');
         $modelConfig = collect($models)->firstWhere('id', $modelId);
 
