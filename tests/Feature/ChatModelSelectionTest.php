@@ -26,7 +26,7 @@ test('free user cannot use paid models', function () {
         ->postJson('/chat/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
-            'model' => 'gpt-4o',
+            'model' => 'gpt-5.2',
         ]);
 
     $response->assertStatus(403);
@@ -40,7 +40,7 @@ test('pro user can use paid models (demo mode)', function () {
         ->postJson('/chat/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
-            'model' => 'gpt-4o',
+            'model' => 'gpt-5.2',
         ]);
 
     $response->assertStatus(200);
