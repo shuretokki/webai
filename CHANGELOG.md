@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 18:00:00] - Admin Panel Enhancements
+
+### Added
+- **File:** `app/Filament/Widgets/RevenueOverview.php`
+- **Description:** Created revenue dashboard widget showing total revenue, monthly revenue with trend comparison, and total API requests.
+- **Impact:** Admins can now monitor revenue metrics at a glance.
+
+- **File:** `app/Filament/Widgets/UserStatsOverview.php`
+- **Description:** Created user statistics widget displaying total users, new signups this month, and subscription tier breakdown.
+- **Impact:** Provides visibility into user growth and subscription distribution.
+
+- **File:** `app/Filament/Widgets/SystemUsageOverview.php`
+- **Description:** Created system usage widget showing total messages, tokens processed, and storage used with formatted units.
+- **Impact:** Track system-wide usage metrics and capacity planning.
+
+### Changed
+- **File:** `app/Filament/Resources/UserResource.php`
+- **Description:** Enhanced user table with computed columns for messages sent and total cost per user.
+- **Impact:** Admins can identify high-usage users and monitor per-user costs directly from the user list.
+
+### Why
+Admin panel needed better visibility into revenue, user metrics, and system usage for production operations and business decisions.
+
+---
+
 ## [2025-12-15 17:15:00] - Real API Token Tracking & Cost Calculation
 
 ### Changed
