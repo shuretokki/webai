@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Motion } from 'motion-v';
 import {
   Activity,
-  ArrowRight,
   BarChart3,
-  Check,
   CheckCircle2,
   ChevronRight,
   Globe,
+  Quote,
   Shield,
   Users,
-  Zap
+  Zap,
+  ChevronDown
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const features = [
   {
@@ -34,35 +40,28 @@ const features = [
   }
 ];
 
-const plans = [
+const faqs = ref([
   {
-    name: 'Starter',
-    price: 'Free',
-    period: '/ forever',
-    description: 'Perfect for testing and personal projects.',
-    features: ['1,000 requests/mo', 'Community support', 'Shared infrastructure', 'Basic analytics'],
-    cta: 'Start for Free',
-    popular: false
+    question: "Can I deploy on-premise?",
+    answer: "Yes, our Enterprise plan supports full on-premise deployment with air-gapped environments for maximum control and security.",
+    isOpen: false
   },
   {
-    name: 'Pro',
-    price: '$49',
-    period: '/ month',
-    description: 'For growing teams and production apps.',
-    features: ['100k requests/mo', 'Priority email support', 'Dedicated API keys', 'Advanced analytics', 'Custom rate limits'],
-    cta: 'Get Started',
-    popular: true
+    question: "What kind of support is included?",
+    answer: "Enterprise customers receive 24/7 dedicated support via Slack and phone, with a guaranteed 1-hour response time for critical issues.",
+    isOpen: false
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large organizations with specific needs.',
-    features: ['Unlimited requests', '24/7 Phone support', 'Private VPC', 'SSO & Audit logs', 'Custom SLA', 'Dedicated Success Manager'],
-    cta: 'Contact Sales',
-    popular: false
+    question: "How do you handle data privacy?",
+    answer: "We adhere to strict data privacy standards. Your data is never used to train our public models, and we offer optional zero-retention policies.",
+    isOpen: false
+  },
+  {
+    question: "Is there a volume discount?",
+    answer: "Absolutely. We offer tailored volume licensing agreements designed to scale efficiently with your organization's growth.",
+    isOpen: false
   }
-];
+]);
 
 const container = {
   hidden: { opacity: 0 },
@@ -78,6 +77,10 @@ const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 }
 };
+
+const toggleFaq = (index: number) => {
+  faqs.value[index].isOpen = !faqs.value[index].isOpen;
+};
 </script>
 
 <template>
@@ -85,17 +88,14 @@ const item = {
 
     <Head title="Enterprise" />
 
-    <div class="min-h-screen bg-black text-white overflow-hidden relative font-space selection:bg-blue-500/30">
+    <div class="min-h-screen bg-background text-foreground overflow-hidden relative font-space selection:bg-primary/30">
       <!-- Ambient Background Effects -->
       <div class="fixed inset-0 z-0 pointer-events-none">
         <div
-          class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-600/20 blur-[120px] rounded-full opacity-50">
+          class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[120px] rounded-full opacity-50">
         </div>
         <div
-          class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[600px] bg-purple-600/10 blur-[100px] rounded-full opacity-30">
-        </div>
-        <div
-          class="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/10 blur-[100px] rounded-full opacity-30">
+          class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[600px] bg-blue-600/10 blur-[100px] rounded-full opacity-30">
         </div>
 
         <!-- Grid Pattern -->
@@ -111,23 +111,23 @@ const item = {
         <Motion initial="hidden" animate="show" :variants="container" class="text-center max-w-4xl mx-auto mb-32">
           <Motion :variants="item" class="flex justify-center mb-6">
             <div
-              class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-medium text-blue-400">
-              <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-none border border-border bg-card/50 backdrop-blur-sm text-xs font-medium text-primary">
+              <span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
               New Enterprise Tier Available
             </div>
           </Motion>
 
           <Motion :variants="item">
-            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight">
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight text-foreground">
               Scale your vision with <br />
               <span
-                class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 animate-gradient-x">Intelligent
+                class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-indigo-400 animate-gradient-x">Intelligent
                 Infrastructure</span>
             </h1>
           </Motion>
 
           <Motion :variants="item">
-            <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
               The complete platform for building, deploying, and scaling AI agents.
               Secure, reliable, and faster than ever before.
             </p>
@@ -135,11 +135,11 @@ const item = {
 
           <Motion :variants="item" class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg"
-              class="h-12 px-8 text-base rounded-full bg-white text-black hover:bg-gray-200 transition-all font-semibold shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+              class="h-12 px-8 text-base rounded-none bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-semibold shadow-[0_0_20px_rgba(var(--primary),0.3)]">
               Start Building
             </Button>
             <Button variant="outline" size="lg"
-              class="h-12 px-8 text-base rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm transition-all group">
+              class="h-12 px-8 text-base rounded-none border-border bg-card/50 hover:bg-card/80 text-foreground backdrop-blur-sm transition-all group">
               Contact Sales
               <ChevronRight class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
@@ -151,47 +151,48 @@ const item = {
           :transition="{ duration: 0.8 }" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32">
           <!-- Card 1: Revenue/Growth -->
           <div
-            class="md:col-span-2 relative group overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8 shadow-2xl">
+            class="md:col-span-2 relative group overflow-hidden rounded-none border border-border bg-card/30 backdrop-blur-md p-8 shadow-2xl">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10 flex flex-col h-full justify-between">
               <div>
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="p-2 rounded-lg bg-blue-500/20 border border-blue-500/30">
-                    <BarChart3 class="w-6 h-6 text-blue-400" />
+                  <div class="p-2 rounded-none bg-primary/20 border border-primary/30">
+                    <BarChart3 class="w-6 h-6 text-primary" />
                   </div>
-                  <h3 class="text-lg font-medium text-gray-200">Usage Analytics</h3>
+                  <h3 class="text-lg font-medium text-foreground">Usage Analytics</h3>
                 </div>
-                <h4 class="text-4xl font-bold text-white mb-2">2.4M+</h4>
-                <p class="text-sm text-gray-400">Tokens generated this week</p>
+                <h4 class="text-4xl font-bold text-foreground mb-2">2.4M+</h4>
+                <p class="text-sm text-muted-foreground">Tokens generated this week</p>
               </div>
 
               <!-- Mock Graph -->
               <div class="mt-8 flex items-end gap-2 h-32 w-full opacity-80">
                 <div
-                  class="w-full bg-blue-500/20 rounded-t-sm h-[40%] group-hover:h-[60%] transition-all duration-700 ease-out relative">
-                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]">
+                  class="w-full bg-primary/20 rounded-none h-[40%] group-hover:h-[60%] transition-all duration-700 ease-out relative">
+                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_10px_currentColor]">
                   </div>
                 </div>
                 <div
-                  class="w-full bg-blue-500/20 rounded-t-sm h-[65%] group-hover:h-[45%] transition-all duration-700 ease-out delay-75 relative">
-                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]">
+                  class="w-full bg-primary/20 rounded-none h-[65%] group-hover:h-[45%] transition-all duration-700 ease-out delay-75 relative">
+                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_10px_currentColor]">
                   </div>
                 </div>
                 <div
-                  class="w-full bg-blue-500/20 rounded-t-sm h-[50%] group-hover:h-[80%] transition-all duration-700 ease-out delay-100 relative">
-                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]">
+                  class="w-full bg-primary/20 rounded-none h-[50%] group-hover:h-[80%] transition-all duration-700 ease-out delay-100 relative">
+                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_10px_currentColor]">
                   </div>
                 </div>
                 <div
-                  class="w-full bg-blue-500/20 rounded-t-sm h-[85%] group-hover:h-[70%] transition-all duration-700 ease-out delay-150 relative">
-                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]">
+                  class="w-full bg-primary/20 rounded-none h-[85%] group-hover:h-[70%] transition-all duration-700 ease-out delay-150 relative">
+                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_10px_currentColor]">
                   </div>
                 </div>
                 <div
-                  class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm h-[75%] group-hover:h-[95%] transition-all duration-700 ease-out delay-200 relative shadow-lg shadow-blue-500/20">
-                  <div class="absolute top-0 left-0 right-0 h-[2px] bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]">
+                  class="w-full bg-gradient-to-t from-primary to-blue-400 rounded-none h-[75%] group-hover:h-[95%] transition-all duration-700 ease-out delay-200 relative shadow-lg shadow-primary/20">
+                  <div
+                    class="absolute top-0 left-0 right-0 h-[2px] bg-foreground shadow-[0_0_15px_rgba(255,255,255,0.8)]">
                   </div>
                 </div>
               </div>
@@ -200,33 +201,33 @@ const item = {
 
           <!-- Card 2: Active Users -->
           <div
-            class="relative group overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8 shadow-2xl">
+            class="relative group overflow-hidden rounded-none border border-border bg-card/30 backdrop-blur-md p-8 shadow-2xl">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-lg bg-purple-500/20 border border-purple-500/30">
-                  <Users class="w-6 h-6 text-purple-400" />
+                <div class="p-2 rounded-none bg-indigo-500/20 border border-indigo-500/30">
+                  <Users class="w-6 h-6 text-indigo-400" />
                 </div>
-                <h3 class="text-lg font-medium text-gray-200">Active Agents</h3>
+                <h3 class="text-lg font-medium text-foreground">Active Agents</h3>
               </div>
               <div class="flex -space-x-4 mb-6">
                 <div v-for="i in 4" :key="i"
-                  class="w-10 h-10 rounded-full border-2 border-[#0a0a0a] bg-gray-800 flex items-center justify-center text-xs text-white relative z-10">
+                  class="w-10 h-10 rounded-full border-2 border-background bg-card flex items-center justify-center text-xs text-foreground relative z-10">
                   <img :src="`https://ui-avatars.com/api/?name=User+${i}&background=random&color=fff`"
                     class="w-full h-full rounded-full" />
                 </div>
                 <div
-                  class="w-10 h-10 rounded-full border-2 border-[#0a0a0a] bg-gray-800 flex items-center justify-center text-xs text-white z-0">
+                  class="w-10 h-10 rounded-full border-2 border-background bg-card flex items-center justify-center text-xs text-foreground z-0">
                   +2k
                 </div>
               </div>
-              <p class="text-gray-400 text-sm mb-4">
+              <p class="text-muted-foreground text-sm mb-4">
                 Join thousands of developers building the future.
               </p>
               <Button variant="link"
-                class="text-purple-400 p-0 h-auto hover:text-purple-300 group-hover:translate-x-1 transition-transform">
+                class="text-indigo-400 p-0 h-auto hover:text-indigo-300 group-hover:translate-x-1 transition-transform">
                 Explore Community &rarr;
               </Button>
             </div>
@@ -234,22 +235,22 @@ const item = {
 
           <!-- Card 3: Global Latency -->
           <div
-            class="relative group overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8 shadow-2xl">
+            class="relative group overflow-hidden rounded-none border border-border bg-card/30 backdrop-blur-md p-8 shadow-2xl">
             <div
-              class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10">
               <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-green-500/20 border border-green-500/30">
-                  <Globe class="w-6 h-6 text-green-400" />
+                <div class="p-2 rounded-none bg-emerald-500/20 border border-emerald-500/30">
+                  <Globe class="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 class="text-lg font-medium text-gray-200">Global Latency</h3>
+                <h3 class="text-lg font-medium text-foreground">Global Latency</h3>
               </div>
-              <h4 class="text-4xl font-bold text-white mb-2 font-mono">24ms</h4>
-              <p class="text-sm text-gray-400 mb-6">Average response time worldwide.</p>
+              <h4 class="text-4xl font-bold text-foreground mb-2 font-mono">24ms</h4>
+              <p class="text-sm text-muted-foreground mb-6">Average response time worldwide.</p>
 
-              <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div class="h-full bg-green-500 w-[85%] rounded-full relative overflow-hidden">
+              <div class="w-full h-2 bg-muted rounded-none overflow-hidden">
+                <div class="h-full bg-emerald-500 w-[85%] rounded-none relative overflow-hidden">
                   <div class="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
                 </div>
               </div>
@@ -258,33 +259,33 @@ const item = {
 
           <!-- Card 4: Security -->
           <div
-            class="md:col-span-2 relative group overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8 shadow-2xl flex flex-col md:flex-row items-center gap-8">
+            class="md:col-span-2 relative group overflow-hidden rounded-none border border-border bg-card/30 backdrop-blur-md p-8 shadow-2xl flex flex-col md:flex-row items-center gap-8">
             <div
               class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
             <div class="relative z-10 flex-1">
               <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 rounded-lg bg-orange-500/20 border border-orange-500/30">
+                <div class="p-2 rounded-none bg-orange-500/20 border border-orange-500/30">
                   <Shield class="w-6 h-6 text-orange-400" />
                 </div>
-                <h3 class="text-lg font-medium text-gray-200">Enterprise Security</h3>
+                <h3 class="text-lg font-medium text-foreground">Enterprise Security</h3>
               </div>
-              <p class="text-gray-400 leading-relaxed mb-6">
+              <p class="text-muted-foreground leading-relaxed mb-6">
                 We prioritize your data security with SOC2 Type II compliance, automated penetration testing, and
                 private cloud deployment options.
               </p>
               <ul class="space-y-2">
-                <li class="flex items-center gap-2 text-sm text-gray-300">
+                <li class="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 class="w-4 h-4 text-orange-400" /> End-to-end Encryption
                 </li>
-                <li class="flex items-center gap-2 text-sm text-gray-300">
+                <li class="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 class="w-4 h-4 text-orange-400" /> SSO & SAML Support
                 </li>
               </ul>
             </div>
             <div
-              class="relative z-10 w-full md:w-1/3 aspect-square bg-black/40 rounded-xl border border-white/10 flex items-center justify-center">
-              <Shield class="w-24 h-24 text-gray-700/50" />
+              class="relative z-10 w-full md:w-1/3 aspect-square bg-black/40 rounded-none border border-border/50 flex items-center justify-center">
+              <Shield class="w-24 h-24 text-muted" />
               <div class="absolute inset-0 flex items-center justify-center">
                 <div class="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center animate-pulse">
                   <span class="w-3 h-3 bg-orange-500 rounded-full shadow-[0_0_10px_#f97316]"></span>
@@ -294,63 +295,97 @@ const item = {
           </div>
         </Motion>
 
-
         <!-- Features List -->
         <div class="mb-32">
           <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4">Why Choose Ecnelis?</h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">Built by developers, for developers. We understand what it takes
+            <h2 class="text-3xl md:text-5xl font-bold mb-4 text-foreground">Why Choose Ecnelis?</h2>
+            <p class="text-muted-foreground max-w-2xl mx-auto">Built by developers, for developers. We understand what
+              it takes
               to scale.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div v-for="(feature, index) in features" :key="index"
-              class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-              <component :is="feature.icon" class="w-10 h-10 text-white mb-4" />
-              <h3 class="text-xl font-bold mb-2 text-white">{{ feature.title }}</h3>
-              <p class="text-gray-400 leading-relaxed">{{ feature.description }}</p>
+              class="p-6 rounded-none bg-card/20 border border-border hover:bg-card/40 transition-colors">
+              <component :is="feature.icon" class="w-10 h-10 text-primary mb-4" />
+              <h3 class="text-xl font-bold mb-2 text-foreground">{{ feature.title }}</h3>
+              <p class="text-muted-foreground leading-relaxed">{{ feature.description }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Pricing Section -->
-        <div>
-          <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4">Pricing Plans</h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">Transparent pricing that scales with you.</p>
+        <!-- Founder Notes -->
+        <div class="mb-32 max-w-4xl mx-auto">
+          <div class="relative p-10 md:p-14 bg-card/20 border border-border rounded-none overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+            <Quote class="absolute top-8 right-8 w-24 h-24 text-primary/5 rotate-12" />
+
+            <h3 class="text-2xl font-bold text-foreground mb-6 font-space">A Note from the Founder</h3>
+
+            <div class="space-y-6 text-lg text-muted-foreground leading-relaxed font-light">
+              <p>
+                "When we started Ecnelis, our goal wasn't just to build another AI platform. We wanted to create the
+                infrastructure that we wished existed when we were hacking together our first agents."
+              </p>
+              <p>
+                "We believe that the future belongs to those who build with intelligence. That's why we've obsessed over
+                every millisecond of latency, every packet of data, and every security protocol. We're not just selling
+                a service; we're partnering with you to build the next generation of software."
+              </p>
+            </div>
+
+            <div class="mt-10 flex items-center gap-4">
+              <div
+                class="w-12 h-12 bg-primary/20 rounded-none flex items-center justify-center border border-primary/30">
+                <span class="font-bold text-primary text-xl">S</span>
+              </div>
+              <div>
+                <div class="text-foreground font-bold font-space">Shure Tokki</div>
+                <div class="text-sm text-muted-foreground">Founder & CEO, Ecnelis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQs -->
+        <div class="mb-32 max-w-3xl mx-auto">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-foreground">Frequently Asked Questions</h2>
+            <p class="text-muted-foreground">Common questions about our Enterprise solutions.</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div v-for="plan in plans" :key="plan.name" :class="[
-              'relative p-8 rounded-3xl border transition-all duration-300 hover:-translate-y-2',
-              plan.popular
-                ? 'bg-gradient-to-b from-blue-900/20 to-black border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)]'
-                : 'bg-black/40 border-white/10 hover:border-white/20'
-            ]">
-              <div v-if="plan.popular"
-                class="absolute -top-4 left-1/2 -translate-x-1/2 text-xs font-bold bg-blue-500 text-white px-3 py-1 rounded-full uppercase tracking-wider">
-                Most Popular
-              </div>
+          <div class="w-full space-y-4">
+            <Collapsible v-for="(faq, index) in faqs" :key="index" v-model:open="faq.isOpen"
+              class="border border-border bg-card/20 p-4 rounded-none">
+              <CollapsibleTrigger
+                class="flex items-center justify-between w-full text-left font-medium text-foreground hover:text-primary transition-colors focus:outline-none">
+                {{ faq.question }}
+                <ChevronDown :class="{ 'rotate-180': faq.isOpen }" class="w-5 h-5 transition-transform duration-200" />
+              </CollapsibleTrigger>
+              <CollapsibleContent class="pt-4 text-muted-foreground leading-relaxed">
+                {{ faq.answer }}
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </div>
 
-              <h3 class="text-xl font-bold text-white mb-2">{{ plan.name }}</h3>
-              <p class="text-gray-400 text-sm mb-6 min-h-[40px]">{{ plan.description }}</p>
+        <!-- Bottom Hero / CTA -->
+        <div class="mb-24 text-center">
+          <div
+            class="py-20 px-6 rounded-none border border-border bg-gradient-to-b from-card/50 to-background relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full"></div>
 
-              <div class="mb-6">
-                <span class="text-4xl font-bold text-white">{{ plan.price }}</span>
-                <span class="text-gray-500">{{ plan.period }}</span>
-              </div>
-
-              <Button class="w-full mb-8 rounded-full" :variant="plan.popular ? 'default' : 'secondary'">
-                {{ plan.cta }}
+            <h2 class="text-4xl md:text-5xl font-bold text-foreground mb-6 relative z-10">Ready to transform your
+              business?</h2>
+            <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto relative z-10">
+              Join industry leaders who trust Ecnelis for their mission-critical AI workloads.
+            </p>
+            <div class="relative z-10">
+              <Button size="lg"
+                class="h-14 px-10 text-lg rounded-none bg-foreground text-background hover:bg-foreground/90 font-bold">
+                Talk to an Expert
               </Button>
-
-              <ul class="space-y-3">
-                <li v-for="feature in plan.features" :key="feature"
-                  class="flex items-center gap-2 text-sm text-gray-300">
-                  <Check class="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  {{ feature }}
-                </li>
-              </ul>
             </div>
           </div>
         </div>
@@ -358,7 +393,7 @@ const item = {
       </div>
 
       <!-- Footer Simple -->
-      <div class="border-t border-white/10 bg-black py-12 text-center text-sm text-gray-500">
+      <div class="border-t border-border bg-background py-12 text-center text-sm text-muted-foreground">
         <p>&copy; 2025 Ecnelis Inc. All rights reserved.</p>
       </div>
     </div>
