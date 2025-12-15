@@ -62,8 +62,9 @@ const user = page.props.auth.user;
                     <MessageSquare class="h-4 w-4" />
                     Return to Chat
                     </Link>
-                    <a href="#"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+                    <Link href="/pricing"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Pricing</Link>
                     <a href="#"
                         class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Enterprise</a>
                     <a href="https://laravel.com/docs/starter-kits#vue" target="_blank"
@@ -86,8 +87,9 @@ const user = page.props.auth.user;
                                 <MessageSquare class="h-5 w-5" />
                                 Return to Chat
                                 </Link>
-                                <a href="#"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Pricing</a>
+                                <Link href="/pricing"
+                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Pricing
+                                </Link>
                                 <a href="#"
                                     class="text-lg font-medium text-muted-foreground hover:text-foreground">Enterprise</a>
                                 <a href="https://laravel.com/docs/starter-kits#vue"
