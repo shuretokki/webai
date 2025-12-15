@@ -16,7 +16,6 @@ const { width } = useWindowSize();
 const isMobile = computed(() => width.value < 768);
 const mobileView = ref<'list' | 'detail'>('list');
 
-// Swipe to close logic
 const modalHeader = ref<HTMLElement | null>(null);
 const { isSwiping, direction } = useSwipe(modalHeader);
 
@@ -189,7 +188,7 @@ const handleUpgrade = () => {
             </div>
 
             <div v-if="mobileView === 'detail'"
-                class="flex-1 overflow-y-auto p-4 bg-background animate-in slide-in-from-right-10 duration-200">
+                class="flex-1 overflow-y-auto p-4 bg-background animate-in slide-in-from-right-10 duration-200 text-lg">
                 <SettingsContent :active-tab="activeTab" />
             </div>
         </div>
