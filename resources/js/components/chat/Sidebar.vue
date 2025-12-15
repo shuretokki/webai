@@ -137,7 +137,7 @@ defineOptions({
             <i-solar-pen-new-square-linear
                 class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
             <p v-if="!isCollapsed"
-                class="font-space font-normal text-sm text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
+                class="font-space font-normal text-base text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
                 New Chat</p>
             </Link>
         </div>
