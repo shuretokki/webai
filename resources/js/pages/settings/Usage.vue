@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
+import SettingsLayout from '@/layouts/settings/Layout.vue';
 
 interface UsageStats {
   messages: number;
@@ -88,103 +89,83 @@ onUnmounted(() => {
 
 <template>
   <AppLayout>
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8">
-        <h1 class="text-3xl font-space font-bold text-foreground">
-          Usage & Billing
-        </h1>
-        <p class="mt-2 text-muted-foreground font-space">
-          Track your AI usage and manage your subscription
-        </p>
-      </div>
+    <SettingsLayout>
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-2xl font-normal text-foreground mb-2">Usage & Billing</h3>
+          <p class="text-muted-foreground mb-6">Track your AI usage and manage your subscription.</p>
+        </div>
 
-      <div v-if="loading" class="text-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p class="mt-4 text-muted-foreground font-space">Loading usage data...</p>
-      </div>
+        <div v-if="loading" class="text-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p class="mt-4 text-muted-foreground font-space">Loading usage data...</p>
+        </div>
 
-      <div v-else-if="error" class="bg-destructive/10 border border-destructive/20 rounded-none p-4">
-        <p class="text-destructive font-space">{{ error }}</p>
-      </div>
+        <div v-else-if="error" class="bg-destructive/10 border border-destructive/20 rounded-none p-4">
+          <p class="text-destructive font-space">{{ error }}</p>
+        </div>
 
-      <div v-else-if="usage" class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <span
-              class="inline-flex items-center px-3 py-1 rounded-none text-sm font-space font-medium bg-primary/10 text-primary border border-primary/20">
-              {{ usage.tier.toUpperCase() }} Plan
-            </span>
-          </div>
-          <div v-if="showWarning" class="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded-none">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <i-solar-danger-triangle-linear class="text-yellow-500 text-xl" />
+        <div v-else-if="usage" class="space-y-8">
+          <!-- Tier Info -->
+          <div class="flex items-center justify-between border-b border-white/10 pb-6">
+            <div>
+              <span class="text-sm text-muted-foreground uppercase tracking-wider">Current Plan</span>
+              <div class="flex items-center gap-3 mt-1">
+                <span class="text-3xl font-normal text-foreground">{{ usage.tier.toUpperCase() }}</span>
+                <span
+                  class="px-2 py-0.5 text-xs bg-primary/20 text-primary border border-primary/30 rounded-full">Active</span>
               </div>
-              <div class="ml-3">
-                <p class="text-sm text-yellow-500 font-space">
-                  {{ warningMessage }}
-                </p>
+            </div>
+            <div v-if="showWarning" class="bg-yellow-500/10 border border-yellow-500/50 p-3 rounded-none">
+              <div class="flex items-center gap-2">
+                <i-solar-danger-triangle-linear class="text-yellow-500 text-lg" />
+                <p class="text-sm text-yellow-500 font-space">{{ warningMessage }}</p>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="bg-card/30 border border-border rounded-none p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-space font-semibold text-foreground">
-              Messages
-            </h3>
-            <span class="text-2xl font-space font-bold text-foreground">
-              {{ usage.stats.messages }} / {{ usage.limits.messages }}
-            </span>
-          </div>
-
-          <div class="w-full bg-secondary rounded-none h-3 overflow-hidden">
-            <div class="h-3 rounded-none transition-all duration-300"
-              :class="usage.percentage >= 90 ? 'bg-destructive' : usage.percentage >= 70 ? 'bg-yellow-500' : 'bg-primary'"
-              :style="{ width: usage.percentage + '%' }"></div>
-          </div>
-
-          <p class="mt-2 text-sm text-muted-foreground font-space">
-            {{ usage.percentage }}% of monthly quota used
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-card/30 border border-border rounded-none p-6">
-            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
-              AI Tokens Used
-            </h3>
-            <p class="text-3xl font-space font-bold text-foreground">
-              {{ usage.stats.tokens.toLocaleString() }}
+          <!-- Messages Progress -->
+          <div>
+            <div class="flex justify-between items-end mb-3">
+              <label class="text-base font-medium text-foreground">Monthly Message Quota</label>
+              <span class="text-sm text-foreground font-mono">{{ usage.stats.messages }} /
+                {{ usage.limits.messages }}</span>
+            </div>
+            <div class="w-full bg-secondary/50 h-4 rounded-none overflow-hidden border border-white/5">
+              <div class="h-full transition-all duration-500 ease-out"
+                :class="usage.percentage >= 90 ? 'bg-destructive' : usage.percentage >= 70 ? 'bg-yellow-500' : 'bg-primary'"
+                :style="{ width: usage.percentage + '%' }"></div>
+            </div>
+            <p class="mt-2 text-sm text-muted-foreground">{{ usage.percentage }}% used. Resets on the 1st of the month.
             </p>
           </div>
 
-          <div class="bg-card/30 border border-border rounded-none p-6">
-            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
-              Storage Used
-            </h3>
-            <p class="text-3xl font-space font-bold text-foreground">
-              {{ usage.stats.bytes }}
-            </p>
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div class="group p-5 border border-white/10 bg-white/5 hover:bg-white/10 transition-colors rounded-none">
+              <h3 class="text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">AI Tokens</h3>
+              <p class="text-2xl font-space text-foreground">{{ usage.stats.tokens.toLocaleString() }}</p>
+            </div>
+
+            <div class="group p-5 border border-white/10 bg-white/5 hover:bg-white/10 transition-colors rounded-none">
+              <h3 class="text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">Storage</h3>
+              <p class="text-2xl font-space text-foreground">{{ usage.stats.bytes }}</p>
+            </div>
+
+            <div class="group p-5 border border-white/10 bg-white/5 hover:bg-white/10 transition-colors rounded-none">
+              <h3 class="text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">Est. Cost</h3>
+              <p class="text-2xl font-space text-foreground">${{ usage.stats.cost }}</p>
+            </div>
           </div>
 
-          <div class="bg-card/30 border border-border rounded-none p-6">
-            <h3 class="text-sm font-space font-medium text-muted-foreground mb-2">
-              Estimated Cost
-            </h3>
-            <p class="text-3xl font-space font-bold text-foreground">
-              ${{ usage.stats.cost }}
-            </p>
+          <div
+            class="mt-8 flex items-center justify-between text-sm text-muted-foreground pt-6 border-t border-white/10">
+            <span>Billing period: Monthly</span>
+            <span>Next invoice: 1st of next month</span>
           </div>
-        </div>
 
-        <div class="bg-primary/5 border border-primary/20 rounded-none p-4">
-          <p class="text-sm text-foreground font-space">
-            <strong>Billing Cycle:</strong> Resets on the 1st of each month
-          </p>
         </div>
       </div>
-    </div>
+    </SettingsLayout>
   </AppLayout>
 </template>
