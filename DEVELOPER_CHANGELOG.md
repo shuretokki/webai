@@ -6,25 +6,21 @@
 
 ---
 
-## [2025-12-15 16:00:00] - Multi-Model Support
+## [2025-12-15 16:15:00] - Expanded Model Support
 
 ### Summary
-Introduced support for multiple AI models in the chat feature, allowing users to select the model used for generating responses. Also added cost calculation based on the selected model.
+Populated `config/ai.php` with a wide range of models across multiple providers. Updated `ChatController::stream` to map all new providers to `Prism\Prism\Enums\Provider`. Refactored `ChatInput.vue` model selector to a grouped "mega dropdown" layout for better usability. Updated tests to use `gemini-1.5-flash` as the default free model.
 
 ### Why
-To provide users with flexibility and control over the AI model used in chats, and to enable cost tracking for different models.
+To offer a broader selection of AI models from various providers, improve the user interface for model selection, and ensure tests reflect the latest model offerings.
 
 ### How
-1. **Config File:** Created `config/ai.php` to define available models and their associated costs.
-2. **Cost Calculation:** Modified `UserUsage::calculateCost` to use model-specific pricing from the new config file.
-3. **Controller Updates:** 
-    - Updated `ChatController::stream` method to handle model selection and permission checks.
-    - Added simulation of demo mode for users without access to paid models.
-4. **Inertia Data Sharing:** Shared `ai.models` configuration via `HandleInertiaRequests` to make available in Inertia responses.
-5. **Frontend Updates:** 
-    - Updated `ChatInput.vue` to include a model selector dropdown.
-    - Integrated `UpgradeModal` to prompt users to upgrade for additional model access.
-6. **Testing:** Added `tests/Feature/ChatModelSelectionTest.php` to verify model selection and cost calculation functionality.
+1. **Config File:** Expanded `config/ai.php` to include additional models and providers.
+2. **Controller Updates:**
+    - Modified `ChatController::stream` method to accommodate new model-provider mappings.
+3. **Frontend Updates:**
+    - Refactored `ChatInput.vue` to implement a grid layout for the model selector.
+4. **Testing:** Updated `tests/Feature/ChatModelSelectionTest.php` to set `gemini-1.5-flash` as the default model for tests.
 
 ---
 
@@ -34,91 +30,65 @@ To provide users with flexibility and control over the AI model used in chats, a
 **Purpose:** Handle AI model selection and streaming response
 
 **Changes:**
-- Added logic to select AI model based on user input.
-- Integrated cost calculation and permission checks.
-- Simulated demo mode for users without access to paid models.
+- Updated `match` statement to include new providers and models.
+- Ensured compatibility with the expanded model configuration.
 
 ---
 
-### File: `app/Models/UserUsage.php` (MODIFIED)
-
-**Location:** `calculateCost` method
-**Purpose:** Calculate usage cost based on selected AI model
-
-**Changes:**
-- Updated to retrieve model pricing from `config/ai.php`.
-- Adjusted cost calculation logic to be model-specific.
-
----
-
-### File: `config/ai.php` (NEW)
+### File: `config/ai.php` (MODIFIED)
 
 **Location:** Entire File
 **Purpose:** Define available AI models and their costs
 
-**Example Configuration:**
-```php
-return [
-    'models' => [
-        'gpt-3.5-turbo' => [
-            'name' => 'GPT-3.5 Turbo',
-            'price_per_token' => 0.000002,
-        ],
-        'gpt-4' => [
-            'name' => 'GPT-4',
-            'price_per_token' => 0.00003,
-        ],
-    ],
-];
-```
+**Changes:**
+- Populated with a wide range of models from multiple providers.
+- Example models:
+    - `gemini-1.5-flash`: Free model from Gemini.
+    - `gpt-3.5-turbo`: GPT-3.5 Turbo model.
+    - `gpt-4`: GPT-4 model.
 
 ---
 
 ### File: `resources/js/components/ChatInput.vue` (MODIFIED)
 
 **Location:** Template & Script Setup
-**Purpose:** Add AI model selector dropdown
+**Purpose:** Improve AI model selector UI
 
 **Changes:**
-- Integrated a dropdown to select AI model.
-- Connected model selection to the chat submission logic.
-- Upgraded modal integration for restricted models.
+- Refactored model selector to a "mega dropdown" grid layout.
+- Enhanced usability for selecting from many available models.
 
 ---
 
-### File: `tests/Feature/ChatModelSelectionTest.php` (NEW)
+### File: `tests/Feature/ChatModelSelectionTest.php` (MODIFIED)
 
 **Location:** Entire File
 **Purpose:** Test AI model selection and cost calculation
 
-**Key Tests:**
-- Verify model selection affects the AI response.
-- Check correct cost calculation based on model and tokens.
-- Ensure permission checks are enforced for paid models.
+**Changes:**
+- Updated default model for tests to `gemini-1.5-flash`.
+- Ensured tests cover new model-provider mappings and UI changes.
 
 ---
 
 ## Feature Completion Status
 
-### Multi-Model Support: ✅ 100% Complete
+### Expanded Model Support: ✅ 100% Complete
 
 **Backend:**
-- [x] Config file for AI models
-- [x] Updated UserUsage model
-- [x] Modified ChatController for model handling
-- [x] Inertia data sharing for models
+- [x] Expanded config file for AI models
+- [x] Updated ChatController for new model-provider mappings
 
 **Frontend:**
-- [x] Model selector in ChatInput.vue
-- [x] Upgrade modal integration
-- [x] Tests for model selection and pricing
+- [x] Refactored model selector in ChatInput.vue
+- [x] Tests updated for new model selection logic
 
 ---
 
 ## Testing Instructions
 
-### Manual Testing (Multi-Model Support)
-1. **Select AI Model:** Use the model selector in the chat input to choose different AI models.
+### Manual Testing (Expanded Model Support)
+1. **Select AI Model:** Use the model selector in the chat input to choose from the expanded list of AI models.
 2. **Send Message:** Observe the response time and content based on the selected model.
 3. **Check Costs:** Verify the calculated cost corresponds to the model's pricing.
 
@@ -142,10 +112,10 @@ Same as previous session.
 
 If issues occur:
 1. Revert changes in `ChatController.php` and `UserUsage.php` to previous versions.
-2. Remove `config/ai.php` file.
+2. Remove or restore `config/ai.php` file to previous state.
 3. Restore previous version of `ChatInput.vue`.
 4. Run `npm run build` to rebuild frontend.
-5. App works as before without multi-model support.
+5. App works as before without expanded model support.
 
 ---
 

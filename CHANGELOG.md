@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 16:15:00] - Expanded Model Support
+
+### Changed
+- **File:** `config/ai.php`
+- **Description:** Updated with comprehensive list of models from OpenAI, Anthropic, Gemini, Mistral, Groq, xAI, DeepSeek, and Ollama.
+- **Impact:** Supports a wider range of AI models and providers.
+
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Updated to handle new providers and model selection logic.
+- **Impact:** Backend now supports additional AI models and providers.
+
+- **File:** `resources/js/components/chat/ChatInput.vue`
+- **Description:** Updated to display models in a "mega dropdown" grouped by provider.
+- **Impact:** Improved user interface for selecting AI models.
+
+- **File:** `resources/js/components/chat/UpgradePlanModal.vue`
+- **Description:** Modal component prompting users to upgrade plan for restricted models.
+- **Impact:** Guides users to appropriate subscription plans based on model access.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Integrated model selector and upgrade plan modal.
+- **Impact:** Unified interface for chat and model management.
+
+### Why
+- **Feature Request:** Users requested ability to choose between different AI models (e.g., GPT-3.5, GPT-4).
+- **Flexibility:** Different models have different capabilities and costs; users should control this.
+- **Future-Proofing:** Easily add new models or change pricing in the future.
+
+---
+
 ## [2025-12-15 16:00:00] - Multi-Model Support
 
 ### Added
