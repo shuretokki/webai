@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import { AnimatePresence } from 'motion-v';
 import Sidebar from '@/components/chat/Sidebar.vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Message from '@/components/chat/Message.vue';
 import ChatInput from '@/components/chat/ChatInput.vue';
 import SearchModal from '@/components/chat/SearchModal.vue';
@@ -384,7 +385,7 @@ onUnmounted(() => {
                                 <div class="absolute -inset-1 rounded-full bg-primary/20 blur-xl"></div>
                                 <div
                                     class="relative size-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center">
-                                    <Sparkles class="size-8 text-primary" />
+                                    <AppLogoIcon class="size-8 text-primary" />
                                 </div>
                             </div>
 

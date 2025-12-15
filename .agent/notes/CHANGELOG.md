@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-16 01:40:00] - Icon System Migration
+
+### Changed
+- **System-wide:** Replaced all Solar icons with **Lucide Icons** for a cleaner, more consistent UI usage.
+- **Files:** Updated `Sidebar.vue`, `Index.vue`, `ChatInput.vue`, `Message.vue`, `SettingsModal.vue`, `SettingsContent.vue`, `Usage.vue`, and `SearchModal.vue`.
+- **Reasoning:** Lucide provides a more professional, cohesive visual style aligned with the application's premium aesthetic.
+
+---
+
 ## [2025-12-15 23:25:00] - UI Refinements & Reasoning Support
 
 ### Added

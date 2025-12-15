@@ -6,6 +6,47 @@
 
 ---
 
+## [2025-12-16 01:40:00] - Icon System Migration
+
+### Summary
+Migrated the entire frontend icon system from Solar Icons (`unplugin-vue-components`/`unplugin-icons`) to Lucide Icons (`lucide-vue-next`). This ensures a more consistent, modern, and production-ready icon set across the entire application. Replaced approximately 30+ icon instances across 7 files.
+
+### Why
+- **Consistency:** Previous icons (Solar) were inconsistent in style (some linear, some bold, some broken).
+- **Control:** Explicit imports of Lucide components prevent auto-import magic from breaking or being unpredictable.
+- **Aesthetics:** Lucide icons offer a cleaner, sharper look that aligns better with the Ecnelis "Start-up / Linear-like" design language.
+
+### Files Changed
+
+#### `resources/js/components/chat/Sidebar.vue` (MIGRATED)
+- **Replaced:** `i-solar-pen-new-square-linear` -> `SquarePen`
+- **Replaced:** `i-solar-chat-round-line-linear` -> `MessageSquare`
+- **Replaced:** `i-solar-alt-arrow-right-linear/left` -> `ChevronRight`/`ChevronLeft`
+- **Logic:** Updated `isCollapsed` toggle icons.
+
+#### `resources/js/pages/chat/Index.vue` (MIGRATED)
+- **Replaced:** Hamburger/Menu icons, Action icons (Pen, Trash, Export).
+- **Updated:** Greeter suggestion cards now use `Code`, `FileText`, and `Palette` icons from Lucide.
+
+#### `resources/js/components/chat/ChatInput.vue` (MIGRATED)
+- **Replaced:** Attachment paperclip (`Paperclip`), Send arrow (`ArrowRight`), File previews (`FileText`, `X`).
+- **Updated:** Model selector now uses `Sparkles` and `ChevronDown`.
+
+#### `resources/js/components/chat/Message.vue` (MIGRATED)
+- **Updated:** Reasoning accordion icon -> `Sparkles`.
+- **Updated:** Action buttons (Copy, Regenerate, Download).
+
+#### `resources/js/components/settings/SettingsModal.vue` & `SettingsContent.vue` (MIGRATED)
+- **Updated:** All settings tabs (`User`, `Settings`, `Sliders`, `Database`).
+- **Updated:** Usage charts and delete actions (`BarChart2`, `Trash2`).
+
+### Technical Details
+- **Library:** `lucide-vue-next`
+- **Method:** Explicit imports in `<script setup>` (e.g., `import { Menu } from 'lucide-vue-next'`).
+- **Tree-Shaking:** Explicit imports ensure that only used icons are bundled, regardless of Vite config.
+
+---
+
 ## [2025-12-15 23:25:00] - UI Refinements & Reasoning Support
 
 ### Summary

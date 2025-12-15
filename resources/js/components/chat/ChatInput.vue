@@ -86,8 +86,6 @@ const clearAttachments = () => {
     attachments.value = [];
 }
 
-/* -=====- */
-
 const submit = () => {
     if (!input.value.trim() && attachments.value.length === 0) return;
 
@@ -124,20 +122,16 @@ defineOptions({
             </button>
 
             <div class="flex-1 min-w-0 py-3 flex flex-col gap-3">
-                <!-- Attachments Preview Grid -->
                 <div v-if="attachments.length > 0" class="flex flex-wrap gap-2">
                     <div v-for="(item, index) in attachments" :key="index" class="relative group">
-                        <!-- Image Preview -->
                         <img v-if="item.type === 'image'" :src="item.preview"
                             class="h-16 w-16 rounded-none object-cover border border-border" />
 
-                        <!-- File Icon -->
                         <div v-else
                             class="h-16 w-16 rounded-none border border-border bg-muted flex items-center justify-center">
                             <FileText class="size-6 text-muted-foreground" />
                         </div>
 
-                        <!-- Remove Button -->
                         <button type="button" @click="removeAttachment(index)"
                             class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 border border-border opacity-0 group-hover:opacity-100 transition-opacity">
                             <X class="size-3" />
@@ -150,8 +144,7 @@ defineOptions({
                     class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
             </div>
 
-            <!-- Model Selector inside Input -->
-            <div class="relative shrink-0 mb-2" ref="modelMenuRef" v-if="models && models.length > 0">
+            <div class="relative shrink-0 mb-2.5" ref="modelMenuRef" v-if="models && models.length > 0">
                 <button type="button" @click="isModelMenuOpen = !isModelMenuOpen"
                     class="flex items-center gap-2 px-2 py-1.5 bg-transparent rounded-none text-xs text-muted-foreground hover:text-foreground transition-all">
                     <Sparkles class="size-3.5" />
@@ -189,7 +182,7 @@ defineOptions({
             </div>
 
             <button type="submit" :disabled="(!input.trim() && attachments.length === 0) || isStreaming"
-                class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
+                class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
                 <div class="absolute inset-0 opacity-30">
                     <div class="absolute inset-0 scale-0 group-hover:scale-150 transition-transform duration-500">
                     </div>

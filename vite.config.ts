@@ -3,8 +3,6 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import AutoImport from 'unplugin-auto-import/vite';
-import IconsResolver from 'unplugin-icons/resolver';
-import Icons from 'unplugin-icons/vite';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 import VueDevTools from 'vite-plugin-vue-devtools';
@@ -51,21 +49,13 @@ export default defineConfig({
         }),
         Components({
             resolvers: [
-                IconsResolver({
-                    prefix: 'i',
-                    enabledCollections: ['solar'],
-                }),
                 (name) => {
-
                     if (name === 'Motion') {
                         return { name, from: 'motion-v' }
                     }
                 }
             ],
             dts: 'resources/js/types/components.d.ts',
-        }),
-        Icons({
-            autoInstall: true,
         }),
     ],
 });

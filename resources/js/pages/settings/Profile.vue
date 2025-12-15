@@ -3,6 +3,7 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { SquarePen, Github, Globe } from 'lucide-vue-next';
 
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -154,6 +155,46 @@ const handleAvatarChange = (event: Event) => {
                         </p>
                         <div v-if="status === 'verification-link-sent'" class="mt-2 text-xs font-bold">
                             Verification link sent!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connected Accounts -->
+                <div>
+                    <h3 class="text-2xl font-normal text-foreground mb-2">Connected Accounts</h3>
+                    <p class="text-muted-foreground mb-6">Connect your social accounts to sign in faster.</p>
+
+                    <div class="space-y-4 max-w-xl">
+                        <!-- GitHub -->
+                        <div class="flex items-center justify-between p-4 border border-border bg-card/10 rounded-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="p-2 bg-white/5 rounded-full border border-white/10">
+                                    <Github class="size-6 text-foreground" />
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-foreground">GitHub</h4>
+                                    <p class="text-sm text-muted-foreground">Not connected</p>
+                                </div>
+                            </div>
+                            <Button variant="outline" class="rounded-none border-input hover:bg-white/10" disabled>
+                                Connect
+                            </Button>
+                        </div>
+
+                        <!-- Google -->
+                        <div class="flex items-center justify-between p-4 border border-border bg-card/10 rounded-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="p-2 bg-white/5 rounded-full border border-white/10">
+                                    <Globe class="size-6 text-foreground" />
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-foreground">Google</h4>
+                                    <p class="text-sm text-muted-foreground">Not connected</p>
+                                </div>
+                            </div>
+                            <Button variant="outline" class="rounded-none border-input hover:bg-white/10" disabled>
+                                Connect
+                            </Button>
                         </div>
                     </div>
                 </div>
