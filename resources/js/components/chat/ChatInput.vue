@@ -159,7 +159,7 @@ defineOptions({
                 </button>
 
                 <div v-if="isModelMenuOpen"
-                    class="absolute bottom-full right-0 mb-2 w-[calc(100vw-32px)] sm:w-80 md:w-96 max-h-[400px] overflow-y-auto bg-popover border border-border rounded-none shadow-xl z-50 flex flex-col custom-scrollbar">
+                    class="absolute bottom-full right-0 mb-2 w-[80vw] sm:w-96 max-h-[400px] overflow-y-auto bg-popover border border-border rounded-none shadow-xl z-50 flex flex-col custom-scrollbar">
                     <div class="p-4 grid grid-cols-1 gap-4">
                         <div v-for="(models, provider) in groupedModels" :key="provider" class="flex flex-col gap-2">
                             <div class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2">
