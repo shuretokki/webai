@@ -44,4 +44,13 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user should not have two-factor authentication enabled.
+     * This is a no-op method for compatibility with Laravel Breeze/Jetstream tests.
+     */
+    public function withoutTwoFactor(): static
+    {
+        return $this;
+    }
 }
