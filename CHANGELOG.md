@@ -6,6 +6,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 12:11:21] - Real-time Updates (Backend)
+
+### Added
+- **File:** `app/Events/MessageSent.php`
+- **Lines:** 1-62 (new file)
+- **What:** WebSocket broadcasting event for real-time message sync
+- **Impact:** Messages appear instantly across devices without page refresh
+
+**Implementation:**
+- Created `MessageSent` event implementing `ShouldBroadcast`
+- Broadcasts to private channel `chats.{id}` after AI completes response
+- Includes message data (id, role, content, timestamp) in payload
+
+### Added
+- **File:** `routes/channels.php`
+- **Lines:** 14-21
+- **What:** Channel authorization for WebSocket security
+- **Impact:** Only chat owners can subscribe to their chat channels
+
+**Authorization Logic:**
+```php
+Broadcast::channel('chats.{chatId}', function ($user, $chatId) {
+    $chat = Chat::find($chatId);
+    return $chat && $chat->user_id === $user->id;
+});
+```
+Prevents users from listening to other users' private conversations.
+
+### Changed
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Lines:** 179-183
+- **Before:** `$chat->messages()->create([...])`
+- **After:** `$assistantMessage = $chat->messages()->create([...]); event(new \App\Events\MessageSent($chat, $assistantMessage));`
+- **Impact:** Triggers WebSocket broadcast after each AI response
+
+### Added
+- **File:** `config/broadcasting.php` (auto-generated)
+- **Lines:** 1-83
+- **What:** Broadcasting configuration for Reverb/Pusher drivers
+- **Impact:** Enables WebSocket infrastructure in Laravel
+
+### Added
+- **File:** `package.json`
+- **Lines:** 27-29
+- **What:** Installed `laravel-echo` (v2.2.6) and `pusher-js` for WebSocket client
+- **Impact:** Frontend can now connect to WebSocket server
+
+### Changed
+- **File:** `resources/js/app.ts`
+- **Lines:** 8-12
+**Before:** No Echo configuration
+- **After:** Added `configureEcho({ broadcaster: 'reverb' })`
+- **Impact:** Laravel Echo initialized globally for Vue app
+
+### Why
+Implement ChatGPT-like real-time experience. SSE (Server-Sent Events) streams AI responses to the sender, WebSocket broadcasts completion to other devices. Both technologies coexist perfectly.
+
+**Status:** Backend complete ✅ | Frontend listener pending ⏳
+
+---
+
 ## [2025-12-15 09:26:10] - Testing Suite Completion
 
 ### Added
