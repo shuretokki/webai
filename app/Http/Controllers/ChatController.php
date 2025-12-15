@@ -150,12 +150,16 @@ class ChatController extends Controller
             echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
 
             $fullResponse = '';
+            $inputTokens = 0;
+            $outputTokens = 0;
             $totalTokens = 0;
 
             if (! $modelConfig['is_free']) {
                 // Demo mode for paid models
                 $fullResponse = "Model usage under progress.\n\n(Simulated response for {$modelConfig['name']})";
-                $totalTokens = 50; // Fake tokens
+                $inputTokens = 25;
+                $outputTokens = 25;
+                $totalTokens = 50;
 
                 // Simulate streaming delay
                 $words = explode(' ', $fullResponse);
@@ -184,7 +188,11 @@ class ChatController extends Controller
                         ->withMessages($history)
                         ->asStream();
 
+                    $lastChunk = null;
+
                     foreach ($stream as $chunk) {
+                        $lastChunk = $chunk; // Keep track of last chunk for usage data
+
                         $text = $chunk->delta ?? '';
 
                         if (empty($text)) {
@@ -192,7 +200,6 @@ class ChatController extends Controller
                         }
 
                         $fullResponse .= $text;
-                        $totalTokens += (int) (\strlen($text) / 4);
 
                         echo 'data: '.json_encode(['text' => $text])."\n\n";
 
@@ -202,10 +209,28 @@ class ChatController extends Controller
 
                         flush();
                     }
+
+                    // Get real token usage from the last chunk
+                    // The last chunk contains usage metadata from the API provider
+                    if ($lastChunk && isset($lastChunk->usage)) {
+                        $inputTokens = $lastChunk->usage->promptTokens ?? 0;
+                        $outputTokens = $lastChunk->usage->completionTokens ?? 0;
+                        $totalTokens = $inputTokens + $outputTokens;
+                    } else {
+                        // Fallback to estimation if usage data not available
+                        $inputTokens = (int) (array_sum(array_map(fn($msg) => strlen($msg->content ?? ''), $history)) / 4);
+                        $outputTokens = (int) (strlen($fullResponse) / 4);
+                        $totalTokens = $inputTokens + $outputTokens;
+                    }
                 } catch (\Throwable $e) {
                     \Log::error($e);
                     echo 'data: '.json_encode([
                         'error' => $e->getMessage()])."\n\n";
+
+                    // Set fallback token counts on error
+                    $inputTokens = (int) (array_sum(array_map(fn($msg) => strlen($msg->content ?? ''), $history)) / 4);
+                    $outputTokens = (int) (strlen($fullResponse) / 4);
+                    $totalTokens = $inputTokens + $outputTokens;
                 }
             }
 
@@ -223,6 +248,8 @@ class ChatController extends Controller
                 metadata: [
                     'chat_id' => $chat->id,
                     'model' => $modelId,
+                    'input_tokens' => $inputTokens,
+                    'output_tokens' => $outputTokens,
                     'response_length' => \strlen($fullResponse),
                 ]
             );
