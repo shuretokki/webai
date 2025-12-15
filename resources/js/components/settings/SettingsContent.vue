@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { usePage, Link } from '@inertiajs/vue3';
+import { useStorage } from '@vueuse/core';
 
 const props = defineProps<{
   activeTab: string;
@@ -9,14 +10,7 @@ const props = defineProps<{
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-const settings = ref({
-  autoScroll: true,
-  enableLog: true,
-  errorReporting: true,
-  experimental1: false,
-  experimental2: false,
-  experimental3: false,
-});
+const autoScroll = useStorage('settings_auto_scroll', true);
 
 const handleUpgrade = () => {
   window.location.href = '/settings/subscription';
@@ -69,65 +63,13 @@ const handleDeleteAllChats = () => {
       <!-- Setting Item -->
       <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
         <span class="text-lg md:text-sm font-space text-foreground">Enable Auto Scroll</span>
-        <button @click="settings.autoScroll = !settings.autoScroll"
+        <button @click="autoScroll = !autoScroll"
           class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          :class="settings.autoScroll ? 'bg-primary' : 'bg-input'">
+          :class="autoScroll ? 'bg-primary' : 'bg-input'">
           <span class="sr-only">Enable Auto Scroll</span>
           <span
             class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
-            :class="settings.autoScroll ? 'translate-x-6' : 'translate-x-1'" />
-        </button>
-      </div>
-
-      <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
-        <span class="text-lg md:text-sm font-space text-foreground">Enable Log</span>
-        <button @click="settings.enableLog = !settings.enableLog"
-          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          :class="settings.enableLog ? 'bg-primary' : 'bg-input'">
-          <span class="sr-only">Enable Log</span>
-          <span
-            class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
-            :class="settings.enableLog ? 'translate-x-6' : 'translate-x-1'" />
-        </button>
-      </div>
-
-      <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
-        <span class="text-lg md:text-sm font-space text-foreground">Enable Error Reporting</span>
-        <button @click="settings.errorReporting = !settings.errorReporting"
-          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          :class="settings.errorReporting ? 'bg-primary' : 'bg-input'">
-          <span class="sr-only">Enable Error Reporting</span>
-          <span
-            class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
-            :class="settings.errorReporting ? 'translate-x-6' : 'translate-x-1'" />
-        </button>
-      </div>
-
-      <div class="h-px bg-border my-2"></div>
-
-      <!-- Disabled/Experimental -->
-      <div
-        class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
-        <span class="text-lg md:text-sm font-space text-foreground">Enable #1</span>
-        <button disabled
-          class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
-          <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
-        </button>
-      </div>
-      <div
-        class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
-        <span class="text-lg md:text-sm font-space text-foreground">Enable #2</span>
-        <button disabled
-          class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
-          <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
-        </button>
-      </div>
-      <div
-        class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
-        <span class="text-lg md:text-sm font-space text-foreground">Enable #3</span>
-        <button disabled
-          class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
-          <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
+            :class="autoScroll ? 'translate-x-6' : 'translate-x-1'" />
         </button>
       </div>
     </div>
