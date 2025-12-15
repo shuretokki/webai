@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import AppLogo from '@/components/AppLogo.vue';
-import UserInfo from '@/components/UserInfo.vue';
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, MessageSquare } from 'lucide-vue-next';
+import { ChevronsUpDown } from 'lucide-vue-next';
+import type { BreadcrumbItemType } from '@/types';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -48,47 +48,40 @@ const navItems = [
     <div class="min-h-screen bg-background text-foreground font-space">
         <header
             class="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div class="flex h-16 items-center px-4 sm:px-8">
-                <div class="flex items-center gap-8">
+            <div class="flex h-16 items-center px-4 sm:px-8 justify-between">
+                <div class="flex items-center gap-4">
                     <Link href="/dashboard" class="flex items-center gap-2 transition-opacity hover:opacity-80">
-                    <AppLogo class="h-6 w-auto" />
+                    <AppLogo class="h-8 w-auto" />
                     </Link>
-
-                    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-                        <template v-for="item in navItems" :key="item.href">
-                            <a v-if="item.external" :href="item.href" target="_blank" rel="noopener noreferrer"
-                                class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground">
-                                <component :is="item.icon" class="h-4 w-4" />
-                                {{ item.title }}
-                            </a>
-                            <Link v-else :href="item.href"
-                                class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-                                :class="{ 'text-foreground': $page.url === item.href }">
-                            <component :is="item.icon" class="h-4 w-4" />
-                            {{ item.title }}
-                            </Link>
-                        </template>
-                    </nav>
-                </div>
-
-                <div class="ml-auto flex items-center gap-4">
-                    <Button variant="ghost" as-child class="text-muted-foreground hover:text-foreground">
-                        <Link href="/chat">
-                        <MessageSquare class="mr-2 h-4 w-4" />
-                        Return to Chat
-                        </Link>
-                    </Button>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
-                            <Button variant="ghost" class="relative gap-2 hover:bg-white/5">
-                                <UserInfo :user="user" class="text-sm" />
-                            </Button>
+                            <button
+                                class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-md hover:bg-white/5 transition-colors focus:outline-none">
+                                <Avatar class="h-6 w-6 overflow-hidden rounded-full">
+                                    <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
+                                    <AvatarFallback class="rounded-full bg-muted text-xs">{{ user.name.charAt(0) }}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <span class="text-sm font-medium text-foreground">{{ user.name }}</span>
+                                <ChevronsUpDown class="h-3 w-3 text-muted-foreground" />
+                            </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" class="w-56">
+                        <DropdownMenuContent align="start" class="w-56 mt-2 bg-[#1a1a1a] border-white/10 text-gray-300">
                             <UserMenuContent :user="user" />
                         </DropdownMenuContent>
                     </DropdownMenu>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <a href="#"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+                    <a href="#"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Enterprise</a>
+                    <a href="https://laravel.com/docs/starter-kits#vue" target="_blank"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs</a>
+                    <a href="#"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog</a>
                 </div>
             </div>
         </header>
