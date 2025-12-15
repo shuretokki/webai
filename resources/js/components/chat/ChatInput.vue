@@ -2,6 +2,7 @@
 import { useTextareaAutosize, onClickOutside } from '@vueuse/core';
 import { ref, computed } from 'vue';
 import UpgradeModal from '@/components/chat/UpgradeModal.vue';
+import UnderProgressModal from '@/components/chat/UnderProgressModal.vue';
 
 const { textarea, input } = useTextareaAutosize();
 const props = defineProps<{
@@ -14,6 +15,7 @@ const emit = defineEmits(['submit', 'update:modelValue']);
 
 const isModelMenuOpen = ref(false);
 const showUpgradeModal = ref(false);
+const showUnderProgressModal = ref(false);
 const modelMenuRef = ref(null);
 onClickOutside(modelMenuRef, () => isModelMenuOpen.value = false);
 
@@ -32,6 +34,13 @@ const groupedModels = computed(() => {
 });
 
 const selectModel = (model: any) => {
+    // Only allow Gemini 2.5 Flash and Flash Lite
+    if (!['gemini-2.5-flash', 'gemini-2.5-flash-lite'].includes(model.id)) {
+        showUnderProgressModal.value = true;
+        isModelMenuOpen.value = false;
+        return;
+    }
+
     if (!model.is_free && !['pro', 'enterprise'].includes(props.userTier || 'free')) {
         showUpgradeModal.value = true;
         isModelMenuOpen.value = false;
@@ -198,6 +207,7 @@ const handleKeydown = (e: KeyboardEvent) => {
         @change="handleFileChange" />
 
     <UpgradeModal v-model:open="showUpgradeModal" />
+    <UnderProgressModal v-model:open="showUnderProgressModal" />
 </template>
 
 <style scoped>
