@@ -32,7 +32,8 @@ const isSearchOpen = ref(false);
 const isMenuOpen = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
 
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, useWindowSize } from '@vueuse/core';
+const { width } = useWindowSize();
 onClickOutside(menuRef, () => isMenuOpen.value = false);
 
 const exportChat = (format: 'pdf' | 'md') => {
@@ -301,8 +302,7 @@ onUnmounted(() => {
                 class="flex flex-col flex-1 h-full items-center content-stretch min-w-0 relative shrink-0 backdrop-blur-[6px]">
 
                 <div class="w-full shrink-0 relative h-[60px] flex items-center justify-between px-4 md:px-6 py-0 z-10">
-                    <button @click="toggleSidebar"
-                        class="md:hidden text-foreground p-2 hover:bg-accent/10 rounded-none transition-colors">
+                    <button @click="toggleSidebar" class="md:hidden text-foreground p-2 rounded-none transition-colors">
                         <i-solar-hamburger-menu-linear class="text-2xl" />
                     </button>
 
@@ -406,7 +406,8 @@ onUnmounted(() => {
             </div>
         </Modal>
 
-        <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm">
+        <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm"
+            :align="width < 768 ? 'bottom' : 'center'" :content-class="width < 768 ? 'mb-0 rounded-b-none' : ''">
             <div class="flex flex-col gap-4">
                 <p class="text-sm font-space text-muted-foreground">
                     Are you sure you want to delete this chat? This action cannot be undone.
