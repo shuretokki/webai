@@ -150,8 +150,7 @@ defineOptions({
 
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-4 custom-scrollbar">
 
-            <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm"
-                :align="width < 768 ? 'bottom' : 'center'" :content-class="width < 768 ? 'mb-0 rounded-b-none' : ''">
+            <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm">
                 <div class="flex flex-col gap-4">
                     <p class="text-sm font-space text-muted-foreground">
                         Are you sure you want to delete this chat? This action cannot be undone.
