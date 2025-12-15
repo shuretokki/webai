@@ -149,11 +149,11 @@ const handleUpgrade = () => {
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-space font-medium text-foreground truncate">{{ user?.name }}</h4>
-                        <p class="text-xs text-muted-foreground font-space truncate">{{ user?.email }}</p>
+                        <h4 class="font-space font-medium text-foreground truncate text-lg">{{ user?.name }}</h4>
+                        <p class="text-base text-muted-foreground font-space truncate">{{ user?.email }}</p>
                     </div>
                     <button
-                        class="px-5 py-2.5 text-sm border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground font-medium">Manage</button>
+                        class="px-5 py-2.5 text-base border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground font-medium">Manage</button>
                 </div>
 
                 <div class="flex items-center justify-between p-4 border-b border-border active:bg-white/5 transition-colors"
@@ -163,10 +163,10 @@ const handleUpgrade = () => {
                             class="size-10 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
                             <div class="size-6 rounded-full border border-primary bg-primary/20"></div>
                         </div>
-                        <span class="font-space font-medium text-foreground">Get ECNELIS+</span>
+                        <span class="font-space font-medium text-foreground text-lg">Get ECNELIS+</span>
                     </div>
                     <button
-                        class="px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors font-medium">Upgrade</button>
+                        class="px-5 py-2.5 rounded-full border border-border text-base text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors font-medium">Upgrade</button>
                 </div>
 
                 <div class="flex flex-col">
