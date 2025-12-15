@@ -198,7 +198,18 @@ const handleDeleteAllChats = () => {
                 <!-- Data Control Tab -->
                  <div v-if="activeTab === 'data'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div class="space-y-1">
-                        <h4 class="font-space text-sm font-medium text-foreground">Sensitive</h4>
+                        <h4 class="font-space text-sm font-medium text-foreground">Usage</h4>
+                        <div class="flex items-center justify-between py-4 border-b border-border">
+                            <div class="flex items-center gap-3">
+                                <i-solar-chart-square-linear class="text-xl text-muted-foreground" />
+                                <span class="text-sm font-space font-medium text-foreground">Data Usage</span>
+                            </div>
+                            <Link href="/settings/usage" class="px-4 py-1.5 rounded-full border border-border text-xs hover:bg-white/5 transition-colors font-medium">
+                                View
+                            </Link>
+                        </div>
+
+                        <h4 class="font-space text-sm font-medium text-foreground mt-4">Sensitive</h4>
                         <div class="flex items-center justify-between py-4 border-b border-border">
                             <div class="flex items-center gap-3 text-destructive">
                                 <i-solar-trash-bin-trash-linear class="text-xl" />
