@@ -61,10 +61,13 @@ const plans = [
 const showWaitlistToast = ref(false);
 const toastMessage = ref('');
 
+/**
+ * TODO: Change into email verified subscribe.
+ * @param plan
+ */
 const handlePlanClick = (plan: any) => {
   if (plan.current) return;
 
-  // Simulate waitlist action
   toastMessage.value = `You've been added to the waitlist for ${plan.name}!`;
   showWaitlistToast.value = true;
   setTimeout(() => {
@@ -119,7 +122,6 @@ const handlePlanClick = (plan: any) => {
         </div>
       </div>
 
-      <!-- Toast Notification -->
       <Transition enter-active-class="transition ease-out duration-300"
         enter-from-class="transform opacity-0 translate-y-2" enter-to-class="transform opacity-100 translate-y-0"
         leave-active-class="transition ease-in duration-200" leave-from-class="transform opacity-100 translate-y-0"

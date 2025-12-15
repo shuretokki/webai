@@ -40,7 +40,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
     <div class="min-h-screen bg-background text-foreground font-space">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="mb-10">
-                <h1 class="text-3xl font-normal text-foreground">Account settings</h1>
+                <h1 class="text-xl md:text-3xl font-normal text-foreground">Account settings</h1>
             </div>
 
             <div class="flex flex-col md:flex-row gap-8 lg:gap-12">
@@ -56,8 +56,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
                         <span
                             :class="{ 'opacity-100': urlIsActive(item.href, currentPath), 'opacity-0 group-hover:opacity-50 transition-opacity': !urlIsActive(item.href, currentPath) }"
                             class="mr-2 text-primary hidden md:inline-block">
-                            <!-- Indicator dot -->
-                            ●
+                            >
                         </span>
                         {{ item.title }}
                         </Link>

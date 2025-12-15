@@ -45,11 +45,9 @@ const handleAvatarChange = (event: Event) => {
     if (input.files && input.files[0]) {
         uploading.value = true;
 
-        // Mock API call
         setTimeout(() => {
             uploading.value = false;
             alert('This is a mock upload. Backend implementation required.');
-            // Ideally we would update user.avatar here with the response
         }, 1500);
     }
 };
@@ -62,7 +60,6 @@ const handleAvatarChange = (event: Event) => {
 
         <SettingsLayout>
             <div class="space-y-12">
-                <!-- Profile Photo Section -->
                 <div>
                     <h3 class="text-2xl font-normal text-foreground mb-2">Profile Photo</h3>
                     <p class="text-muted-foreground mb-6">Update your profile picture.</p>
@@ -87,7 +84,6 @@ const handleAvatarChange = (event: Event) => {
                     </div>
                 </div>
 
-                <!-- Name Section -->
                 <div>
                     <h3 class="text-2xl font-normal text-foreground mb-2">My Profile</h3>
                     <p class="text-muted-foreground mb-6">Manage your public profile details.</p>
@@ -113,7 +109,6 @@ const handleAvatarChange = (event: Event) => {
                     </Form>
                 </div>
 
-                <!-- Email Section -->
                 <div>
                     <h3 class="text-2xl font-normal text-foreground mb-2">Email</h3>
                     <p class="text-muted-foreground mb-6">Set or update the email address where you will receive
@@ -159,7 +154,6 @@ const handleAvatarChange = (event: Event) => {
                     </div>
                 </div>
 
-                <!-- Connected Accounts -->
                 <div>
                     <h3 class="text-2xl font-normal text-foreground mb-2">Connected Accounts</h3>
                     <p class="text-muted-foreground mb-6">Connect your social accounts to sign in faster.</p>
@@ -181,7 +175,6 @@ const handleAvatarChange = (event: Event) => {
                             </Button>
                         </div>
 
-                        <!-- Google -->
                         <div class="flex items-center justify-between p-4 border border-border bg-card/10 rounded-sm">
                             <div class="flex items-center gap-4">
                                 <div class="p-2 bg-white/5 rounded-full border border-white/10">
@@ -199,7 +192,6 @@ const handleAvatarChange = (event: Event) => {
                     </div>
                 </div>
 
-                <!-- Profile Other Details (Blue Box) -->
                 <div>
                     <h3 class="text-2xl font-normal text-foreground mb-6">Profile Details</h3>
                     <div class="bg-blue-900/10 border border-blue-500/30 p-6 rounded-none">

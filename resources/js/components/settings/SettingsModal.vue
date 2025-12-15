@@ -64,7 +64,7 @@ const page = usePage();
 const user = computed(() => page.props.auth.user);
 
 const handleUpgrade = () => {
-    window.location.href = '/settings/subscription';
+    window.location.href = '/pricing';
 };
 
 </script>
@@ -93,9 +93,9 @@ const handleUpgrade = () => {
                     </button>
                 </div>
 
-                <div class="px-4 mt-auto pt-4">
+                <div class="px-4 mt-auto pt-4" v-if="!['plus', 'enterprise'].includes(user?.subscription_tier)">
                     <div
-                        class="p-4 rounded-none border border-border bg-gradient-to-br from-card to-background relative overflow-hidden group hover:border-primary/50 transition-colors">
+                        class="p-4 rounded-none border border-border bg-gradient-to-br from-card to-background relative overflow-hidden group transition-colors">
                         <div class="flex items-center gap-3 mb-3">
                             <div
                                 class="size-8 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
@@ -105,7 +105,7 @@ const handleUpgrade = () => {
                         </div>
 
                         <button @click="handleUpgrade"
-                            class="w-full text-xs py-1.5 px-3 rounded-full border border-border bg-white/5 hover:bg-white/10 hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground">
+                            class="w-full text-xs py-1.5 px-3 rounded-full border border-border bg-white/5 hover:bg-white/10 cursor-pointer transition-all text-muted-foreground hover:text-foreground">
                             Upgrade
                         </button>
                     </div>
@@ -144,21 +144,28 @@ const handleUpgrade = () => {
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-space font-medium text-foreground truncate text-lg">{{ user?.name }}</h4>
+                        <h4 class="font-space font-medium text-foreground truncate text-lg flex items-center gap-2">
+                            {{ user?.name }}
+                            <span v-if="['plus', 'enterprise'].includes(user?.subscription_tier)"
+                                class="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase border border-primary/20 tracking-wider">
+                                {{ user?.subscription_tier === 'enterprise' ? 'PRO' : 'PLUS' }}
+                            </span>
+                        </h4>
                         <p class="text-base text-muted-foreground font-space truncate">{{ user?.email }}</p>
                     </div>
                     <button
                         class="px-5 py-2.5 text-base border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground font-medium">Manage</button>
                 </div>
 
-                <div class="flex items-center justify-between p-4 border-b border-border active:bg-white/5 transition-colors"
+                <div v-if="!['plus', 'enterprise'].includes(user?.subscription_tier)"
+                    class="flex items-center justify-between p-4 border-b border-border active:bg-white/5 transition-colors"
                     @click="handleUpgrade">
                     <div class="flex items-center gap-3">
                         <div
                             class="size-10 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
                             <div class="size-6 rounded-full border border-primary bg-primary/20"></div>
                         </div>
-                        <span class="font-space font-medium text-foreground text-lg">Get ECNELIS+</span>
+                        <span class="font-space font-medium text-foreground! text-lg">Get ECNELIS+</span>
                     </div>
                     <button
                         class="px-5 py-2.5 rounded-full border border-border text-base text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors font-medium">Upgrade</button>

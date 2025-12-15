@@ -133,19 +133,16 @@ const scrollToBottom = async (force = false) => {
     if (!container.value)
         return;
 
-    // Force scroll (e.g. user sent message) or if auto-scroll is enabled
     if (force || autoScrollEnabled.value) {
         container.value.scrollTop = container.value.scrollHeight;
     }
 }
 
-// Watch messages: Auto scroll if enabled
 watch(() => props.messages, () => scrollToBottom(false), { deep: true });
 
 const streaming = ref('');
 const isStreaming = ref(false);
 watch(streaming, () => {
-    // Always auto-scroll during streaming if enabled
     if (autoScrollEnabled.value) {
         scrollToBottom(false);
     }
@@ -383,9 +380,8 @@ onUnmounted(() => {
                             class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full">
                             <div class="mb-8 relative">
                                 <div class="absolute -inset-1 rounded-full bg-primary/20 blur-xl"></div>
-                                <div
-                                    class="relative size-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center">
-                                    <AppLogoIcon class="size-8 text-primary" />
+                                <div class="relative size-16 flex items-center justify-center">
+                                    <AppLogoIcon class="size-16 text-primary" />
                                 </div>
                             </div>
 

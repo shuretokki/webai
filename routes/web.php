@@ -21,6 +21,15 @@ Route::inertia('/settings/usage', 'settings/Usage')
 Route::inertia('/pricing', 'Pricing')
     ->name('pricing');
 
+Route::inertia('/enterprise', 'Enterprise')
+    ->name('enterprise');
+
+Route::inertia('/docs', 'Docs')
+    ->name('docs');
+
+Route::inertia('/blog', 'Blog')
+    ->name('blog');
+
 Route::middleware(['auth', 'verified'])
     ->prefix('api')
     ->group(function () {

@@ -106,7 +106,6 @@ onUnmounted(() => {
         </div>
 
         <div v-else-if="usage" class="space-y-8">
-          <!-- Tier Info -->
           <div class="flex items-center justify-between border-b border-white/10 pb-6">
             <div>
               <span class="text-sm text-muted-foreground uppercase tracking-wider">Current Plan</span>
@@ -124,7 +123,6 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Messages Progress -->
           <div>
             <div class="flex justify-between items-end mb-3">
               <label class="text-base font-medium text-foreground">Monthly Message Quota</label>
@@ -140,7 +138,6 @@ onUnmounted(() => {
             </p>
           </div>
 
-          <!-- Stats Grid -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             <div class="group p-5 border border-white/10 bg-white/5 hover:bg-white/10 transition-colors rounded-none">
               <h3 class="text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">AI Tokens</h3>

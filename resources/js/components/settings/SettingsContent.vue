@@ -13,7 +13,7 @@ const user = computed(() => page.props.auth.user);
 const autoScroll = useStorage('settings_auto_scroll', true);
 
 const handleUpgrade = () => {
-  window.location.href = '/settings/subscription';
+  window.location.href = '/pricing';
 };
 
 const handleDeleteAllChats = () => {

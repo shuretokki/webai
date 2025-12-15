@@ -55,25 +55,26 @@ const user = page.props.auth.user;
                     </DropdownMenu>
                 </div>
 
-                <!-- Desktop Nav -->
                 <div class="hidden md:flex items-center gap-6">
                     <Link href="/chat"
-                        class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-2">
+                        class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-4">
                     <MessageSquare class="h-4 w-4" />
                     Return to Chat
                     </Link>
                     <Link href="/pricing"
                         class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Pricing</Link>
-                    <a href="#"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Enterprise</a>
-                    <a href="https://laravel.com/docs/starter-kits#vue" target="_blank"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs</a>
-                    <a href="#"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog</a>
+                    <Link href="/enterprise"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Enterprise</Link>
+                    <Link href="/docs" target="_blank"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs
+                    </Link>
+                    <Link href="/blog"
+                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog
+                    </Link>
                 </div>
 
-                <!-- Mobile Nav -->
                 <div class="md:hidden">
                     <Sheet>
                         <SheetTrigger as-child>
@@ -81,22 +82,24 @@ const user = page.props.auth.user;
                                 <Menu class="h-5 w-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent>
+                        <SheetContent
+                            class="bg-background justify-between p-8 text-center items-center border-l border-border text-foreground w-full max-w-64">
                             <div class="flex flex-col gap-6 mt-8">
-                                <Link href="/chat" class="flex items-center gap-2 text-lg font-medium text-foreground">
-                                <MessageSquare class="h-5 w-5" />
-                                Return to Chat
-                                </Link>
                                 <Link href="/pricing"
                                     class="text-lg font-medium text-muted-foreground hover:text-foreground">Pricing
                                 </Link>
-                                <a href="#"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Enterprise</a>
-                                <a href="https://laravel.com/docs/starter-kits#vue"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Docs</a>
-                                <a href="#"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Blog</a>
+                                <Link href="/enterprise"
+                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Enterprise
+                                </Link>
+                                <Link href="/docs"
+                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Docs</Link>
+                                <Link href="/blog"
+                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Blog</Link>
                             </div>
+                            <Link href="/chat" class="flex items-center gap-2 text-lg font-medium text-foreground">
+                            <MessageSquare class="h-5 w-5" />
+                            Return to Chat
+                            </Link>
                         </SheetContent>
                     </Sheet>
                 </div>

@@ -169,8 +169,8 @@ defineOptions({
                                     </div>
                                     <div class="flex items-center gap-2 shrink-0">
                                         <div v-if="!model.is_free && !['plus', 'enterprise'].includes(userTier || 'free')"
-                                            class="px-1.5 py-0.5 bg-muted rounded-none text-[10px] text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                                            PRO
+                                            class="px-1.5 py-0.5 text-sm text-muted-foreground group-hover:text-primary transition-colors">
+                                            PLUS
                                         </div>
                                         <Check v-if="modelValue === model.id" class="size-4 text-primary" />
                                     </div>

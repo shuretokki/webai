@@ -46,3 +46,33 @@ The login page has been updated with "Login with GitHub" and "Login with Google"
 - **Callback Handling:** These should handle both *login* (existing user) and *registration* (new user) flows.
 - **Merge Logic:** If a user logs in with email `foo@bar.com` via Google, and an account with that email already exists (password-based), silently link them or prompt for password to verify linkage. Avoid creating duplicate accounts with the same email.
 
+## User Settings & Security
+The frontend `Profile.vue` uses `ProfileController` and `Form` components which imply a standard form submission flow.
+
+**Immediate Backend Requirements:**
+1.  **Profile Update (Name/Email):**
+    -   Ensure standard Fortify/Jetstream routes (e.g., `PUT /user/profile-information`) are active and mapped correctly.
+    -   The frontend connects to `ProfileController.update`. Verify this matches your route naming convention or update the frontend to use standard routes (e.g., `/user/profile-information`).
+2.  **Email Verification:**
+    -   The frontend has UI for "Resend Verification".
+    -   Ensure `POST /email/verification-notification` is implemented/active (Fortify default).
+3.  **Two-Factor Authentication (2FA):**
+    -   User requested "make 2fa work".
+    -   Ensure Fortify's 2FA features are enabled in `config/fortify.php`.
+    -   Frontend needs endpoints for:
+        -   Enabling 2FA (`POST /user/two-factor-authentication`)
+        -   Getting QR Code (`GET /user/two-factor-qr-code`)
+        -   Confirming 2FA with OTP (`POST /user/confirmed-two-factor-authentication`)
+        -   Getting Recovery Codes (`GET /user/two-factor-recovery-codes`)
+
+## Content Pages (Docs & Blog)
+Frontend currently uses **mock static pages** (`Docs.vue`, `Blog.vue`).
+
+**Future Backend Requirements:**
+1.  **Documentation:**
+    -   If docs should be dynamic, create a `DocumentationController` that reads markdown files or from a CMS.
+    -   Pass content as Inertia props to `Docs.vue`.
+2.  **Blog:**
+    -   If blog posts are managed in DB, create `Post` model and `BlogController`.
+    -   Pass paginated posts to `Blog.vue`.
+

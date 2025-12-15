@@ -17,7 +17,7 @@ const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>;
 }>();
 
-const { width } = useWindowSize(); // Reactive window size
+const { width } = useWindowSize();
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
@@ -123,9 +123,9 @@ defineOptions({
 
     <Motion v-bind="$attrs"
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20"
-        :class="[isCollapsed ? 'items-center w-[80px]' : 'items-start w-[300px]']">
+        :class="[isCollapsed ? 'items-start w-[60px]' : 'items-start w-[300px]']">
         <div class="w-full shrink-0 relative h-[60px] flex items-center"
-            :class="[isCollapsed ? 'justify-center' : 'pl-4 pr-4 justify-between']">
+            :class="[isCollapsed ? 'pl-4 pr-4 justify-center' : 'pl-4 pr-4 justify-between']">
             <div class="h-8 flex items-center justify-center text-sidebar-foreground">
                 <AppLogoIcon class="size-8 text-sidebar-primary" />
             </div>
@@ -171,7 +171,7 @@ defineOptions({
 
             <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat(chat.id).url" :preserve-state="false"
                 class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
-                :class="[isCollapsed ? 'justify-left' : '']">
+                :class="[isCollapsed ? 'justify-center' : '']">
 
             <MessageSquare v-if="isCollapsed"
                 class="size-5 text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
