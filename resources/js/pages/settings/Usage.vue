@@ -118,7 +118,7 @@ onUnmounted(() => {
             </div>
             <div v-if="showWarning" class="bg-yellow-500/10 border border-yellow-500/50 p-3 rounded-none">
               <div class="flex items-center gap-2">
-                <i-solar-danger-triangle-linear class="text-yellow-500 text-lg" />
+                <TriangleAlert class="text-yellow-500 text-lg" />
                 <p class="text-sm text-yellow-500 font-space">{{ warningMessage }}</p>
               </div>
             </div>

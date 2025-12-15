@@ -89,10 +89,10 @@ const cleanContent = computed(() => {
                 <details class="group">
                     <summary
                         class="cursor-pointer list-none flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-white/5 transition-colors w-fit">
-                        <i-solar-stars-minimalistic-linear class="text-muted-foreground text-sm" />
+                        <Sparkles class="text-muted-foreground size-3.5" />
                         <span class="text-xs text-muted-foreground font-space select-none">Thinking</span>
-                        <i-solar-alt-arrow-down-linear
-                            class="text-xs text-muted-foreground group-open:rotate-180 transition-transform" />
+                        <ChevronDown
+                            class="text-xs text-muted-foreground group-open:rotate-180 transition-transform size-3" />
                     </summary>
                     <div
                         class="mt-2 ml-1 pl-4 border-l-2 border-border/50 text-xs text-muted-foreground/80 font-mono whitespace-pre-wrap leading-relaxed">
@@ -114,7 +114,7 @@ const cleanContent = computed(() => {
                     class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                     <button
                         class="p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors">
-                        <i-solar-download-linear />
+                        <Download class="size-4" />
                     </button>
                 </div>
             </div>
@@ -126,7 +126,7 @@ const cleanContent = computed(() => {
                     class="h-40 w-auto rounded-none border border-white/10 object-cover hover:border-primary/50 transition-colors" />
                 <a v-else :href="att.url" target="_blank"
                     class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-none border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-colors">
-                    <i-solar-file-text-linear class="text-xl text-primary" />
+                    <FileText class="text-xl text-primary size-5" />
                     <span class="text-sm font-space">{{ att.name || 'File' }}</span>
                 </a>
             </div>
@@ -135,11 +135,11 @@ const cleanContent = computed(() => {
         <div class="flex items-center gap-2 mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button @click="copy()"
                 class="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                <i-solar-check-circle-bold v-if="copied" class="text-xs text-green-500" />
-                <i-solar-copy-linear v-else class="text-xs" />
+                <Check v-if="copied" class="text-xs text-green-500 size-3" />
+                <Copy v-else class="text-xs size-3" />
             </button>
             <button v-if="isResponder" class="text-muted-foreground hover:text-foreground transition-colors">
-                <i-solar-restart-linear class="text-xs" />
+                <RotateCw class="text-xs size-3" />
             </button>
             <span v-if="isUser && timestamp" class="text-[10px] text-muted-foreground/50">{{ timestamp }}</span>
         </div>
