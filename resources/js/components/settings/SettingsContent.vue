@@ -44,7 +44,7 @@ const handleDeleteAllChats = () => {
           <p class="text-sm md:text-xs text-muted-foreground font-space truncate">{{ user?.email }}</p>
         </div>
         <Link href="/settings/profile"
-          class="px-3 py-1.5 text-xs border border-border rounded-full hover:bg-white/5 hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground">
+          class="px-3 py-1.5 text-base md:text-xs border border-border rounded-full hover:bg-white/5 hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground">
         Manage
         </Link>
       </div>
@@ -58,7 +58,7 @@ const handleDeleteAllChats = () => {
         <p class="text-lg md:text-sm text-muted-foreground max-w-[200px]">Unlock more features and higher limits.
         </p>
         <button @click="handleUpgrade"
-          class="mt-2 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
+          class="mt-2 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors text-lg md:text-sm font-medium">
           Upgrade
         </button>
       </div>
@@ -149,7 +149,7 @@ const handleDeleteAllChats = () => {
             <span class="text-lg md:text-sm font-space font-medium text-foreground">Data Usage</span>
           </div>
           <Link href="/settings/usage"
-            class="px-4 py-1.5 rounded-full border border-border text-xs hover:bg-white/5 transition-colors font-medium">
+            class="px-4 py-1.5 rounded-full border border-border text-base md:text-xs hover:bg-white/5 transition-colors font-medium">
           View
           </Link>
         </div>
@@ -161,7 +161,7 @@ const handleDeleteAllChats = () => {
             <span class="text-lg md:text-sm font-space font-medium">Delete all chats</span>
           </div>
           <button @click="handleDeleteAllChats"
-            class="px-4 py-1.5 rounded-full border border-destructive/50 text-destructive text-xs hover:bg-destructive/10 transition-colors font-medium">
+            class="px-4 py-1.5 rounded-full border border-destructive/50 text-destructive text-base md:text-xs hover:bg-destructive/10 transition-colors font-medium">
             Delete
           </button>
         </div>
