@@ -16,39 +16,75 @@
 | **Search Backend (LIKE)**     | ✅ Done | ✅ 7 tests    | ~50           | `search-frontend-todo.md`                  |
 | **Usage Dashboard (Frontend)**| ✅ Done | N/A (UI)      | ~150          | `usage-tracking-implementation.md`         |
 | **Testing Suite**             | ✅ Done | ✅ 66 tests   | ~400          | See CHANGELOG.md                           |
+| **Real-time Updates**         | ✅ Done | N/A (WebSocket) | ~285        | Below (WebSocket Implementation Notes)     |
+| **Frontend Search UI**        | ✅ Done | N/A (UI)      | ~250          | `resources/js/components/chat/SearchModal.vue` |
 
-**Total Backend Code:** ~1,530 lines
+**Total Backend Code:** ~1,815 lines
 **Test Coverage:** 100% pass rate (66/66 tests, 207 assertions)
 **Admin Resources:** 3 (User, Chat, UserUsage)
 **Frontend Pages:** 2 (Chat, Usage Dashboard)
+**Real-time Features:** WebSocket broadcasting with Laravel Reverb
 **Production Ready:** All core features ✅
+
+---
+
+## 📡 WebSocket Implementation Notes
+
+**Technology Stack:**
+- Backend: Laravel Reverb (WebSocket server)
+- Frontend: Laravel Echo Vue (`@laravel/echo-vue` v2.2.6)
+- Transport: Pusher protocol with Reverb
+
+**Key Implementation Details:**
+
+1. **Event Naming Convention:**
+   - When using `broadcastAs()` in your event class, the frontend must listen with a **leading dot** (`.`)
+   - Example: `broadcastAs() { return 'message.sent'; }` → Frontend listens to `.message.sent`
+   - The dot prefix tells Laravel Echo to ignore the PHP namespace
+
+2. **Backend Event Structure:**
+   ```php
+   class MessageSent implements ShouldBroadcast {
+       public function broadcastOn(): array {
+           return [new PrivateChannel('chats.' . $this->chat->id)];
+       }
+
+       public function broadcastAs(): string {
+           return 'message.sent'; // Custom event name
+       }
+   }
+   ```
+
+3. **Frontend Listener (Vue Composable):**
+   ```typescript
+   import { useEcho } from '@laravel/echo-vue';
+
+   useEcho(
+       `chats.${chatId}`,     // Channel name
+       '.message.sent',       // Event name (note the dot prefix)
+       (event) => { ... },    // Callback
+       [],                    // Dependencies
+       'private'              // Channel type
+   );
+   ```
+
+4. **Configuration:**
+   - Echo is configured globally in `resources/js/app.ts` using `configureEcho()`
+   - No need for `window.Echo` - use Vue composables instead
+   - Reverb runs on port 8080 (configurable in `.env`)
+
+5. **Private Channels:**
+   - Require authentication via `routes/channels.php`
+   - Use `Broadcast::channel()` to define authorization logic
+   - Example: `Broadcast::channel('chats.{id}', fn($user, $id) => ...)`
+
+**Verified Working:** Real-time message updates in chat interface ✅
 
 ---
 
 ## 🎯 Next Steps Roadmap
 
-### **Priority 1: Real-time Updates** ⚡ (IN PROGRESS)
-
-**Goal:** Implement WebSocket-based live updates using Laravel Reverb
-
-**Use Cases:**
-- See new messages instantly across devices
-- Live typing indicators
-- Usage quota updates in real-time
-
-**Tasks:**
-- [ ] Install Laravel Reverb
-- [ ] Configure broadcasting
-- [ ] Create `MessageSent` event
-- [ ] Update frontend with Laravel Echo
-- [ ] Test multi-device sync
-
-**Estimated Time:** 1.5-2 hours
-**Value:** Modern, responsive UX that matches ChatGPT-level interactivity
-
----
-
-### **Priority 2: Email Notifications** 📧
+### **Priority 1: Email Notifications** 📧 (RECOMMENDED NEXT)
 
 **Goal:** Build usage dashboard for users to monitor quota
 
@@ -93,7 +129,7 @@ Route::get('/api/usage/history', [UsageController::class, 'history']);
 
 ---
 
-### **Priority 3: Search Functionality** 🔍
+### **Priority 2: Search Functionality** 🔍 (COMPLETED)
 
 **Goal:** Full-text search through chat history
 
@@ -143,7 +179,7 @@ composer require laravel/scout meilisearch/meilisearch-php
 
 ---
 
-### **Priority 4: Export Functionality** 📄
+### **Priority 3: Export Functionality** 📄
 
 **Goal:** Export chat history as PDF/Markdown
 
