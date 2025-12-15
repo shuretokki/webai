@@ -35,7 +35,7 @@ class UserResource extends Resource
                 Forms\Components\Select::make('subscription_tier')
                     ->options([
                         'free' => 'Free',
-                        'pro' => 'Pro',
+                        'plus' => 'Plus',
                         'enterprise' => 'Enterprise',
                     ])
                     ->required()
@@ -69,7 +69,7 @@ class UserResource extends Resource
                 Tables\Columns\BadgeColumn::make('subscription_tier')
                     ->colors([
                         'secondary' => 'free',
-                        'success' => 'pro',
+                        'success' => 'plus',
                         'primary' => 'enterprise',
                     ])
                     ->sortable(),
@@ -99,7 +99,7 @@ class UserResource extends Resource
                 Tables\Filters\SelectFilter::make('subscription_tier')
                     ->options([
                         'free' => 'Free',
-                        'pro' => 'Pro',
+                        'plus' => 'Plus',
                         'enterprise' => 'Enterprise',
                     ]),
 
