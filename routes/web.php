@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])
 
         Route::get('/chat/{chat}/export/{format?}', [ChatController::class, 'export'])
             ->name('chat.export')
+            ->can('view', 'chat')
             ->where('format', 'pdf|md');
 
         Route::get('/chat/{chat?}', [ChatController::class, 'index'])
