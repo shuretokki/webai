@@ -60,7 +60,8 @@ const handleUpgrade = () => {
 
 <template>
     <Modal :show="show" :title="mobileTitle" @close="closeModal" max-width="3xl"
-        :content-class="isMobile ? 'p-0 h-[80vh]' : 'p-0'" :hide-header="isMobile" @back="handleBack">
+        :content-class="isMobile ? 'p-0 h-[80vh]' : 'p-0'" :hide-header="isMobile"
+        :align="isMobile ? 'bottom' : 'center'">
 
         <div class="hidden md:flex h-[450px] overflow-hidden">
             <div class="w-1/3 border-r border-border bg-card/30 flex flex-col justify-between py-6">
@@ -104,24 +105,60 @@ const handleUpgrade = () => {
             </div>
         </div>
 
-        <div class="md:hidden flex flex-col h-full bg-background overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-4 border-b border-border shrink-0">
-                <div class="flex items-center gap-3">
-                    <button v-if="mobileView === 'detail'" @click="mobileView = 'list'"
-                        class="text-muted-foreground hover:text-foreground transition-colors p-1 -ml-2">
-                        <i-solar-arrow-left-linear class="text-xl" />
-                    </button>
-                    <button v-else @click="closeModal"
-                        class="text-muted-foreground hover:text-foreground transition-colors p-1 -ml-2">
-                        <i-solar-arrow-left-linear class="text-xl" />
-                    </button>
-                    <h3 class="text-lg font-space font-medium text-foreground">{{ mobileTitle }}</h3>
-                </div>
+        <div class="md:hidden flex flex-col h-full bg-background overflow-hidden relative">
+            <div class="flex items-center justify-center pt-3 pb-4 relative shrink-0">
+                <div class="w-12 h-1.5 bg-border rounded-full"></div>
+
+                <button @click="closeModal"
+                    class="absolute right-4 top-3 text-muted-foreground hover:text-foreground p-1 transition-colors">
+                    <i-solar-close-circle-linear class="text-2xl" />
+                </button>
+            </div>
+
+            <div class="px-4 pb-4 flex items-center gap-3 shrink-0" v-if="mobileView === 'detail'">
+                <button @click="mobileView = 'list'"
+                    class="text-muted-foreground hover:text-foreground transition-colors">
+                    <i-solar-arrow-left-linear class="text-xl" />
+                </button>
+                <h3 class="text-lg font-space font-medium text-foreground">{{ mobileTitle }}</h3>
+            </div>
+
+            <div class="px-4 pb-4 shrink-0" v-else>
+                <h3 class="text-lg font-space font-medium text-foreground">{{ mobileTitle }}</h3>
             </div>
 
             <div v-if="mobileView === 'list'" class="flex-1 overflow-y-auto p-0">
+                <div class="flex items-center gap-4 p-4 border-b border-border active:bg-white/5 transition-colors"
+                    @click="navigateToTab('account')">
+                    <div
+                        class="size-12 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground overflow-hidden border border-border shrink-0">
+                        <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
+                        <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-space font-medium text-foreground truncate">{{ user?.name }}</h4>
+                        <p class="text-xs text-muted-foreground font-space truncate">{{ user?.email }}</p>
+                    </div>
+                    <button
+                        class="px-4 py-1.5 text-xs border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground">Manage</button>
+                </div>
+
+                <div class="flex items-center justify-between p-4 border-b border-border active:bg-white/5 transition-colors"
+                    @click="handleUpgrade">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-10 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
+                            <div class="size-6 rounded-full border border-primary bg-primary/20"></div>
+                        </div>
+                        <span class="font-space font-medium text-foreground">Get ECNELIS+</span>
+                    </div>
+                    <button
+                        class="px-4 py-1.5 rounded-full border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors">Upgrade</button>
+                </div>
+
                 <div class="flex flex-col">
-                    <button v-for="tab in tabs" :key="tab.id" @click="navigateToTab(tab.id)"
+                    <button v-for="tab in tabs.filter(t => t.id !== 'account')" :key="tab.id"
+                        @click="navigateToTab(tab.id)"
                         class="flex items-center justify-between p-4 border-b border-border text-left group active:bg-white/5 transition-colors">
                         <div class="flex items-center gap-3">
                             <component :is="tab.icon"
