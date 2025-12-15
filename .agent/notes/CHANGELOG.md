@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 19:55:00] - Chat Frontend/Backend Alignment Fixes
+
+### Fixed
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Fixed SSE stream parsing to be more robust by adding `.trim()` to data extraction and supporting both `[Done]` and `[DONE]` termination signals.
+- **Impact:** Stream parsing is now resilient to whitespace variations and backend format changes.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Added error handling for backend error responses in SSE stream. Errors are now displayed directly in chat UI with ⚠️ emoji prefix.
+- **Impact:** Users can see backend errors (quota exceeded, model errors) directly in chat instead of only in console.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Implemented message deduplication logic in Echo WebSocket listener to prevent duplicate assistant messages.
+- **Impact:** Echo broadcasts no longer create duplicate messages when user is actively streaming responses.
+
+- **File:** `resources/js/components/chat/Message.vue`
+- **Description:** Uncommented and restyled attachment rendering section with Ecnelis design system (squared corners, proper spacing, design tokens).
+- **Impact:** Users can now see uploaded images and files in their chat messages.
+
+### Changed
+- **Command:** `php artisan storage:link`
+- **Description:** Verified storage symlink exists to ensure uploaded files are accessible.
+- **Impact:** Attachment URLs using `asset('storage/...')` now resolve correctly.
+
+### Why
+Frontend and backend had several misalignments causing issues with streaming, attachments, and real-time updates. These fixes ensure production-ready chat experience with proper error handling and visual feedback.
+
+---
+
 ## [2025-12-15 22:00:00] - Security Audit & Authorization Improvements
 
 ### Fixed
