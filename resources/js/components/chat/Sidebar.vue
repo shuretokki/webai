@@ -6,6 +6,7 @@ import { chat as Chat } from '@/routes/index'
 import Modal from '@/components/ui/Modal.vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import SettingsModal from '@/components/settings/SettingsModal.vue';
 import { edit as profileEdit } from '@/routes/profile';
 
 const props = defineProps<{
@@ -75,29 +76,37 @@ const deleteChat = (id: number) => {
 
 const emit = defineEmits(['close']);
 const isCollapsed = ref(false);
+const showSettingsModal = ref(false);
+
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value;
 };
+
+defineOptions({
+    inheritAttrs: false
+});
 </script>
 
 <template>
+    <SettingsModal :show="showSettingsModal" @close="showSettingsModal = false" />
+
     <Motion
+        v-bind="$attrs"
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20"
         :class="[isCollapsed ? 'items-center' : 'items-start']">
         <div class="w-full shrink-0 relative h-[60px] flex items-center"
-            :class="[isCollapsed ? 'justify-center' : 'justify-between px-4']">
+            :class="[isCollapsed ? 'justify-center' : 'pl-4 pr-4 justify-between']">
             <div class="h-8 flex items-center justify-center text-sidebar-foreground">
-                <AppLogo v-if="!isCollapsed" class="h-6" />
-                <AppLogoIcon v-else class="size-8 text-sidebar-primary" />
+                <AppLogoIcon class="size-8 text-sidebar-primary" />
             </div>
             <button @click="$emit('close')" class="md:hidden text-sidebar-foreground" v-if="!isCollapsed">
                 <i-solar-close-circle-linear class="text-2xl" />
             </button>
         </div>
 
-        <div class="w-full shrink-0 flex flex-col gap-2 px-2 mt-2">
+        <div class="w-full shrink-0 flex flex-col gap-2 px-3 mt-2">
             <Link :href="Chat().url"
-                class="w-full relative flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent cursor-pointer transition-colors group"
+                class="w-full relative flex items-center gap-3 p-2 rounded-none hover:bg-sidebar-accent cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']">
             <i-solar-pen-new-square-linear class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
             <p v-if="!isCollapsed"
@@ -106,16 +115,16 @@ const toggleCollapse = () => {
             </Link>
         </div>
 
-        <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-4 py-2 mt-4">
+        <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-6 py-2 mt-4">
             <p class="font-space font-normal text-sm text-sidebar-foreground/40 uppercase tracking-wider">Recent Chats</p>
         </div>
-        <div v-else class="w-full h-px bg-sidebar-border my-4 mx-2"></div>
+        <div v-else class="w-full h-px bg-sidebar-border my-4 mx-0"></div>
 
-        <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-2 custom-scrollbar">
+        <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-4 custom-scrollbar">
 
-            <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat({ chat: chat.id }).url"
+            <Link v-for="chat in filteredChats" :key="chat.id" :href="`/chat/${chat.id}`"
                 class="w-full flex items-center p-2 gap-3 hover:bg-sidebar-accent cursor-pointer transition-colors group relative"
-                :class="[isCollapsed ? 'justify-center' : '']">
+                :class="[isCollapsed ? 'justify-left' : '']">
 
             <i-solar-chat-round-line-linear v-if="isCollapsed"
                 class="text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
@@ -124,14 +133,6 @@ const toggleCollapse = () => {
                 <p class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1">
                     {{ chat.title || 'Untitled' }}
                 </p>
-                <button @click.prevent.stop="deleteChat(chat.id)"
-                    class="p-1 text-sidebar-foreground/40 hover:text-destructive cursor-pointer transition-colors">
-                    <i-solar-trash-bin-trash-linear />
-                </button>
-                <button @click.prevent.stop="openEditModal(chat)"
-                    class="p-1 text-sidebar-foreground/40 hover:text-sidebar-primary cursor-pointer transition-colors">
-                    <i-solar-pen-linear />
-                </button>
             </div>
             </Link>
 
@@ -141,17 +142,17 @@ const toggleCollapse = () => {
                         <label
                             class="block text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">Title</label>
                         <input v-model="editForm.title" type="text"
-                            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground focus:border-primary focus:outline-none transition-colors"
+                            class="w-full bg-muted border border-border rounded-none px-4 py-2 text-foreground focus:border-primary focus:outline-none transition-colors"
                             placeholder="Enter chat title..." @keydown.enter="saveTitle" autoFocus />
                     </div>
 
                     <div class="flex justify-end gap-2 mt-2">
                         <button @click="showEditModal = false"
-                            class="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                            class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
                             Cancel
                         </button>
                         <button @click="saveTitle" :disabled="editForm.processing"
-                            class="px-4 py-2 rounded-lg bg-primary text-primary-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
+                            class="px-4 py-2 rounded-none bg-primary text-primary-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
                             Save Changes
                         </button>
                     </div>
@@ -167,11 +168,11 @@ const toggleCollapse = () => {
         <div class="w-full shrink-0 mt-auto pt-2 pb-4 px-2 border-t border-sidebar-border flex flex-col gap-2">
             <div class="w-full flex items-center gap-2"
                 :class="[isCollapsed ? 'flex-col justify-center' : 'justify-between']">
-                
-                <Link :href="profileEdit().url" class="flex items-center gap-3 p-2 rounded-xl hover:bg-sidebar-accent cursor-pointer transition-colors flex-1 min-w-0"
+
+                <button @click="showSettingsModal = true" class="flex items-center gap-3 p-2 rounded-none hover:bg-sidebar-accent cursor-pointer transition-colors flex-1 min-w-0 text-left"
                     :class="[isCollapsed ? 'justify-center w-full' : '']">
                     <div
-                        class="size-8 rounded-full bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
+                        class="size-8 rounded-none bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
                         <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
@@ -179,9 +180,9 @@ const toggleCollapse = () => {
                         <span class="text-sm font-medium truncate text-sidebar-foreground">{{ user?.name }}</span>
                         <span class="text-xs text-muted-foreground truncate">{{ user?.email }}</span>
                     </div>
-                </Link>
+                </button>
 
-                <button @click.stop="toggleCollapse" class="p-2 rounded-xl hover:bg-sidebar-accent text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
+                <button @click.stop="toggleCollapse" class="p-2 rounded-none hover:bg-sidebar-accent text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
                     :class="[isCollapsed ? 'w-full flex justify-center' : '']">
                     <i-solar-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
                     <i-solar-alt-arrow-left-linear v-else class="text-xl" />
