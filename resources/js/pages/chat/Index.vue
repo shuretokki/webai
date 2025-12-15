@@ -375,15 +375,36 @@ onUnmounted(() => {
                     ref="container">
                     <div class="w-full max-w-3xl flex flex-col gap-4 py-4">
                         <div v-if="uiMessages.length === 0"
-                            class="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-                            <div class="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                                <i-solar-stars-minimalistic-linear class="text-3xl text-primary" />
+                            class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full">
+                            <div class="mb-8 relative">
+                                <div class="absolute -inset-1 rounded-full bg-primary/20 blur-xl"></div>
+                                <div
+                                    class="relative size-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center">
+                                    <i-solar-stars-minimalistic-linear class="text-3xl text-primary" />
+                                </div>
                             </div>
-                            <h2 class="text-2xl font-space font-medium text-foreground mb-2">How can I help you today?
+
+                            <h2 class="text-3xl md:text-4xl font-space font-bold text-foreground mb-3 tracking-tight">
+                                Welcome to Ecnelis
                             </h2>
-                            <p class="text-sm text-muted-foreground font-space max-w-md">
-                                I can help you write code, analyze data, or even just chat.
+                            <p class="text-base text-muted-foreground font-space max-w-md mb-12">
+                                I'm your AI assistant. I can help you write code, analyze data, or bring your creative
+                                ideas to life.
                             </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
+                                <button v-for="(suggestion, idx) in [
+                                    { icon: 'i-solar-code-square-linear', text: 'Write a Python script to scrape a website' },
+                                    { icon: 'i-solar-document-text-linear', text: 'Summarize this article for me' },
+                                    { icon: 'i-solar-palette-linear', text: 'Generate creative ideas for a marketing campaign' }
+                                ]" :key="idx" @click="handleSendMessage(suggestion.text)"
+                                    class="p-4 rounded-none border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-left flex flex-col gap-3 group">
+                                    <component :is="suggestion.icon"
+                                        class="text-xl text-primary/80 group-hover:text-primary transition-colors" />
+                                    <span
+                                        class="text-sm font-space text-foreground/80 group-hover:text-foreground">{{ suggestion.text }}</span>
+                                </button>
+                            </div>
                         </div>
 
                         <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
