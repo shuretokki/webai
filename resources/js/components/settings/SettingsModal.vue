@@ -8,11 +8,10 @@ defineProps<{
 }>();
 
 import { useWindowSize } from '@vueuse/core';
-import SettingsContent from './SettingsContent.vue'; // Extracted content component
+import SettingsContent from './SettingsContent.vue';
 
 const emit = defineEmits(['close']);
 
-// Mobile Logic
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value < 768);
 const mobileView = ref<'list' | 'detail'>('list');
@@ -63,9 +62,7 @@ const handleUpgrade = () => {
     <Modal :show="show" :title="mobileTitle" @close="closeModal" max-width="3xl"
         :content-class="isMobile ? 'p-0 h-[80vh]' : 'p-0'" :hide-header="isMobile" @back="handleBack">
 
-        <!-- Desktop Layout -->
         <div class="hidden md:flex h-[450px] overflow-hidden">
-            <!-- Sidebar -->
             <div class="w-1/3 border-r border-border bg-card/30 flex flex-col justify-between py-6">
                 <div class="flex flex-col gap-1 px-3">
                     <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
@@ -75,7 +72,6 @@ const handleUpgrade = () => {
                                 ? 'bg-white/10 text-foreground font-medium'
                                 : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                         ]">
-                        <!-- Active indicator -->
                         <div v-if="activeTab === tab.id" class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"></div>
 
                         <component :is="tab.icon" class="text-lg shrink-0"
@@ -84,7 +80,6 @@ const handleUpgrade = () => {
                     </button>
                 </div>
 
-                <!-- Upgrade Banner -->
                 <div class="px-4 mt-auto pt-4">
                     <div
                         class="p-4 rounded-none border border-border bg-gradient-to-br from-card to-background relative overflow-hidden group hover:border-primary/50 transition-colors">
@@ -104,15 +99,12 @@ const handleUpgrade = () => {
                 </div>
             </div>
 
-            <!-- Content Area (Desktop) -->
             <div class="flex-1 bg-background p-6 overflow-y-auto custom-scrollbar">
                 <SettingsContent :active-tab="activeTab" />
             </div>
         </div>
 
-        <!-- Mobile Layout -->
         <div class="md:hidden flex flex-col h-full bg-background overflow-hidden">
-            <!-- Mobile Header with Back Button -->
             <div class="flex items-center justify-between px-4 py-4 border-b border-border shrink-0">
                 <div class="flex items-center gap-3">
                     <button v-if="mobileView === 'detail'" @click="mobileView = 'list'"
@@ -127,48 +119,13 @@ const handleUpgrade = () => {
                 </div>
             </div>
 
-            <!-- Mobile List View -->
-            <div v-if="mobileView === 'list'" class="flex-1 overflow-y-auto p-4 space-y-6">
-                <!-- User Profile Card -->
-                <div class="flex items-center gap-4 py-2" @click="navigateToTab('account')">
-                    <div
-                        class="size-12 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground overflow-hidden border border-border shrink-0">
-                        <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
-                        <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-space font-medium text-foreground">{{ user?.name }}</h4>
-                        <!-- Mobile email truncate fix -->
-                        <p class="text-xs text-muted-foreground font-space truncate w-40">{{ user?.email }}</p>
-                    </div>
-                    <button
-                        class="px-3 py-1.5 text-xs border border-border rounded-full text-muted-foreground">Manage</button>
-                </div>
-
-                <div class="h-px bg-border w-full"></div>
-
-                <!-- Upgrade Banner Mobile -->
-                <div class="flex items-center justify-between py-2" @click="handleUpgrade">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="size-10 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
-                            <div class="size-6 rounded-full border border-primary bg-primary/20"></div>
-                        </div>
-                        <span class="font-space font-medium text-foreground">Get ECNELIS+</span>
-                    </div>
-                    <button
-                        class="px-4 py-1.5 rounded-full border border-border text-xs text-muted-foreground">Upgrade</button>
-                </div>
-
-                <div class="h-px bg-border w-full"></div>
-
-                <!-- Navigation Links -->
-                <div class="flex flex-col gap-2">
-                    <button v-for="tab in tabs.filter(t => t.id !== 'account')" :key="tab.id"
-                        @click="navigateToTab(tab.id)" class="flex items-center justify-between py-4 text-left group">
+            <div v-if="mobileView === 'list'" class="flex-1 overflow-y-auto p-0">
+                <div class="flex flex-col">
+                    <button v-for="tab in tabs" :key="tab.id" @click="navigateToTab(tab.id)"
+                        class="flex items-center justify-between p-4 border-b border-border text-left group active:bg-white/5 transition-colors">
                         <div class="flex items-center gap-3">
                             <component :is="tab.icon"
-                                class="text-xl text-muted-foreground group-active:text-foreground" />
+                                class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
                             <span class="font-space text-lg text-foreground">{{ tab.label }}</span>
                         </div>
                         <i-solar-alt-arrow-right-linear class="text-xl text-muted-foreground" />
@@ -176,7 +133,6 @@ const handleUpgrade = () => {
                 </div>
             </div>
 
-            <!-- Mobile Detail View -->
             <div v-if="mobileView === 'detail'"
                 class="flex-1 overflow-y-auto p-4 bg-background animate-in slide-in-from-right-10 duration-200">
                 <SettingsContent :active-tab="activeTab" />
