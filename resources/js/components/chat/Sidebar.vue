@@ -69,12 +69,31 @@ const saveTitle = () => {
     });
 };
 
+const showDeleteModal = ref(false);
+const deletingChatId = ref<number | null>(null);
+const isDeleting = ref(false);
+
+const openDeleteModal = (id: number) => {
+    deletingChatId.value = id;
+    showDeleteModal.value = true;
+};
+
+const confirmDelete = () => {
+    if (!deletingChatId.value) return;
+
+    isDeleting.value = true;
+    router.delete(`/chat/${deletingChatId.value}`, {
+        preserveState: true,
+        onFinish: () => {
+            isDeleting.value = false;
+            showDeleteModal.value = false;
+            deletingChatId.value = null;
+        }
+    });
+};
+
 const deleteChat = (id: number) => {
-    if (confirm('Are you sure you want to delete this chat?')) {
-        router.delete(`/chat/${id}`, {
-            preserveState: true,
-        });
-    }
+    openDeleteModal(id);
 }
 
 const emit = defineEmits(['close']);
@@ -118,7 +137,7 @@ defineOptions({
             <i-solar-pen-new-square-linear
                 class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
             <p v-if="!isCollapsed"
-                class="font-space font-normal text-[16px] text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
+                class="font-space font-normal text-base text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
                 New Chat</p>
             </Link>
         </div>
@@ -130,6 +149,24 @@ defineOptions({
         <div v-else class="w-full h-px bg-sidebar-border my-4 mx-0"></div>
 
         <div class="w-full shrink-0 flex flex-col flex-1 gap-1 overflow-y-auto overflow-x-hidden px-4 custom-scrollbar">
+
+            <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm">
+                <div class="flex flex-col gap-4">
+                    <p class="text-sm font-space text-muted-foreground">
+                        Are you sure you want to delete this chat? This action cannot be undone.
+                    </p>
+                    <div class="flex justify-end gap-2">
+                        <button @click="showDeleteModal = false"
+                            class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                            Cancel
+                        </button>
+                        <button @click="confirmDelete" :disabled="isDeleting"
+                            class="px-4 py-2 rounded-none bg-destructive text-destructive-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat(chat.id).url" :preserve-state="false"
                 class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
