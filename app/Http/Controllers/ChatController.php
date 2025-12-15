@@ -119,7 +119,6 @@ class ChatController extends Controller
                         'filename' => $file->getClientOriginalName(),
                     ]
                 );
-                // TODO: Add PDF/Document support if Prism supports it for Gemini
             }
         }
 
@@ -158,13 +157,11 @@ class ChatController extends Controller
             $totalTokens = 0;
 
             if (! $modelConfig['is_free']) {
-                // Demo mode for paid models
                 $fullResponse = "Model usage under progress.\n\n(Simulated response for {$modelConfig['name']})";
                 $inputTokens = 25;
                 $outputTokens = 25;
                 $totalTokens = 50;
 
-                // Simulate streaming delay
                 $words = explode(' ', $fullResponse);
                 foreach ($words as $word) {
                     $text = $word.' ';
@@ -173,7 +170,7 @@ class ChatController extends Controller
                         ob_flush();
                     }
                     flush();
-                    usleep(50000); // 50ms delay
+                    usleep(50000);
                 }
             } else {
                 try {
@@ -213,19 +210,16 @@ class ChatController extends Controller
                         flush();
                     }
 
-                    // Get real token usage from the last chunk
-                    // The last chunk contains usage metadata from the API provider
                     if ($lastChunk && isset($lastChunk->usage)) {
                         $inputTokens = $lastChunk->usage->promptTokens ?? 0;
                         $outputTokens = $lastChunk->usage->completionTokens ?? 0;
                         $totalTokens = $inputTokens + $outputTokens;
                     } else {
-                        // Fallback to estimation if usage data not available
                         $inputTokens = (int) (array_sum(array_map(fn ($msg) => strlen($msg->content ?? ''), $history)) / 4);
                         $outputTokens = (int) (strlen($fullResponse) / 4);
                         $totalTokens = $inputTokens + $outputTokens;
                     }
-                } catch (\Throwable $e) {
+                } catch (\Exception $e) {
                     \Log::error($e);
                     echo 'data: '.json_encode([
                         'error' => $e->getMessage()])."\n\n";
@@ -323,6 +317,7 @@ class ChatController extends Controller
                 'title',
                 'LIKE',
                 "%{$escaped}%")
+            ->whereNull('deleted_at')
             ->limit(5)
             ->get()
             ->map(fn ($chat) => [
@@ -331,8 +326,7 @@ class ChatController extends Controller
                 'title' => $chat->title,
                 'url' => "/chat/{$chat->id}",
                 'subtitle' => $chat
-                    ->created_at
-                    ->diffForHumans(),
+                ->diffForHumans(),
             ]);
 
         $messages = DB::table('messages')
@@ -342,6 +336,7 @@ class ChatController extends Controller
                 '=',
                 'chats.id')
             ->where('chats.user_id', $user->id)
+            ->whereNull('chats.deleted_at')
             ->where(
                 'messages.content',
                 'LIKE',

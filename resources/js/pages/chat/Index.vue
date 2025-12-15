@@ -192,7 +192,6 @@ const handleSendMessage = async (text: string, files?: File[]) => {
                 try {
                     const json = JSON.parse(data);
 
-                    // Handle error response from backend
                     if (json.error) {
                         console.error('Stream error:', json.error);
                         streaming.value += '\n\n⚠️ Error: ' + json.error;
@@ -235,15 +234,13 @@ let echoControl: any = null;
 onMounted(() => {
     scrollToBottom();
 
-    // Only subscribe to Echo if Reverb is configured and chat exists
-    if (props.chatId && import.meta.env.VITE_REVERB_APP_KEY) {
+    if (import.meta.env.VITE_REVERB_APP_KEY && props.chatId) {
         try {
             echoControl = useEcho(
                 `chats.${props.chatId}`,
                 '.message.sent',
                 (event: any) => {
                     if (event.message && event.message.role === 'assistant') {
-                        // Deduplicate: only add if not already present from streaming
                         const isDuplicate = props.messages.some(
                             m => m.role === 'assistant' && m.content === event.message.content
                         );
@@ -298,36 +295,26 @@ onUnmounted(() => {
 
                     <div class="flex items-center gap-3 ml-auto">
                         <div class="relative" ref="menuRef">
-                            <button
-                                @click="isMenuOpen = !isMenuOpen"
+                            <button @click="isMenuOpen = !isMenuOpen"
                                 class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
-                                :class="{ 'bg-white/10 text-white': isMenuOpen }"
-                            >
+                                :class="{ 'bg-white/10 text-white': isMenuOpen }">
                                 <i-solar-menu-dots-linear class="text-xl" />
                             </button>
 
-                            <div
-                                v-if="isMenuOpen"
-                                class="absolute right-0 top-full mt-2 w-48 bg-[#2a2a2a] border border-white/10 rounded-none shadow-xl overflow-hidden z-50 py-1"
-                            >
+                            <div v-if="isMenuOpen"
+                                class="absolute right-0 top-full mt-2 w-48 bg-[#2a2a2a] border border-white/10 rounded-none shadow-xl overflow-hidden z-50 py-1">
                                 <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider">
                                     Chat Options
                                 </div>
-                                <button
-                                    @click="openEditModal"
+                                <button @click="openEditModal"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
-                                    :disabled="!chatId"
-                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
-                                >
+                                    :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
                                     <i-solar-pen-linear class="text-lg" />
                                     <span>Rename Chat</span>
                                 </button>
-                                <button
-                                    @click="deleteChat"
+                                <button @click="deleteChat"
                                     class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
-                                    :disabled="!chatId"
-                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
-                                >
+                                    :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
                                     <i-solar-trash-bin-trash-linear class="text-lg" />
                                     <span>Delete Chat</span>
                                 </button>
@@ -335,31 +322,23 @@ onUnmounted(() => {
                                 <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider">
                                     Export Chat
                                 </div>
-                                <button
-                                    @click="exportChat('pdf')"
+                                <button @click="exportChat('pdf')"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
-                                    :disabled="!chatId"
-                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
-                                >
+                                    :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
                                     <i-solar-file-text-linear class="text-lg" />
                                     <span>Export as PDF</span>
                                 </button>
-                                <button
-                                    @click="exportChat('md')"
+                                <button @click="exportChat('md')"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
-                                    :disabled="!chatId"
-                                    :class="{ 'opacity-50 cursor-not-allowed': !chatId }"
-                                >
+                                    :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
                                     <i-solar-code-square-linear class="text-lg" />
                                     <span>Export as Markdown</span>
                                 </button>
                             </div>
                         </div>
-                        <button
-                            @click="isSearchOpen = true"
+                        <button @click="isSearchOpen = true"
                             class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
-                            title="Search (Cmd/Ctrl+K)"
-                        >
+                            title="Search (Cmd/Ctrl+K)">
                             <i-solar-magnifer-linear class="text-xl" />
                         </button>
                         <Link :href="Chat().url"
@@ -382,8 +361,8 @@ onUnmounted(() => {
                 <div
                     class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
 
-                    <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl" v-model:modelValue="model"
-                        :models="models" :userTier="userTier" :is-streaming="isStreaming" />
+                    <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl"
+                        v-model:modelValue="model" :models="models" :userTier="userTier" :is-streaming="isStreaming" />
                 </div>
             </div>
         </div>

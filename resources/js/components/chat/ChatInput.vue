@@ -35,7 +35,6 @@ const groupedModels = computed(() => {
 });
 
 const selectModel = (model: any) => {
-    // Only allow Gemini 2.5 Flash and Flash Lite
     if (!['gemini-2.5-flash', 'gemini-2.5-flash-lite'].includes(model.id)) {
         showUnderProgressModal.value = true;
         isModelMenuOpen.value = false;
@@ -137,7 +136,8 @@ defineOptions({
                                 class="w-full px-3 py-2 text-left text-sm text-foreground hover:bg-accent/50 rounded-none flex items-center justify-between gap-2 transition-colors group"
                                 :class="{ 'opacity-50': !model.is_free && !['plus', 'enterprise'].includes(userTier || 'free') }">
                                 <div class="flex flex-col min-w-0">
-                                    <span class="truncate" :class="{ 'text-primary': modelValue === model.id }">{{ model.name }}</span>
+                                    <span class="truncate"
+                                        :class="{ 'text-primary': modelValue === model.id }">{{ model.name }}</span>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
                                     <div v-if="!model.is_free && !['plus', 'enterprise'].includes(userTier || 'free')"
@@ -182,7 +182,8 @@ defineOptions({
                     </div>
                 </div>
 
-                <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..." @keydown="handleKeydown"
+                <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..."
+                    @keydown="handleKeydown"
                     class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
             </div>
 
@@ -193,9 +194,12 @@ defineOptions({
                         class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/50 via-transparent to-transparent scale-0 group-hover:scale-150 transition-transform duration-500">
                     </div>
                     <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 Q 50 50 100 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
-                        <path d="M-20 100 Q 50 30 120 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
-                        <path d="M-40 100 Q 50 10 140 100" stroke="currentColor" stroke-width="2" fill="none" opacity="0.2" />
+                        <path d="M0 100 Q 50 50 100 100" stroke="currentColor" stroke-width="2" fill="none"
+                            opacity="0.2" />
+                        <path d="M-20 100 Q 50 30 120 100" stroke="currentColor" stroke-width="2" fill="none"
+                            opacity="0.2" />
+                        <path d="M-40 100 Q 50 10 140 100" stroke="currentColor" stroke-width="2" fill="none"
+                            opacity="0.2" />
                     </svg>
                 </div>
 
