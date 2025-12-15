@@ -21,6 +21,16 @@ const currentModelName = computed(() => {
     return props.models?.find(m => m.id === props.modelValue)?.name || 'Select Model';
 });
 
+const groupedModels = computed(() => {
+    if (!props.models) return {};
+    return props.models.reduce((acc, model) => {
+        const provider = model.provider.charAt(0).toUpperCase() + model.provider.slice(1);
+        if (!acc[provider]) acc[provider] = [];
+        acc[provider].push(model);
+        return acc;
+    }, {} as Record<string, typeof props.models>);
+});
+
 const selectModel = (model: any) => {
     if (!model.is_free && !['pro', 'enterprise'].includes(props.userTier || 'free')) {
         showUpgradeModal.value = true;
@@ -105,23 +115,30 @@ const handleKeydown = (e: KeyboardEvent) => {
             </button>
 
             <div v-if="isModelMenuOpen"
-                class="absolute bottom-full left-0 mb-2 w-64 bg-[#2a2a2a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 py-1">
-                <div class="px-3 py-2 text-xs font-medium text-white/40 uppercase tracking-wider border-b border-white/5">
-                    Select Model
+                class="absolute bottom-full left-0 mb-2 w-[600px] max-h-[400px] overflow-y-auto bg-[#2a2a2a] border border-white/10 rounded-xl shadow-xl z-50 flex flex-col custom-scrollbar">
+                <div class="p-4 grid grid-cols-2 gap-6">
+                    <div v-for="(models, provider) in groupedModels" :key="provider" class="flex flex-col gap-2">
+                        <div class="text-xs font-medium text-white/40 uppercase tracking-wider px-2">
+                            {{ provider }}
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <button v-for="model in models" :key="model.id" @click="selectModel(model)"
+                                class="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/5 rounded-lg flex items-center justify-between gap-2 transition-colors group"
+                                :class="{ 'opacity-50': !model.is_free && !['pro', 'enterprise'].includes(userTier || 'free') }">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="truncate" :class="{ 'text-[#dbf156]': modelValue === model.id }">{{ model.name }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <div v-if="!model.is_free && !['pro', 'enterprise'].includes(userTier || 'free')"
+                                        class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-white/60 group-hover:bg-[#dbf156] group-hover:text-black transition-colors">
+                                        PRO
+                                    </div>
+                                    <i-solar-check-circle-bold v-if="modelValue === model.id" class="text-[#dbf156]" />
+                                </div>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button v-for="model in models" :key="model.id" @click="selectModel(model)"
-                    class="w-full px-4 py-2.5 text-left text-sm text-white hover:bg-white/5 flex items-center justify-between gap-2 transition-colors group"
-                    :class="{ 'opacity-50': !model.is_free && !['pro', 'enterprise'].includes(userTier || 'free') }">
-                    <div class="flex flex-col">
-                        <span :class="{ 'text-[#dbf156]': modelValue === model.id }">{{ model.name }}</span>
-                        <span class="text-[10px] text-white/40">{{ model.provider }}</span>
-                    </div>
-                    <div v-if="!model.is_free && !['pro', 'enterprise'].includes(userTier || 'free')"
-                        class="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-white/60 group-hover:bg-[#dbf156] group-hover:text-black transition-colors">
-                        PRO
-                    </div>
-                    <i-solar-check-circle-bold v-if="modelValue === model.id" class="text-[#dbf156]" />
-                </button>
             </div>
         </div>
 
