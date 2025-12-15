@@ -27,42 +27,48 @@ const sidebarNavItems: NavItem[] = [
         title: 'Appearance',
         href: editAppearance(),
     },
+    {
+        title: 'Billing & Usage',
+        href: '/settings/usage',
+    },
 ];
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
 </script>
 
 <template>
-    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 md:p-8">
-        <div class="w-full max-w-5xl bg-card border border-border rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
-            <aside class="w-full md:w-64 bg-muted/10 border-b md:border-b-0 md:border-r border-border p-6 flex flex-col gap-6">
-                <div>
-                    <h2 class="text-lg font-semibold tracking-tight text-foreground">Settings</h2>
-                    <p class="text-sm text-muted-foreground">Manage your account</p>
-                </div>
+    <div class="min-h-screen bg-background text-foreground font-space">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="mb-10">
+                <h1 class="text-3xl font-normal text-foreground">Account settings</h1>
+            </div>
 
-                <nav class="flex flex-col space-y-1">
-                    <Button
-                        v-for="item in sidebarNavItems"
-                        :key="toUrl(item.href)"
-                        variant="ghost"
-                        :class="[
-                            'w-full justify-start',
+            <div class="flex flex-col md:flex-row gap-8 lg:gap-12">
+                <aside class="w-full md:w-64 shrink-0 border-b border-white/10 md:border-b-0 pb-6 md:pb-0 mb-6 md:mb-0">
+                    <nav
+                        class="flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-2 md:gap-1 pb-2 md:pb-0 scrollbar-hide">
+                        <Link v-for="item in sidebarNavItems" :key="toUrl(item.href)" :href="item.href" :class="[
+                            'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap',
                             urlIsActive(item.href, currentPath)
-                                ? 'bg-muted hover:bg-muted'
-                                : 'hover:bg-transparent hover:underline',
-                        ]"
-                        as-child
-                    >
-                        <Link :href="item.href">
-                            {{ item.title }}
+                                ? 'text-foreground font-bold bg-white/5 md:bg-transparent'
+                                : 'text-muted-foreground hover:text-foreground'
+                        ]">
+                        <span
+                            :class="{ 'opacity-100': urlIsActive(item.href, currentPath), 'opacity-0 group-hover:opacity-50 transition-opacity': !urlIsActive(item.href, currentPath) }"
+                            class="mr-2 text-primary hidden md:inline-block">
+                            <!-- Indicator dot -->
+                            ●
+                        </span>
+                        {{ item.title }}
                         </Link>
-                    </Button>
-                </nav>
-            </aside>
+                    </nav>
+                </aside>
 
-            <div class="flex-1 p-6 md:p-10 overflow-y-auto">
-                <slot />
+                <main class="flex-1 min-w-0">
+                    <div class="max-w-3xl">
+                        <slot />
+                    </div>
+                </main>
             </div>
         </div>
     </div>
