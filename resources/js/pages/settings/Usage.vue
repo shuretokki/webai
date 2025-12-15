@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 interface UsageStats {
@@ -131,9 +132,13 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
-          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          <!-- TODO: Re-enable when Xendit payment integration is implemented -->
+          <!-- <Link
+            href="/subscription"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition inline-block"
+          >
             Upgrade Plan
-          </button>
+          </Link> -->
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
