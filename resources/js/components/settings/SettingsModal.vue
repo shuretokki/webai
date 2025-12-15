@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Modal from '@/components/ui/Modal.vue';
 import { usePage, Link } from '@inertiajs/vue3';
 
@@ -10,64 +10,207 @@ defineProps<{
 const emit = defineEmits(['close']);
 
 const tabs = [
-    { id: 'profile', label: 'Profile', icon: 'i-solar-user-circle-linear' },
-    { id: 'appearance', label: 'Appearance', icon: 'i-solar-palette-linear' },
-    { id: 'usage', label: 'Usage', icon: 'i-solar-chart-square-linear' },
+    { id: 'account', label: 'Account', icon: 'i-solar-user-circle-linear' },
+    { id: 'behavior', label: 'Behavior', icon: 'i-solar-settings-minimalistic-linear' },
+    { id: 'customize', label: 'Customize', icon: 'i-solar-tuning-2-linear' },
+    { id: 'data', label: 'Data Control', icon: 'i-solar-database-linear' },
 ];
 
-const activeTab = ref('profile');
+const activeTab = ref('account');
 const page = usePage();
-const user = page.props.auth.user;
+const user = computed(() => page.props.auth.user);
+
+// Behavior settings
+const settings = ref({
+    autoScroll: true,
+    enableLog: true,
+    errorReporting: true,
+    experimental1: false,
+    experimental2: false,
+    experimental3: false,
+});
+
+// Mock upgrade function
+const handleUpgrade = () => {
+    window.location.href = '/settings/subscription';
+};
+
+const handleDeleteAllChats = () => {
+    if (confirm('Are you sure you want to delete all chats? This action cannot be undone.')) {
+        // Implement delete all
+        console.log('Delete all chats requested');
+    }
+};
 
 </script>
 
 <template>
-    <Modal :show="show" title="Settings" @close="$emit('close')">
-        <div class="flex flex-col h-[400px]">
-            <div class="flex border-b border-border mb-4">
-                <button
-                    v-for="tab in tabs"
-                    :key="tab.id"
-                    @click="activeTab = tab.id"
-                    class="px-4 py-2 text-sm font-space flex items-center gap-2 border-b-2 transition-colors"
-                    :class="[
-                        activeTab === tab.id
-                            ? 'border-primary text-primary'
-                            : 'border-transparent text-muted-foreground hover:text-foreground'
-                    ]"
-                >
-                    <component :is="tab.icon" class="text-lg" />
-                    {{ tab.label }}
-                </button>
+    <Modal :show="show" title="Settings" @close="$emit('close')" max-width="3xl" content-class="p-0">
+        <div class="flex h-[450px] overflow-hidden">
+            <!-- Sidebar -->
+            <div class="w-1/3 border-r border-border bg-card/30 flex flex-col justify-between py-6">
+                <div class="flex flex-col gap-1 px-3">
+                    <button
+                        v-for="tab in tabs"
+                        :key="tab.id"
+                        @click="activeTab = tab.id"
+                        class="px-3 py-2 text-sm font-space flex items-center gap-3 rounded-none transition-all duration-200 group relative"
+                        :class="[
+                            activeTab === tab.id
+                                ? 'bg-white/10 text-foreground font-medium'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                        ]"
+                    >
+                        <!-- Active indicator -->
+                        <div v-if="activeTab === tab.id" class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"></div>
+
+                        <component :is="tab.icon" class="text-lg shrink-0"
+                            :class="activeTab === tab.id ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'" />
+                        {{ tab.label }}
+                    </button>
+                </div>
+
+                <!-- Upgrade Banner -->
+                <div class="px-4 mt-auto pt-4">
+                    <div class="p-4 rounded-none border border-border bg-gradient-to-br from-card to-background relative overflow-hidden group hover:border-primary/50 transition-colors">
+                         <div class="flex items-center gap-3 mb-3">
+                             <div class="size-8 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
+                                 <div class="size-5 rounded-full border border-primary bg-primary/20"></div>
+                             </div>
+                             <span class="font-space font-medium text-sm text-foreground">Get ECNELIS+</span>
+                         </div>
+
+                        <button @click="handleUpgrade" class="w-full text-xs py-1.5 px-3 rounded-full border border-border bg-white/5 hover:bg-white/10 hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground">
+                            Upgrade
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar">
-                <div v-if="activeTab === 'profile'" class="space-y-4">
-                    <div class="flex items-center gap-4">
-                        <div class="size-16 rounded-none bg-muted flex items-center justify-center text-2xl font-bold text-muted-foreground overflow-hidden">
+            <!-- Content Area -->
+            <div class="flex-1 bg-background p-6 overflow-y-auto custom-scrollbar">
+
+                <!-- Account Tab -->
+                <div v-if="activeTab === 'account'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div class="flex items-center p-4 border border-border bg-card/20 rounded-none gap-4">
+                         <div class="size-12 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground overflow-hidden border border-border">
                             <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
                             <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                         </div>
-                        <div>
-                            <h4 class="font-medium text-foreground">{{ user?.name }}</h4>
-                            <p class="text-sm text-muted-foreground">{{ user?.email }}</p>
+                        <div class="flex-1 min-w-0">
+                             <h4 class="font-space font-medium text-foreground truncate">{{ user?.name }}</h4>
+                             <p class="text-xs text-muted-foreground font-space truncate">{{ user?.email }}</p>
                         </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-border">
-                        <Link href="/settings/profile" class="text-sm text-primary hover:underline">
-                            Manage Profile
+                        <Link href="/settings/profile" class="px-3 py-1.5 text-xs border border-border rounded-full hover:bg-white/5 hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground">
+                            Manage
                         </Link>
                     </div>
+
+                    <div class="bg-card/10 border border-border p-6 flex flex-col items-center justify-center gap-3 text-center rounded-none">
+                         <div class="size-12 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10 mb-2">
+                             <div class="size-8 rounded-full border border-primary bg-primary/20"></div>
+                         </div>
+                         <h3 class="font-space text-lg font-medium">Get ECNELIS+</h3>
+                         <p class="text-sm text-muted-foreground max-w-[200px]">Unlock more features and higher limits.</p>
+                         <button @click="handleUpgrade" class="mt-2 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
+                            Upgrade
+                         </button>
+                    </div>
                 </div>
 
-                <div v-if="activeTab === 'appearance'" class="space-y-4">
-                    <p class="text-sm text-muted-foreground">Theme settings coming soon.</p>
+                <!-- Behavior Tab -->
+                <div v-if="activeTab === 'behavior'" class="space-y-1 animate-in fade-in slide-in-from-right-4 duration-300">
+                     <!-- Setting Item -->
+                     <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
+                         <span class="text-sm font-space text-foreground">Enable Auto Scroll</span>
+                         <button
+                            @click="settings.autoScroll = !settings.autoScroll"
+                            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                            :class="settings.autoScroll ? 'bg-primary' : 'bg-input'"
+                         >
+                            <span class="sr-only">Enable Auto Scroll</span>
+                            <span
+                                class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                                :class="settings.autoScroll ? 'translate-x-6' : 'translate-x-1'"
+                            />
+                         </button>
+                     </div>
+
+                     <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
+                         <span class="text-sm font-space text-foreground">Enable Log</span>
+                         <button
+                            @click="settings.enableLog = !settings.enableLog"
+                            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                            :class="settings.enableLog ? 'bg-primary' : 'bg-input'"
+                         >
+                            <span class="sr-only">Enable Log</span>
+                            <span
+                                class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                                :class="settings.enableLog ? 'translate-x-6' : 'translate-x-1'"
+                            />
+                         </button>
+                     </div>
+
+                     <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
+                         <span class="text-sm font-space text-foreground">Enable Error Reporting</span>
+                         <button
+                            @click="settings.errorReporting = !settings.errorReporting"
+                            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                            :class="settings.errorReporting ? 'bg-primary' : 'bg-input'"
+                         >
+                            <span class="sr-only">Enable Error Reporting</span>
+                            <span
+                                class="inline-block size-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                                :class="settings.errorReporting ? 'translate-x-6' : 'translate-x-1'"
+                            />
+                         </button>
+                     </div>
+
+                     <div class="h-px bg-border my-2"></div>
+
+                     <!-- Disabled/Experimental -->
+                      <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
+                         <span class="text-sm font-space text-foreground">Enable #1</span>
+                         <button disabled class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
+                             <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
+                         </button>
+                     </div>
+                      <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
+                         <span class="text-sm font-space text-foreground">Enable #2</span>
+                         <button disabled class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
+                             <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
+                         </button>
+                     </div>
+                      <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none opacity-60">
+                         <span class="text-sm font-space text-foreground">Enable #3</span>
+                         <button disabled class="relative inline-flex h-6 w-11 items-center rounded-full bg-input transition-colors cursor-not-allowed">
+                             <span class="translate-x-1 inline-block size-4 transform rounded-full bg-white/50 shadow-sm"></span>
+                         </button>
+                     </div>
                 </div>
 
-                <div v-if="activeTab === 'usage'" class="space-y-4">
-                    <p class="text-sm text-muted-foreground">Usage statistics coming soon.</p>
+                <!-- Customize Tab (Placeholder) -->
+                <div v-if="activeTab === 'customize'" class="h-full flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-right-4 duration-300">
+                    <i-solar-pallete-2-linear class="text-4xl mb-4 opacity-50" />
+                    <p class="font-space text-sm">Theme customization coming soon</p>
                 </div>
+
+                <!-- Data Control Tab -->
+                 <div v-if="activeTab === 'data'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div class="space-y-1">
+                        <h4 class="font-space text-sm font-medium text-foreground">Sensitive</h4>
+                        <div class="flex items-center justify-between py-4 border-b border-border">
+                            <div class="flex items-center gap-3 text-destructive">
+                                <i-solar-trash-bin-trash-linear class="text-xl" />
+                                <span class="text-sm font-space font-medium">Delete all chats</span>
+                            </div>
+                            <button @click="handleDeleteAllChats" class="px-4 py-1.5 rounded-full border border-destructive/50 text-destructive text-xs hover:bg-destructive/10 transition-colors font-medium">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </Modal>
