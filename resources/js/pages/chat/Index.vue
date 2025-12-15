@@ -296,8 +296,8 @@ onUnmounted(() => {
                     <div class="flex items-center gap-3 ml-auto">
                         <div class="relative" ref="menuRef">
                             <button @click="isMenuOpen = !isMenuOpen"
-                                class="text-white/60 hover:text-white p-2 rounded-none hover:bg-white/10 cursor-pointer transition-colors"
-                                :class="{ 'bg-white/10 text-white': isMenuOpen }">
+                                class="text-white/60 hover:text-white p-2 rounded-none cursor-pointer transition-colors"
+                                :class="{ 'text-white': isMenuOpen }">
                                 <i-solar-menu-dots-linear class="text-xl" />
                             </button>
 
