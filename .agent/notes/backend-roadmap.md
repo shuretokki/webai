@@ -23,6 +23,8 @@
 | **Real Token Tracking**       | ✅ Done | ✅ Tested     | ~50           | `ChatController.php` (Prism API integration) |
 | **Admin Dashboard Widgets**   | ✅ Done | N/A (UI)      | ~450          | Revenue, User Stats, System Usage widgets   |
 | **Stripe Subscriptions**      | ❌ Removed | ✅ 10 tests | ~600          | Blocked: Need Xendit (Indonesia support)   |
+| **Settings Redesign**         | ✅ Done | N/A (UI)      | ~300          | See CHANGELOG.md                           |
+| **Chat Input Polish**         | ✅ Done | N/A (UI)      | ~50           | Disabled during stream, styling fixes      |
 | **Security Audit**            | ✅ Done | ✅ 69 tests   | ~100          | Authorization, validation, rate limiting    |
 
 **Total Backend Code:** ~3,755 lines (cleaned up)

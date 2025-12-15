@@ -9,9 +9,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025-12-15 19:55:00] - Chat Frontend/Backend Alignment Fixes
 
 ### Fixed
-- **File:** `resources/js/pages/chat/Index.vue`
-- **Description:** Fixed SSE stream parsing to be more robust by adding `.trim()` to data extraction and supporting both `[Done]` and `[DONE]` termination signals.
-- **Impact:** Stream parsing is now resilient to whitespace variations and backend format changes.
+- **File:** `resources/js/components/chat/ChatInput.vue`
+- **Description:** Disabled chat input submit button while AI is streaming response.
+- **Impact:** Prevents duplicate message submissions and UI confusion during streaming.
+
+### Added
+- **File:** `resources/js/components/settings/SettingsModal.vue`
+- **Description:** Redesigned Settings Modal with 2-column "Ecnelis" layout (Sidebar + Content), dark theme, and squared corners.
+- **Impact:** Premium, cohesive design aligning with the app's aesthetic.
+
+- **File:** `resources/js/components/settings/SettingsModal.vue`
+- **Description:** Added "Data Usage" link under Data Control section.
+- **Impact:** Users can easily access their usage statistics from settings.
+
+### Fixed
+- **File:** `resources/js/components/settings/SettingsModal.vue`
+- **Description:** Fixed CSS transition warnings ("redundant transition properties") in toggle switches.
+- **Impact:** Clean console output and smoother animations.
+
+- **File:** `resources/js/components/ui/Modal.vue`
+- **Description:** Fixed `props is not defined` reference error.
+- **Impact:** Modals now initialize correctly without runtime errors.
+
+---
+
+## [2025-12-15 19:55:00] - Chat Frontend/Backend Alignment Fixes
 
 - **File:** `resources/js/pages/chat/Index.vue`
 - **Description:** Added error handling for backend error responses in SSE stream. Errors are now displayed directly in chat UI with ⚠️ emoji prefix.

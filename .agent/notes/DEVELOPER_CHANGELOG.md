@@ -6,6 +6,36 @@
 
 ---
 
+## [2025-12-15 22:30:00] - Settings Redesign & UI Polish
+
+### Summary
+Comprehensive redesign of the Settings Modal to match "Ecnelis" design specs (2-column layout, dark theme, squared corners). Fixed critical Vue/CSS issues including `props` reference errors and redundant transition properties. Improved Chat Input UX by disabling submission during streaming.
+
+### Why
+- **User Experience:** Settings modal was basic; needed premium feel.
+- **Usability:** Users could double-submit messages while AI was typing.
+- **Code Quality:** Console was spamming CSS warnings and JS errors.
+
+### Files Changed
+
+#### `resources/js/components/settings/SettingsModal.vue` (REDESIGNED)
+- **Layout:** Conversion to `w-1/3` sidebar + `flex-1` content area.
+- **Style:** Applied `rounded-none`, `bg-card/30`, `font-space`.
+- **Features:** Added Account, Behavior (Toggles), Data Control sections.
+- **Fix:** Removed redundant `transition transition-transform` classes (replaced with `transition-transform`).
+
+#### `resources/js/components/chat/ChatInput.vue` (ENHANCED)
+- **State:** Accepts `:is-streaming` prop.
+- **Logic:** `:disabled="(!input.trim() && attachments.length === 0) || isStreaming"`
+- **Why:** Prevents race conditions during active generation.
+
+#### `resources/js/components/ui/Modal.vue` (FIXED)
+- **Issue:** `defineProps` result wasn't assigned to variable.
+- **Fix:** `const props = defineProps<{ ... }>()`.
+- **Why:** Template was referencing `props.maxWidth` which failed at runtime.
+
+---
+
 ## [2025-12-15 19:55:00] - Chat Frontend/Backend Alignment Fixes
 
 ### Summary
