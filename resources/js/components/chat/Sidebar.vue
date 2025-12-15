@@ -10,6 +10,7 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import SettingsModal from '@/components/settings/SettingsModal.vue';
 import { edit as profileEdit } from '@/routes/profile';
 import { useWindowSize } from '@vueuse/core';
+import { SquarePen, MessageSquare, ChevronRight, ChevronLeft } from 'lucide-vue-next';
 
 const props = defineProps<{
     isOpen?: boolean;
@@ -134,8 +135,8 @@ defineOptions({
             <Link :href="Chat().url"
                 class="w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']">
-            <i-solar-pen-new-square-linear
-                class="text-xl text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
+            <SquarePen
+                class="size-5 text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
             <p v-if="!isCollapsed"
                 class="font-space font-normal text-base text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
                 New Chat</p>
@@ -172,8 +173,8 @@ defineOptions({
                 class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
                 :class="[isCollapsed ? 'justify-left' : '']">
 
-            <i-solar-chat-round-line-linear v-if="isCollapsed"
-                class="text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
+            <MessageSquare v-if="isCollapsed"
+                class="size-5 text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
 
             <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
                 <p
@@ -221,7 +222,7 @@ defineOptions({
                     class="flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors flex-1 min-w-0 text-left group"
                     :class="[isCollapsed ? 'justify-center w-full' : '']">
                     <div
-                        class="size-8 rounded-none bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
+                        class="size-8 rounded-full bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
                         <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
@@ -239,8 +240,8 @@ defineOptions({
                 <button @click.stop="handleSidebarToggle"
                     class="p-2 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
                     :class="[isCollapsed ? 'w-full flex justify-center' : '']">
-                    <i-solar-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
-                    <i-solar-alt-arrow-left-linear v-else class="text-xl" />
+                    <ChevronRight v-if="isCollapsed" class="size-5" />
+                    <ChevronLeft v-else class="size-5" />
                 </button>
             </div>
         </div>
