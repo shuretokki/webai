@@ -15,7 +15,6 @@ class ChatRequest extends FormRequest
             return false;
         }
 
-        // If chat_id provided, verify user owns it
         if ($this->has('chat_id') && $this->input('chat_id')) {
             $chat = \App\Models\Chat::find($this->input('chat_id'));
 
