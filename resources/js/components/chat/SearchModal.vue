@@ -120,7 +120,6 @@ onKeyStroke('Enter', (e) => {
     }
 });
 
-// Highlight matching text
 const highlightMatch = (text: string, query: string): string => {
     if (!query.trim()) return text;
 

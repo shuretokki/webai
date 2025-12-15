@@ -33,39 +33,36 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 </script>
 
 <template>
-    <div class="px-4 py-6">
-        <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
-        />
+    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 md:p-8">
+        <div class="w-full max-w-5xl bg-card border border-border rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+            <aside class="w-full md:w-64 bg-muted/10 border-b md:border-b-0 md:border-r border-border p-6 flex flex-col gap-6">
+                <div>
+                    <h2 class="text-lg font-semibold tracking-tight text-foreground">Settings</h2>
+                    <p class="text-sm text-muted-foreground">Manage your account</p>
+                </div>
 
-        <div class="flex flex-col lg:flex-row lg:space-x-12">
-            <aside class="w-full max-w-xl lg:w-48">
-                <nav class="flex flex-col space-y-1 space-x-0">
+                <nav class="flex flex-col space-y-1">
                     <Button
                         v-for="item in sidebarNavItems"
                         :key="toUrl(item.href)"
                         variant="ghost"
                         :class="[
                             'w-full justify-start',
-                            { 'bg-muted': urlIsActive(item.href, currentPath) },
+                            urlIsActive(item.href, currentPath)
+                                ? 'bg-muted hover:bg-muted'
+                                : 'hover:bg-transparent hover:underline',
                         ]"
                         as-child
                     >
                         <Link :href="item.href">
-                            <component :is="item.icon" class="h-4 w-4" />
                             {{ item.title }}
                         </Link>
                     </Button>
                 </nav>
             </aside>
 
-            <Separator class="my-6 lg:hidden" />
-
-            <div class="flex-1 md:max-w-2xl">
-                <section class="max-w-xl space-y-12">
-                    <slot />
-                </section>
+            <div class="flex-1 p-6 md:p-10 overflow-y-auto">
+                <slot />
             </div>
         </div>
     </div>

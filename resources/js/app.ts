@@ -5,6 +5,14 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
+import { configureEcho } from '@laravel/echo-vue';
+
+// Only configure Echo if Reverb is set up
+if (import.meta.env.VITE_REVERB_APP_KEY) {
+    configureEcho({
+        broadcaster: 'reverb',
+    });
+}
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

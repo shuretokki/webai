@@ -4,15 +4,12 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserUsage>
  */
 class UserUsageFactory extends Factory
 {
-    use HasFactory;
-
     /**
      * Define the model's default state.
      *

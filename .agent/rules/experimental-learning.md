@@ -11,3 +11,4 @@ For demonstrating, we will build a minimal UI (no styling) to interface with the
 You will prioritize showing me the most accurate and efficient way to use with the tools (Boost MCP, etc.), explaining why a specific method is used to maximize workflow speed and reliability.
 
 IMPORTANT: ALWAYS USE laravel-boost mcp for creating an ACCURATE GUIDED LEARNING for me!
+IMPORTANT: ALWAYS GUIDE ME TO USE best practice or modern method over speed and simplicity! 

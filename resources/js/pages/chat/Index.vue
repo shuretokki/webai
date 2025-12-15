@@ -235,30 +235,35 @@ let echoControl: any = null;
 onMounted(() => {
     scrollToBottom();
 
-    if (props.chatId) {
-        echoControl = useEcho(
-            `chats.${props.chatId}`,
-            '.message.sent',
-            (event: any) => {
-                if (event.message && event.message.role === 'assistant') {
-                    // Deduplicate: only add if not already present from streaming
-                    const isDuplicate = props.messages.some(
-                        m => m.role === 'assistant' && m.content === event.message.content
-                    );
+    // Only subscribe to Echo if Reverb is configured and chat exists
+    if (props.chatId && import.meta.env.VITE_REVERB_APP_KEY) {
+        try {
+            echoControl = useEcho(
+                `chats.${props.chatId}`,
+                '.message.sent',
+                (event: any) => {
+                    if (event.message && event.message.role === 'assistant') {
+                        // Deduplicate: only add if not already present from streaming
+                        const isDuplicate = props.messages.some(
+                            m => m.role === 'assistant' && m.content === event.message.content
+                        );
 
-                    if (!isDuplicate) {
-                        props.messages.push({
-                            role: event.message.role,
-                            content: event.message.content,
-                            attachments: []
-                        });
-                        scrollToBottom();
+                        if (!isDuplicate) {
+                            props.messages.push({
+                                role: event.message.role,
+                                content: event.message.content,
+                                attachments: []
+                            });
+                            scrollToBottom();
+                        }
                     }
-                }
-            },
-            [],
-            'private'
-        );
+                },
+                [],
+                'private'
+            );
+        } catch (error) {
+            console.warn('WebSocket connection not available:', error);
+        }
     }
 });
 
