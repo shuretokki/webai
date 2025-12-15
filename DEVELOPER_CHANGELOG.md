@@ -6,6 +6,191 @@
 
 ---
 
+## [2025-12-15 18:00:00] - Admin Panel Enhancements
+
+### Summary
+Built comprehensive admin dashboard widgets for monitoring revenue, user statistics, and system usage. Enhanced the UserResource table with per-user usage metrics.
+
+### Why
+Production SaaS applications need admin visibility into key metrics: revenue trends, user growth, system capacity. Filament widgets provide real-time dashboard stats.
+
+### How
+1. Created three StatsOverview widgets using `php artisan make:filament-widget`
+2. Used Eloquent aggregations (sum, count) to calculate metrics
+3. Added month-over-month trend calculations for revenue
+4. Enhanced UserResource with computed columns using `getStateUsing()`
+
+---
+
+### File: `app/Filament/Widgets/RevenueOverview.php` (NEW)
+
+**Purpose:** Display revenue metrics on admin dashboard
+
+**Implementation:**
+```php
+// Calculate total revenue across all time
+$totalRevenue = UserUsage::sum('cost');
+
+// Current month revenue
+$currentMonthRevenue = UserUsage::whereYear('created_at', now()->year)
+    ->whereMonth('created_at', now()->month)
+    ->sum('cost');
+
+// Last month for comparison
+$lastMonthRevenue = UserUsage::whereYear('created_at', now()->subMonth()->year)
+    ->whereMonth('created_at', now()->subMonth()->month)
+    ->sum('cost');
+
+// Calculate percentage change
+$revenueChange = $lastMonthRevenue > 0 
+    ? (($currentMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 
+    : 0;
+```
+
+**Stats Displayed:**
+- Total Revenue (all time)
+- This Month Revenue (with % change indicator)
+- Total Requests (API call count)
+
+---
+
+### File: `app/Filament/Widgets/UserStatsOverview.php` (NEW)
+
+**Purpose:** Display user growth and subscription metrics
+
+**Implementation:**
+```php
+// Count users by subscription tier
+$totalUsers = User::count();
+$freeUsers = User::where('subscription_tier', 'free')->count();
+$proUsers = User::where('subscription_tier', 'pro')->count();
+$enterpriseUsers = User::where('subscription_tier', 'enterprise')->count();
+
+// New signups this month
+$newUsersThisMonth = User::whereYear('created_at', now()->year)
+    ->whereMonth('created_at', now()->month)
+    ->count();
+```
+
+**Stats Displayed:**
+- Total Users
+- New This Month
+- Subscription Breakdown (Free | Pro | Enterprise)
+
+---
+
+### File: `app/Filament/Widgets/SystemUsageOverview.php` (NEW)
+
+**Purpose:** Display system-wide usage metrics
+
+**Implementation:**
+```php
+// Aggregate usage by type
+$totalMessages = UserUsage::where('type', 'message_sent')->sum('messages');
+$totalTokens = UserUsage::where('type', 'ai_response')->sum('tokens');
+$totalStorage = UserUsage::where('type', 'file_upload')->sum('bytes');
+
+// Format bytes into human-readable units (GB, MB, KB)
+private function formatBytes(int $bytes): string {
+    if ($bytes >= 1073741824) {
+        return number_format($bytes / 1073741824, 2) . ' GB';
+    } elseif ($bytes >= 1048576) {
+        return number_format($bytes / 1048576, 2) . ' MB';
+    } elseif ($bytes >= 1024) {
+        return number_format($bytes / 1024, 2) . ' KB';
+    }
+    return $bytes . ' B';
+}
+```
+
+**Stats Displayed:**
+- Total Messages (with this month count)
+- Total Tokens (AI processing)
+- Storage Used (formatted bytes)
+
+---
+
+### File: `app/Filament/Resources/UserResource.php` (MODIFIED)
+
+**Location:** Table columns definition
+**Purpose:** Show per-user usage stats in the user list
+
+**Added Columns:**
+```php
+Tables\Columns\TextColumn::make('usage_stats.total_messages')
+    ->label('Messages')
+    ->getStateUsing(fn ($record) => $record->usages()->where('type', 'message_sent')->sum('messages'))
+    ->sortable()
+    ->toggleable(),
+
+Tables\Columns\TextColumn::make('usage_stats.total_cost')
+    ->label('Total Cost')
+    ->getStateUsing(fn ($record) => '$' . number_format($record->usages()->sum('cost'), 2))
+    ->sortable()
+    ->toggleable(),
+```
+
+**Technical Notes:**
+- Uses `getStateUsing()` to compute values on-the-fly
+- Leverages existing `usages()` relationship on User model
+- Columns are toggleable to reduce visual clutter
+- Sortable for admin convenience
+
+---
+
+## Feature Completion Status
+
+### Admin Panel Enhancements: ✅ 100% Complete
+
+**Widgets Created:**
+- [x] Revenue Dashboard Widget
+- [x] User Stats Widget
+- [x] System Usage Widget
+
+**Resource Enhancements:**
+- [x] UserResource with usage columns
+
+---
+
+## Testing Instructions
+
+### Manual Testing (Admin Panel)
+1. **Access Admin Panel:** Visit `/admin` and log in as admin user
+2. **Verify Widgets:** Check dashboard shows three widget rows with stats
+3. **Check Revenue:** Ensure revenue numbers match database totals
+4. **Check User Stats:** Verify user counts and subscription breakdown
+5. **Check Usage Stats:** Confirm messages, tokens, and storage display
+6. **User Resource:** Navigate to Users list and toggle usage columns
+
+### Debugging
+- **Widgets not showing?** Check user has `is_admin = true`
+- **Zero values?** Ensure `user_usages` table has data
+- **Performance issues?** Consider adding database indexes on `user_id`, `created_at`, `type`
+
+---
+
+## Dependencies (No Changes)
+All dependencies installed in previous sessions.
+
+---
+
+## Rollback Instructions
+
+If issues occur:
+1. Delete widget files from `app/Filament/Widgets/`
+2. Revert `UserResource.php` to previous version
+3. Widgets will no longer appear on dashboard
+
+---
+
+**Total Files Created:** 3 widgets
+**Total Files Modified:** 1 resource
+**Lines of Code Added:** ~140 lines
+**Backend Status:** ✅ Complete
+**Production Ready:** ✅ Yes
+
+---
+
 ## [2025-12-15 17:15:00] - Real API Token Tracking & Cost Calculation
 
 ### Summary
