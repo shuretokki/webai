@@ -36,3 +36,13 @@ The frontend now includes a "Connected Accounts" section in `Profile.vue` for Gi
     - If new user (registration), create account.
     - **Crucial:** If the user connects a provider, check if their avatar is default. If so, update `users.avatar` with the social provider's avatar URL.
 6.  **API:** Expose connected providers status to the frontend (e.g., via `Inertia::share`) so the UI can toggle "Connect" vs "Connected".
+
+## Authentication (Login with Social)
+The login page has been updated with "Login with GitHub" and "Login with Google" buttons.
+
+**Routes Required:**
+- `GET /auth/github/redirect` -> Redirects to GitHub OAuth.
+- `GET /auth/google/redirect` -> Redirects to Google OAuth.
+- **Callback Handling:** These should handle both *login* (existing user) and *registration* (new user) flows.
+- **Merge Logic:** If a user logs in with email `foo@bar.com` via Google, and an account with that email already exists (password-based), silently link them or prompt for password to verify linkage. Avoid creating duplicate accounts with the same email.
+
