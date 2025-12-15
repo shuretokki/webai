@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 17:15:00] - Real API Token Tracking & Cost Calculation
+
+### Changed
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Upgraded token tracking to use real usage data from AI provider APIs instead of estimations. Now captures both input and output tokens separately from the Prism response object.
+- **Impact:** Cost calculations are now 100% accurate based on actual API usage. Users see real costs from OpenAI, Anthropic, Gemini, etc.
+
+### Why
+- **Accuracy:** Previous implementation estimated tokens using `strlen($text) / 4`, which was approximate.
+- **Real Costs:** AI providers charge different rates for input vs output tokens. We now track both separately.
+- **Production Ready:** Users can trust the cost/usage numbers shown in their dashboard.
+
+### Technical Details
+- Streaming responses: Capture `usage` object from the last chunk (`$lastChunk->usage`)
+- Non-streaming: Use `$response->usage` directly
+- Metadata now includes: `input_tokens`, `output_tokens`, and `response_length`
+- `UserUsage::calculateCost()` already supported this—just needed real data
+
+---
+
 ## [2025-12-15 16:45:00] - Model List Refinement
 
 ### Changed
