@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])
         Route::get('/chat/search', [ChatController::class, 'search'])
             ->name('chat.search');
 
+        Route::get('/chat/{chat}/export/{format?}', [ChatController::class, 'export'])
+            ->name('chat.export')
+            ->where('format', 'pdf|md');
+
         Route::get('/chat/{chat?}', [ChatController::class, 'index'])
             ->name('chat');
     });
