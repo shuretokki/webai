@@ -1,19 +1,22 @@
+```vue
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Motion } from 'motion-v';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router, useForm } from '@inertiajs/vue3';
 import { chat as Chat } from '@/routes/index'
 import Modal from '@/components/ui/Modal.vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import SettingsModal from '@/components/settings/SettingsModal.vue';
 import { edit as profileEdit } from '@/routes/profile';
+import { useWindowSize } from '@vueuse/core';
 
 const props = defineProps<{
     isOpen?: boolean;
     chats: Array<{ id: number, title: string, created_at: string }>;
 }>();
 
+const { width } = useWindowSize(); // Reactive window size
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
@@ -82,6 +85,14 @@ const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value;
 };
 
+const handleSidebarToggle = () => {
+    if (width.value < 768) {
+        emit('close');
+    } else {
+        toggleCollapse();
+    }
+}
+
 defineOptions({
     inheritAttrs: false
 });
@@ -92,7 +103,7 @@ defineOptions({
 
     <Motion v-bind="$attrs"
         class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20"
-        :class="[isCollapsed ? 'items-center' : 'items-start w-[300px]']">
+        :class="[isCollapsed ? 'items-center w-[80px]' : 'items-start w-[300px]']">
         <div class="w-full shrink-0 relative h-[60px] flex items-center"
             :class="[isCollapsed ? 'justify-center' : 'pl-4 pr-4 justify-between']">
             <div class="h-8 flex items-center justify-center text-sidebar-foreground">
@@ -129,7 +140,7 @@ defineOptions({
 
             <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
                 <p
-                    class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap">
+                    class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap block w-full">
                     {{ chat.title || 'Untitled' }}
                 </p>
             </div>
@@ -170,7 +181,7 @@ defineOptions({
                 :class="[isCollapsed ? 'flex-col justify-center' : 'justify-between']">
 
                 <button @click="showSettingsModal = true"
-                    class="flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors flex-1 min-w-0 text-left"
+                    class="flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors flex-1 min-w-0 text-left group"
                     :class="[isCollapsed ? 'justify-center w-full' : '']">
                     <div
                         class="size-8 rounded-none bg-sidebar-primary flex items-center justify-center text-sidebar-primary-foreground font-bold shrink-0 overflow-hidden">
@@ -178,21 +189,17 @@ defineOptions({
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
                     <div v-if="!isCollapsed" class="flex flex-col min-w-0">
-                        <span class="text-sm font-medium truncate text-sidebar-foreground">{{ user?.name }}</span>
-                        <span class="text-xs text-muted-foreground truncate">{{ user?.email }}</span>
+                        <span
+                            class="text-sm font-medium truncate text-sidebar-foreground group-hover:text-white transition-colors">{{
+                                user?.name }}</span>
+                        <span
+                            class="text-xs text-muted-foreground truncate group-hover:text-sidebar-foreground transition-colors">{{
+                                user?.email }}</span>
                     </div>
                 </button>
 
                 <!-- Modified logic: On mobile, arrow key ALWAYS closes the sidebar (emits close) -->
-                <button @click.stop="() => {
-                    // Check if mobile (md:hidden usually implies mobile view logic here,
-                    // but JS check is safer. However, simplified logic:
-                    if (window.innerWidth < 768) {
-                        $emit('close');
-                    } else {
-                        toggleCollapse();
-                    }
-                }"
+                <button @click.stop="handleSidebarToggle"
                     class="p-2 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
                     :class="[isCollapsed ? 'w-full flex justify-center' : '']">
                     <i-solar-alt-arrow-right-linear v-if="isCollapsed" class="text-xl" />
