@@ -14,7 +14,7 @@ class UpdateChatRequest extends FormRequest
         $chat = $this->route('chat');
 
         return $this->user()
-            ->can('update, $chat');
+            ->can('update', $chat);
     }
 
     /**
