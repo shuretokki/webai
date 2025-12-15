@@ -398,7 +398,7 @@ UserUsage::record(
 - Capture created message in `$assistantMessage` variable
 - `event()` helper - Dispatches event to broadcasting system
 - Fully qualified namespace `\App\Events\MessageSent` - Required from within controller
-- Event fires AFTER message is saved but before usage tracking
+- Event fires AFTER message is saved but BEFORE usage tracking
 
 **Impact:** All devices subscribed to `chats.{id}` channel receive instant notification
 
@@ -577,3 +577,68 @@ WebSocket is purely additive - removing it doesn't break existing functionality.
 **Backend Complete:** ✅ Yes
 **Frontend Complete:** ⏳ Partial (Echo configured, listener pending)
 **Production Ready:** ⚠️ Requires .env configuration + Reverb server running
+
+---
+
+## [2025-12-15 15:30:00] - Export Functionality
+
+### Summary
+Implemented chat export functionality allowing users to download conversations as PDF or Markdown files.
+
+### Why
+Users need a way to backup or share their chat history outside the application.
+
+### How
+1. **Backend:** Installed `barryvdh/laravel-dompdf`. Added `export()` method to `ChatController` which either renders a PDF view or streams a Markdown response.
+2. **Frontend:** Replaced the static "menu dots" button in `Index.vue` with a functional dropdown menu containing export options.
+3. **Routing:** Added a new route `GET /chat/{chat}/export/{format}`.
+
+---
+
+### File: `app/Http/Controllers/ChatController.php` (MODIFIED)
+
+**Location:** `export` method
+**Purpose:** Handle export logic
+
+**Implementation:**
+```php
+public function export(Chat $chat, string $format = 'md')
+{
+    $this->authorize('view', $chat);
+
+    if ($format === 'pdf') {
+        $pdf = Pdf::loadView('chat.export', ['chat' => $chat]);
+        return $pdf->download("chat-{$chat->id}.pdf");
+    }
+
+    // Stream Markdown download
+    return response()->streamDownload(function () use ($chat) {
+        // ... generate markdown ...
+    }, "chat-{$chat->id}.md");
+}
+```
+
+---
+
+### File: `resources/views/chat/export.blade.php` (NEW)
+
+**Location:** Entire File
+**Purpose:** HTML template for PDF generation
+**Details:** Uses inline CSS for compatibility with dompdf. Styles messages with distinct colors for User (Blue) and Assistant (Green).
+
+---
+
+### File: `resources/js/pages/chat/Index.vue` (MODIFIED)
+
+**Location:** Header Section
+**Purpose:** Add export UI
+
+**Changes:**
+- Added `isMenuOpen` state and `onClickOutside` handler.
+- Replaced static button with a dropdown menu.
+- Added `exportChat(format)` function that triggers a window location change to download the file.
+
+---
+
+## Dependencies Installed
+- `barryvdh/laravel-dompdf` (v3.1.1) - Wrapper for dompdf to generate PDFs in Laravel.

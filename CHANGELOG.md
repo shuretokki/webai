@@ -403,6 +403,32 @@ Storage costs money. Orphaned files waste space. Users expect deleted data to ev
 
 ---
 
+## [2025-12-15 15:30:00] - Export Functionality
+
+### Added
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Added `export` method to handle PDF and Markdown export requests.
+- **Impact:** Users can now download their chat history.
+
+- **File:** `resources/views/chat/export.blade.php`
+- **Description:** Blade template for PDF generation with styling for user/assistant messages.
+- **Impact:** Provides a clean, readable layout for exported PDFs.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Added a dropdown menu to the chat header with "Export as PDF" and "Export as Markdown" options.
+- **Impact:** UI access to the export feature.
+
+### Changed
+- **File:** `routes/web.php`
+- **Description:** Added `/chat/{chat}/export/{format}` route.
+- **Impact:** Enables the export endpoint.
+
+### Why
+- **User Request:** Users want to save their conversations for offline reference or sharing.
+- **Portability:** Markdown is great for developers; PDF is great for general users.
+
+---
+
 ## Template for Future Entries
 
 ```markdown
