@@ -6,6 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-15 16:00:00] - Multi-Model Support
+
+### Added
+- **File:** `config/ai.php`
+- **Description:** New configuration file for AI model settings.
+- **Impact:** Allows dynamic selection of AI models and pricing.
+
+- **File:** `app/Models/UserUsage.php`
+- **Description:** Updated to calculate costs based on selected AI model.
+- **Impact:** Accurate usage tracking and billing for different AI models.
+
+- **File:** `resources/js/components/chat/ChatInput.vue`
+- **Description:** Added model selector dropdown for choosing AI model.
+- **Impact:** Users can select desired AI model per conversation.
+
+- **File:** `resources/js/components/chat/UpgradePlanModal.vue`
+- **Description:** Modal component prompting users to upgrade plan for restricted models.
+- **Impact:** Guides users to appropriate subscription plans based on model access.
+
+- **File:** `resources/js/pages/chat/Index.vue`
+- **Description:** Integrated model selector and upgrade plan modal.
+- **Impact:** Unified interface for chat and model management.
+
+### Changed
+- **File:** `app/Http/Controllers/ChatController.php`
+- **Description:** Modified to handle multiple AI models for responses.
+- **Impact:** Backend now supports dynamic AI model usage per request.
+
+- **File:** `routes/web.php`
+- **Description:** Updated routes to reflect new model-based architecture.
+- **Impact:** Ensures correct handling of requests for different AI models.
+
+### Why
+- **Feature Request:** Users requested ability to choose between different AI models (e.g., GPT-3.5, GPT-4).
+- **Flexibility:** Different models have different capabilities and costs; users should control this.
+- **Future-Proofing:** Easily add new models or change pricing in the future.
+
+---
+
 ## [2025-12-15 15:15:00] - Frontend Search UI & WebSocket Fixes
 
 ### Added
