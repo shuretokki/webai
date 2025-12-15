@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, computed } from 'vue';
 import { Motion, AnimatePresence } from 'motion-v';
-defineProps<{
+const props = defineProps<{
     show: boolean;
     title?: string;
+    maxWidth?: string;
+    contentClass?: string;
 }>();
+
 const emit = defineEmits(['close']);
 const close = () => emit('close');
 
@@ -13,6 +16,24 @@ const handleKeydown = (e: KeyboardEvent) => {
 };
 onMounted(() => document.addEventListener('keydown', handleKeydown));
 onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
+
+// Compute max-width class
+const maxWidthClass = computed(() => {
+    switch (props.maxWidth) {
+        case 'sm': return 'max-w-sm';
+        case 'md': return 'max-w-md';
+        case 'lg': return 'max-w-lg';
+        case 'xl': return 'max-w-xl';
+        case '2xl': return 'max-w-2xl';
+        case '3xl': return 'max-w-3xl';
+        case '4xl': return 'max-w-4xl';
+        case '5xl': return 'max-w-5xl';
+        case '6xl': return 'max-w-6xl';
+        case '7xl': return 'max-w-7xl';
+        case 'full': return 'max-w-full';
+        default: return 'max-w-md';
+    }
+});
 </script>
 <template>
     <Teleport to="body">
@@ -29,7 +50,8 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
                     :initial="{ opacity: 0, scale: 0.95, y: 10 }"
                     :animate="{ opacity: 1, scale: 1, y: 0 }"
                     :exit="{ opacity: 0, scale: 0.95, y: 10 }"
-                    class="relative w-full max-w-md bg-popover border border-border rounded-none shadow-2xl overflow-hidden"
+                    class="relative w-full bg-popover border border-border rounded-none shadow-2xl overflow-hidden"
+                    :class="maxWidthClass"
                 >
                     <div class="flex items-center justify-between px-6 py-4 border-b border-border">
                         <h3 class="text-lg font-space text-popover-foreground">{{ title }}</h3>
@@ -38,7 +60,7 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown));
                         </button>
                     </div>
 
-                    <div class="p-6">
+                    <div :class="contentClass || 'p-6'">
                         <slot />
                     </div>
                 </Motion>
