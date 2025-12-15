@@ -8,7 +8,8 @@ const { textarea, input } = useTextareaAutosize();
 const props = defineProps<{
     modelValue?: string,
     models?: Array<{ id: string, name: string, is_free: boolean, provider: string }>,
-    userTier?: string
+    userTier?: string,
+    isStreaming?: boolean
 }>();
 
 const emit = defineEmits(['submit', 'update:modelValue']);
@@ -185,7 +186,7 @@ defineOptions({
                     class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
             </div>
 
-            <button type="submit" :disabled="!input.trim() && attachments.length === 0"
+            <button type="submit" :disabled="(!input.trim() && attachments.length === 0) || isStreaming"
                 class="shrink-0 size-[48px] relative flex items-center justify-center rounded-none bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all overflow-hidden group">
                 <div class="absolute inset-0 opacity-30">
                     <div
