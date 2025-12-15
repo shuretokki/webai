@@ -22,7 +22,6 @@ withDefaults(defineProps<Props>(), {
 const page = usePage();
 const user = page.props.auth.user;
 
-
 </script>
 
 <template>
