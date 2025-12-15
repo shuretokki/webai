@@ -26,13 +26,44 @@ const { copy, copied } = useClipboard({ source: props.content });
 
 const reasoning = computed(() => {
     if (!props.content) return null;
-    const match = props.content.match(/<think>([\s\S]*?)<\/think>/);
-    return match ? match[1].trim() : null;
+    const hasStart = props.content.includes('<think>');
+    if (!hasStart) return null;
+
+    // Extract everything after <think>
+    const start = props.content.indexOf('<think>') + 7;
+    const end = props.content.indexOf('</think>');
+
+    if (end !== -1) {
+        // Complete tag match
+        return props.content.slice(start, end).trim();
+    } else {
+        // Incomplete/Streaming: return everything after <think>
+        return props.content.slice(start).trim();
+    }
 });
 
 const cleanContent = computed(() => {
     if (!props.content) return '';
-    return props.content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+
+    // Remove <think> and everything after it if no closing tag (streaming reasoning)
+    // Or remove the full block if closing tag exists
+
+    if (props.content.includes('<think>')) {
+        const startIdx = props.content.indexOf('<think>');
+        const endIdx = props.content.indexOf('</think>');
+
+        if (endIdx !== -1) {
+            // Block exists, remove it
+            const pre = props.content.slice(0, startIdx);
+            const post = props.content.slice(endIdx + 8);
+            return (pre + post).trim();
+        } else {
+            // Streaming reasoning, hide it all from main content
+            return props.content.slice(0, startIdx).trim();
+        }
+    }
+
+    return props.content.trim();
 });
 
 </script>
@@ -59,7 +90,7 @@ const cleanContent = computed(() => {
                     <summary
                         class="cursor-pointer list-none flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-white/5 transition-colors w-fit">
                         <i-solar-stars-minimalistic-linear class="text-muted-foreground text-sm" />
-                        <span class="text-xs text-muted-foreground font-space select-none">Reasoning chain</span>
+                        <span class="text-xs text-muted-foreground font-space select-none">Thinking</span>
                         <i-solar-alt-arrow-down-linear
                             class="text-xs text-muted-foreground group-open:rotate-180 transition-transform" />
                     </summary>
