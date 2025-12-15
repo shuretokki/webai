@@ -9,6 +9,10 @@ import Modal from '@/components/ui/Modal.vue';
 import { chat as Chat } from '@/routes/index'
 import { useEcho } from '@laravel/echo-vue'
 import { usePage } from '@inertiajs/vue3';
+import {
+    Menu, MoreVertical, Pen, Trash2, FileText, Code, Search,
+    SquarePen, Sparkles, Palette
+} from 'lucide-vue-next';
 
 const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>,
@@ -313,7 +317,7 @@ onUnmounted(() => {
 
                 <div class="w-full shrink-0 relative h-[60px] flex items-center justify-between px-4 md:px-6 py-0 z-10">
                     <button @click="toggleSidebar" class="md:hidden text-foreground p-2 rounded-none transition-colors">
-                        <i-solar-hamburger-menu-linear class="text-2xl" />
+                        <Menu class="size-6" />
                     </button>
 
                     <div class="flex items-center gap-3 ml-auto">
@@ -321,7 +325,7 @@ onUnmounted(() => {
                             <button @click="isMenuOpen = !isMenuOpen"
                                 class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors"
                                 :class="{ 'text-white': isMenuOpen }">
-                                <i-solar-menu-dots-linear class="text-xl" />
+                                <MoreVertical class="size-5" />
                             </button>
 
                             <div v-if="isMenuOpen"
@@ -332,13 +336,13 @@ onUnmounted(() => {
                                 <button @click="openEditModal"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
                                     :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
-                                    <i-solar-pen-linear class="text-lg" />
+                                    <Pen class="size-4" />
                                     <span>Rename Chat</span>
                                 </button>
                                 <button @click="deleteChat"
                                     class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
                                     :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
-                                    <i-solar-trash-bin-trash-linear class="text-lg" />
+                                    <Trash2 class="size-4" />
                                     <span>Delete Chat</span>
                                 </button>
                                 <div class="h-px bg-white/10 my-1"></div>
@@ -348,13 +352,13 @@ onUnmounted(() => {
                                 <button @click="exportChat('pdf')"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
                                     :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
-                                    <i-solar-file-text-linear class="text-lg" />
+                                    <FileText class="size-4" />
                                     <span>Export as PDF</span>
                                 </button>
                                 <button @click="exportChat('md')"
                                     class="w-full px-4 py-2 text-left text-sm text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
                                     :disabled="!chatId" :class="{ 'opacity-50 cursor-not-allowed': !chatId }">
-                                    <i-solar-code-square-linear class="text-lg" />
+                                    <Code class="size-4" />
                                     <span>Export as Markdown</span>
                                 </button>
                             </div>
@@ -362,11 +366,11 @@ onUnmounted(() => {
                         <button @click="isSearchOpen = true"
                             class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors"
                             title="Search (Cmd/Ctrl+K)">
-                            <i-solar-magnifer-linear class="text-xl" />
+                            <Search class="size-5" />
                         </button>
                         <Link :href="Chat().url"
                             class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors">
-                        <i-solar-pen-new-square-linear class="text-xl" />
+                        <SquarePen class="size-5" />
                         </Link>
                     </div>
                 </div>
@@ -380,7 +384,7 @@ onUnmounted(() => {
                                 <div class="absolute -inset-1 rounded-full bg-primary/20 blur-xl"></div>
                                 <div
                                     class="relative size-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center">
-                                    <i-solar-stars-minimalistic-linear class="text-3xl text-primary" />
+                                    <Sparkles class="size-8 text-primary" />
                                 </div>
                             </div>
 
@@ -394,13 +398,13 @@ onUnmounted(() => {
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
                                 <button v-for="(suggestion, idx) in [
-                                    { icon: 'i-solar-code-square-linear', text: 'Write a Python script to scrape a website' },
-                                    { icon: 'i-solar-document-text-linear', text: 'Summarize this article for me' },
-                                    { icon: 'i-solar-palette-linear', text: 'Generate creative ideas for a marketing campaign' }
+                                    { icon: Code, text: 'Write a Python script to scrape a website' },
+                                    { icon: FileText, text: 'Summarize this article for me' },
+                                    { icon: Palette, text: 'Generate creative ideas for a marketing campaign' }
                                 ]" :key="idx" @click="handleSendMessage(suggestion.text)"
                                     class="p-4 rounded-none border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-left flex flex-col gap-3 group">
                                     <component :is="suggestion.icon"
-                                        class="text-xl text-primary/80 group-hover:text-primary transition-colors" />
+                                        class="size-6 text-primary/80 group-hover:text-primary transition-colors" />
                                     <span
                                         class="text-sm font-space text-foreground/80 group-hover:text-foreground">{{ suggestion.text }}</span>
                                 </button>
