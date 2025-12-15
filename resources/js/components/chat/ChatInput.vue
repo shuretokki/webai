@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useTextareaAutosize, onClickOutside } from '@vueuse/core';
 import { ref, computed } from 'vue';
+import { Paperclip, FileText, X, Sparkles, ChevronDown, Check, ArrowRight } from 'lucide-vue-next';
 import UpgradeModal from '@/components/chat/UpgradeModal.vue';
 import UnderProgressModal from '@/components/chat/UnderProgressModal.vue';
 
@@ -119,7 +120,7 @@ defineOptions({
             class="w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50">
             <button type="button" @click="triggerFileInput"
                 class="shrink-0 p-3 text-muted-foreground hover:text-primary cursor-pointer transition-colors rounded-none h-[48px] w-[48px] flex items-center justify-center">
-                <i-solar-paperclip-linear class="text-xl" />
+                <Paperclip class="size-5" />
             </button>
 
             <div class="flex-1 min-w-0 py-3 flex flex-col gap-3">
@@ -133,13 +134,13 @@ defineOptions({
                         <!-- File Icon -->
                         <div v-else
                             class="h-16 w-16 rounded-none border border-border bg-muted flex items-center justify-center">
-                            <i-solar-file-text-linear class="text-2xl text-muted-foreground" />
+                            <FileText class="size-6 text-muted-foreground" />
                         </div>
 
                         <!-- Remove Button -->
                         <button type="button" @click="removeAttachment(index)"
                             class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 border border-border opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i-solar-close-circle-bold class="text-lg" />
+                            <X class="size-3" />
                         </button>
                     </div>
                 </div>
@@ -153,9 +154,9 @@ defineOptions({
             <div class="relative shrink-0 mb-2" ref="modelMenuRef" v-if="models && models.length > 0">
                 <button type="button" @click="isModelMenuOpen = !isModelMenuOpen"
                     class="flex items-center gap-2 px-2 py-1.5 bg-transparent rounded-none text-xs text-muted-foreground hover:text-foreground transition-all">
-                    <i-solar-stars-minimalistic-linear class="text-sm" />
+                    <Sparkles class="size-3.5" />
                     <span class="hidden sm:inline">{{ currentModelName }}</span>
-                    <i-solar-alt-arrow-down-linear class="text-[10px]" />
+                    <ChevronDown class="size-3" />
                 </button>
 
                 <div v-if="isModelMenuOpen"
@@ -178,8 +179,7 @@ defineOptions({
                                             class="px-1.5 py-0.5 bg-muted rounded-none text-[10px] text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                             PRO
                                         </div>
-                                        <i-solar-check-circle-bold v-if="modelValue === model.id"
-                                            class="text-primary" />
+                                        <Check v-if="modelValue === model.id" class="size-4 text-primary" />
                                     </div>
                                 </button>
                             </div>
@@ -204,7 +204,7 @@ defineOptions({
                     </svg>
                 </div>
 
-                <i-solar-arrow-right-linear class="text-2xl relative z-10" />
+                <ArrowRight class="size-6 relative z-10" />
             </button>
         </form>
     </div>
