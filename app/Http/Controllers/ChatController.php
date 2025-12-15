@@ -173,13 +173,16 @@ class ChatController extends Controller
                 }
             } catch (\Throwable $e) {
                 \Log::error($e);
-                echo 'data: '.json_encode(['error' => $e->getMessage()])."\n\n";
+                echo 'data: '.json_encode([
+                    'error' => $e->getMessage()])."\n\n";
             }
 
-            $chat->messages()->create([
+            $assistantMessage = $chat->messages()->create([
                 'role' => 'assistant',
                 'content' => $fullResponse,
             ]);
+
+            event(new \App\Events\MessageSent($chat, $assistantMessage));
 
             UserUsage::record(
                 userId: $user->id,
@@ -192,7 +195,8 @@ class ChatController extends Controller
                 ]
             );
 
-            if ($chat->title === 'New Chat' || $chat->messages->count() <= 2) {
+            if ($chat->title === 'New Chat'
+                || $chat->messages->count() <= 2) {
                 \App\Jobs\GenerateChatTitle::dispatch($chat);
             }
 
@@ -209,10 +213,10 @@ class ChatController extends Controller
         ]);
     }
 
-    public function update(UpdateChatRequest $rawRequest, Chat $chat)
+    public function update(UpdateChatRequest $request, Chat $chat)
     {
         $chat->update([
-            'title' => $rawRequest
+            'title' => $request
                 ->validated()
                 ->input('title')]);
 
