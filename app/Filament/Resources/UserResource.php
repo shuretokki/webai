@@ -78,6 +78,18 @@ class UserResource extends Resource
                     ->boolean()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('usage_stats.total_messages')
+                    ->label('Messages')
+                    ->getStateUsing(fn ($record) => $record->usages()->where('type', 'message_sent')->sum('messages'))
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('usage_stats.total_cost')
+                    ->label('Total Cost')
+                    ->getStateUsing(fn ($record) => '$' . number_format($record->usages()->sum('cost'), 2))
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
