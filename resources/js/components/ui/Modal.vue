@@ -38,7 +38,7 @@ const maxWidthClass = computed(() => {
 
 const containerClasses = computed(() => {
     if (props.align === 'bottom') {
-        return 'items-end justify-center sm:items-center px-0 sm:px-4';
+        return 'items-end justify-center px-0';
     }
     return 'items-center justify-center px-4';
 });
@@ -69,7 +69,7 @@ const motionExit = computed(() => {
                     class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="close" />
                 <Motion :initial="motionInitial" :animate="motionAnimate" :exit="motionExit"
                     class="relative w-full bg-popover border border-border rounded-none shadow-2xl overflow-hidden"
-                    :class="[maxWidthClass, align === 'bottom' ? 'rounded-t-xl border-b-0' : '']">
+                    :class="[maxWidthClass, align === 'bottom' ? 'border-b-0' : '']">
                     <div v-if="!hideHeader" class="flex items-center justify-between px-6 py-4 border-b border-border">
                         <h3 class="text-lg font-space text-popover-foreground">{{ title }}</h3>
                         <button @click="close" class="text-muted-foreground hover:text-foreground transition-colors">
