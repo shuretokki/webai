@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Impact:** improves user onboarding and empty state aesthetics.
 
 - **File:** `resources/js/components/chat/Message.vue`
-- **Description:** Added support for "Reasoning Mode" (for Gemini 2.5 Flash). Automatically parses `<think>` tags and displays the reasoning process in a collapsible accordion details element.
+- **Description:** Added support for "Reasoning Mode" (for Gemini 2.5 Flash). Automatically parses `<think>` tags and displays the reasoning process in a collapsible accordion details element. Note: Used `i-solar-brain-linear` for the icon.
 - **Impact:** Cleaner chat interface by separating intermediate reasoning thoughts from the final answer.
 
 ### Changed

@@ -30,7 +30,7 @@ Reverted the delete modal to the standard centered style to align with other mod
 #### `resources/js/components/chat/Message.vue` (ENHANCED)
 - **Feature:** Reasoning Accordion.
 - **Logic:** content parsing for `<think>...</think>` tags.
-- **UI:** `<details>` element with distinct styling for the thought process.
+- **UI:** `<details>` element with distinct styling for the thought process. Icon used is `i-solar-brain-linear`.
 - **Impact:** Separates the "Reasoning chain" from the final markdown response.
 
 ### Code Snippet (Message Parsing)
