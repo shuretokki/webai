@@ -10,8 +10,8 @@ Route::get('/', fn () => Inertia::render('Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
 ]))->name('home');
 
-Route::inertia('dashboard', 'Dashboard')
-    ->name('dashboard')
+Route::inertia('explore', 'Explore')
+    ->name('explore')
     ->middleware(['auth', 'verified']);
 
 Route::inertia('/settings/usage', 'settings/Usage')
@@ -29,6 +29,15 @@ Route::inertia('/docs', 'Docs')
 
 Route::inertia('/blog', 'Blog')
     ->name('blog');
+
+Route::inertia('/changelog', 'Changelog')
+    ->name('changelog');
+
+Route::inertia('/contact', 'Contact')
+    ->name('contact');
+
+Route::inertia('/community', 'Community')
+    ->name('community');
 
 Route::middleware(['auth', 'verified'])
     ->prefix('api')
