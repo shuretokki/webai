@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
         'subscription_tier',
         'is_admin',
     ];
@@ -57,6 +58,14 @@ class User extends Authenticatable
     public function usages(): HasMany
     {
         return $this->hasMany(UserUsage::class);
+    }
+
+    /**
+     * @return HasMany<SocialIdentity, User>
+     */
+    public function socialIdentities(): HasMany
+    {
+        return $this->hasMany(SocialIdentity::class);
     }
 
     /**
