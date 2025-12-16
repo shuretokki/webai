@@ -156,11 +156,11 @@ const staggerContainer = {
 
         <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
             <div class="absolute inset-0 z-0" :style="{ transform: `translateY(${y * 0.5}px)` }">
-                <div class="absolute inset-0 bg-black/60 z-10 w-full h-[120%]"></div>
+                <div class="absolute inset-0 bg-black/70 z-10 w-full h-[100%]"></div>
                 <img src="/images/heroSection.jpg" alt="Foggy Mountain"
                     class="w-full h-[120%] object-cover object-center opacity-80" />
                 <div
-                    class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
+                    class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
                 </div>
             </div>
 
