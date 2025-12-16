@@ -272,9 +272,8 @@ class ChatController extends Controller
     public function update(UpdateChatRequest $request, Chat $chat)
     {
         $chat->update([
-            'title' => $request
-                ->validated()
-                ->input('title')]);
+            'title' => $request->validated()['title']
+        ]);
 
         return back();
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\UsageController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -48,6 +49,13 @@ Route::inertia('/terms', 'Terms')
 
 Route::inertia('/privacy', 'Privacy')
     ->name('privacy');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->middleware('auth')->name('logout');
 
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
     ->name('social.redirect')
