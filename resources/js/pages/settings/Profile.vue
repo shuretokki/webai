@@ -88,7 +88,7 @@ const handleAvatarChange = (event: Event) => {
                     <h3 class="text-2xl font-normal text-foreground mb-2">My Profile</h3>
                     <p class="text-muted-foreground mb-6">Manage your public profile details.</p>
 
-                    <Form v-bind="ProfileController.update.form()" class="max-w-xl"
+                    <Form v-bind="ProfileController.update.form()" class="w-full"
                         v-slot="{ errors, processing, recentlySuccessful }">
                         <div class="grid gap-4">
                             <div class="grid gap-2">
@@ -114,7 +114,7 @@ const handleAvatarChange = (event: Event) => {
                     <p class="text-muted-foreground mb-6">Set or update the email address where you will receive
                         notifications.</p>
 
-                    <Form v-bind="ProfileController.update.form()" class="max-w-xl"
+                    <Form v-bind="ProfileController.update.form()" class="w-full"
                         v-slot="{ errors, processing, recentlySuccessful }">
                         <div class="grid gap-2">
                             <Label for="email" class="text-base font-medium">Email address</Label>
@@ -158,7 +158,7 @@ const handleAvatarChange = (event: Event) => {
                     <h3 class="text-2xl font-normal text-foreground mb-2">Connected Accounts</h3>
                     <p class="text-muted-foreground mb-6">Connect your social accounts to sign in faster.</p>
 
-                    <div class="space-y-4 max-w-xl">
+                    <div class="space-y-4 w-full">
                         <!-- GitHub -->
                         <div class="flex items-center justify-between p-4 border border-border bg-card/10 rounded-sm">
                             <div class="flex items-center gap-4">
