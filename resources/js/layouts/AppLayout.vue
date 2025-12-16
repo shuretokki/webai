@@ -57,6 +57,11 @@ const logout = () => {
                             :class="{ 'text-white': $page.url.startsWith('/chat') }">
                         Chat
                         </Link>
+                        <Link href="/enterprise"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors"
+                            :class="{ 'text-white': $page.url === '/enterprise' }">
+                        Enterprise
+                        </Link>
                         <Link href="/docs" target="_blank"
                             class="text-sm font-medium text-white/60 hover:text-white transition-colors">
                         Docs
@@ -69,9 +74,13 @@ const logout = () => {
                             class="text-sm font-medium text-white/60 hover:text-white transition-colors">
                         About
                         </Link>
-                        <Link href="/#pricing"
+                        <Link href="/?section=pricing"
                             class="text-sm font-medium text-white/60 hover:text-white transition-colors">
                         Pricing
+                        </Link>
+                        <Link href="/enterprise"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        Enterprise
                         </Link>
                         <Link href="/blog" class="text-sm font-medium text-white/60 hover:text-white transition-colors">
                         Blog
@@ -146,6 +155,8 @@ const logout = () => {
                 <Link href="/explore" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Explore
                 </Link>
                 <Link href="/chat" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Chat</Link>
+                <Link href="/enterprise" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">
+                Enterprise</Link>
                 <Link href="/docs" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Docs</Link>
                 <button @click="logout" class="text-lg font-medium text-red-400 py-2 text-left">Log out</button>
             </nav>

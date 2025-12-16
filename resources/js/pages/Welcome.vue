@@ -157,8 +157,8 @@ const staggerContainer = {
         <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
             <div class="absolute inset-0 z-0" :style="{ transform: `translateY(${y * 0.5}px)` }">
                 <div class="absolute inset-0 bg-black/60 z-10 w-full h-[120%]"></div>
-                <img src="https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=2874&auto=format&fit=crop"
-                    alt="Foggy Mountain" class="w-full h-[120%] object-cover object-center opacity-80" />
+                <img src="/images/heroSection.jpg" alt="Foggy Mountain"
+                    class="w-full h-[120%] object-cover object-center opacity-80" />
                 <div
                     class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
                 </div>
@@ -224,7 +224,7 @@ const staggerContainer = {
                         <div class="group">
                             <div
                                 class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5 hover:border-white/10 transition-colors">
-                                <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2874&auto=format&fit=crop"
+                                <img src="/images/featureTime.jpg"
                                     class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale mix-blend-screen"
                                     alt="Time Unfolded" />
                                 <div class="absolute inset-0 flex items-center justify-center p-8">
@@ -254,7 +254,7 @@ const staggerContainer = {
                         <div class="group">
                             <div
                                 class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5 hover:border-white/10 transition-colors">
-                                <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2960&auto=format&fit=crop"
+                                <img src="/images/featureWords.jpg"
                                     class="absolute inset-0 w-full h-full object-cover opacity-30 grayscale mix-blend-screen"
                                     alt="Words That Flow" />
                                 <div class="absolute inset-0 flex items-center justify-center p-8">
@@ -277,7 +277,7 @@ const staggerContainer = {
                         <div class="group">
                             <div
                                 class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5 hover:border-white/10 transition-colors">
-                                <img src="https://images.unsplash.com/photo-1548502499-ef268e8a259ea?q=80&w=2968&auto=format&fit=crop"
+                                <img src="/images/featureGuide.jpg"
                                     class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale mix-blend-screen"
                                     alt="Silent Guide" />
                                 <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8">
@@ -431,8 +431,8 @@ const staggerContainer = {
 
             <section class="relative h-[600px] flex items-center mb-10 mx-6 rounded-sm overflow-hidden">
                 <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
-                <img src="https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=2874&auto=format&fit=crop"
-                    alt="Pre footer bg" class="absolute inset-0 w-full h-full object-cover object-center" />
+                <img src="/images/preFooter.jpg" alt="Pre footer bg"
+                    class="absolute inset-0 w-full h-full object-cover object-center" />
 
                 <div class="relative z-20 max-w-[1400px] mx-auto px-12 md:px-20 w-full">
                     <h2 class="text-4xl md:text-6xl font-light text-white mb-6 max-w-2xl leading-tight">
