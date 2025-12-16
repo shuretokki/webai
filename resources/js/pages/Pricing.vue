@@ -2,8 +2,8 @@
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Button } from '@/components/ui/button';
-import { Check, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Check } from 'lucide-vue-next';
+import { Motion } from 'motion-v';
 
 const plans = [
   {
@@ -17,16 +17,16 @@ const plans = [
       'Community support',
       'Standard processing speed'
     ],
-    cta: 'Active Plan',
-    current: true,
-    disabled: true,
+    cta: 'Start Building',
+    href: '/explore',
+    comingSoon: false,
     highlight: false
   },
   {
     name: 'ECNELIS+',
     price: '$20',
     period: '/mo',
-    description: 'For power users who need more',
+    description: 'For power users who need more available resources.',
     features: [
       'Access to premium models',
       'Unlimited messages',
@@ -35,15 +35,15 @@ const plans = [
       'Early access to new features'
     ],
     cta: 'Join Waitlist',
-    current: false,
-    disabled: false,
+    href: '#',
+    comingSoon: true,
     highlight: true
   },
   {
     name: 'ENTERPRISE',
     price: 'Custom',
     period: '',
-    description: 'For organizations with custom needs',
+    description: 'For organizations with custom needs to scale.',
     features: [
       'Custom model fine-tuning',
       'Dedicated support manager',
@@ -52,86 +52,159 @@ const plans = [
       'Usage analytics dashboard'
     ],
     cta: 'Contact Sales',
-    current: false,
-    disabled: false,
+    href: '/contact',
+    comingSoon: true,
     highlight: false
   }
 ];
 
-const showWaitlistToast = ref(false);
-const toastMessage = ref('');
-
-/**
- * TODO: Change into email verified subscribe.
- * @param plan
- */
-const handlePlanClick = (plan: any) => {
-  if (plan.current) return;
-
-  toastMessage.value = `You've been added to the waitlist for ${plan.name}!`;
-  showWaitlistToast.value = true;
-  setTimeout(() => {
-    showWaitlistToast.value = false;
-  }, 3000);
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
 };
 
+const item: any = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
 </script>
 
 <template>
   <AppLayout>
-    <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div class="text-center mb-16">
-        <h1 class="text-4xl font-space font-bold text-foreground mb-4">Simple, Transparent Pricing</h1>
-        <p class="text-xl text-muted-foreground font-space max-w-2xl mx-auto">
-          Choose the plan that's right for you. No hidden fees.
-        </p>
+    <div class="min-h-screen bg-white dark:bg-black font-sans py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+
+      <!-- Background Noise -->
+      <div class="absolute inset-0 z-0 pointer-events-none">
+        <div
+          class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] dark:opacity-20">
+        </div>
+        <!-- Animated Tech Lines -->
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent animate-scan-y">
+        </div>
+        <div
+          class="absolute top-0 right-0 w-[1px] h-full bg-gradient-to-b from-transparent via-black/10 dark:via-white/10 to-transparent animate-scan-x delay-1000">
+        </div>
+        <div
+          class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent animate-scan-y delay-500">
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div v-for="plan in plans" :key="plan.name"
-          class="relative flex flex-col p-8 rounded-none border transition-all duration-300 bg-background/50 backdrop-blur-sm"
-          :class="[
-            plan.highlight ? 'border-primary ring-1 ring-primary shadow-lg shadow-primary/10' : 'border-white/10 hover:border-white/20'
-          ]">
+      <Motion initial="hidden" animate="show" :variants="container" class="max-w-7xl mx-auto relative z-10">
+        <div class="text-left mb-24">
+          <Motion :variants="item">
+            <h1 class="text-5xl md:text-6xl font-bold text-black dark:text-white mb-6 tracking-tight">Simple,
+              Transparent Pricing</h1>
+          </Motion>
+          <Motion :variants="item">
+            <p class="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl">
+              Choose the plan that's right for you. No hidden fees.
+            </p>
+          </Motion>
+        </div>
 
-          <div v-if="plan.highlight"
-            class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider rounded-full">
-            Popular
-          </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+          <Motion v-for="(plan, index) in plans" :key="plan.name" :variants="item"
+            class="relative flex flex-col p-8 lg:p-10 rounded-none border transition-all duration-300 group h-full border-black/10 dark:border-white/10 bg-white dark:bg-black"
+            :class="[
+              plan.highlight ? 'z-10 bg-zinc-50 dark:bg-white/5' : ''
+            ]">
 
-          <div class="mb-8">
-            <h3 class="text-lg font-space font-medium text-foreground mb-2">{{ plan.name }}</h3>
-            <div class="flex items-baseline gap-1">
-              <span class="text-4xl font-space font-bold text-foreground">{{ plan.price }}</span>
-              <span class="text-muted-foreground font-space">{{ plan.period }}</span>
+            <!-- Coming Soon Overlay (Permanent) -->
+            <div v-if="plan.comingSoon"
+              class="absolute inset-0 bg-white/10 dark:bg-black/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center text-center p-6">
+              <div
+                class="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-sm font-bold uppercase tracking-widest mb-4">
+                Coming Soon</div>
+              <p class="text-zinc-900 dark:text-zinc-100 font-medium">We're finalizing the details.</p>
             </div>
-            <p class="mt-4 text-sm text-muted-foreground font-space">{{ plan.description }}</p>
-          </div>
 
-          <ul class="flex-1 space-y-4 mb-8">
-            <li v-for="feature in plan.features" :key="feature" class="flex items-start gap-3">
-              <Check class="h-5 w-5 text-primary shrink-0" />
-              <span class="text-sm text-foreground/80 font-space">{{ feature }}</span>
-            </li>
-          </ul>
+            <div class="mb-8 relative z-10">
+              <h3 class="text-lg font-bold uppercase tracking-widest text-zinc-500 mb-4">{{ plan.name }}</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-5xl font-bold text-black dark:text-white">{{ plan.price }}</span>
+                <span v-if="plan.period" class="text-zinc-500">{{ plan.period }}</span>
+              </div>
+              <p class="mt-6 text-zinc-600 dark:text-zinc-400 leading-relaxed">{{ plan.description }}</p>
+            </div>
 
-          <Button class="w-full rounded-none font-space font-medium transition-all"
-            :variant="plan.highlight ? 'default' : 'outline'" :disabled="plan.current" @click="handlePlanClick(plan)">
-            {{ plan.cta }}
-          </Button>
+            <ul class="flex-1 space-y-4 mb-10 relative z-10">
+              <li v-for="feature in plan.features" :key="feature" class="flex items-start gap-3">
+                <div
+                  class="mt-1 w-4 h-4 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center shrink-0">
+                  <Check class="h-2.5 w-2.5 text-black dark:text-white" />
+                </div>
+                <span class="text-sm text-zinc-700 dark:text-zinc-300">{{ feature }}</span>
+              </li>
+            </ul>
+
+            <div class="relative z-10 mt-auto">
+              <Link :href="plan.href || '#'" :class="{ 'pointer-events-none': plan.comingSoon }">
+              <Button class="w-full h-12 rounded-none font-bold text-sm tracking-wide transition-all"
+                :variant="plan.highlight ? 'default' : 'outline'" :class="[
+                  plan.highlight ? 'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200' : 'border-black/20 dark:border-white/20 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                ]" :disabled="plan.comingSoon">
+                {{ plan.cta }}
+              </Button>
+              </Link>
+            </div>
+          </Motion>
         </div>
-      </div>
-
-      <Transition enter-active-class="transition ease-out duration-300"
-        enter-from-class="transform opacity-0 translate-y-2" enter-to-class="transform opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-200" leave-from-class="transform opacity-100 translate-y-0"
-        leave-to-class="transform opacity-0 translate-y-2">
-        <div v-if="showWaitlistToast"
-          class="fixed bottom-8 right-8 z-50 bg-primary text-primary-foreground px-6 py-4 rounded shadow-xl flex items-center gap-3">
-          <Check class="h-5 w-5" />
-          <span class="font-space font-medium">{{ toastMessage }}</span>
-        </div>
-      </Transition>
+      </Motion>
     </div>
   </AppLayout>
 </template>
+
+<style scoped>
+@keyframes scan-y {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes scan-x {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+.animate-scan-y {
+  animation: scan-y 8s linear infinite;
+}
+
+.animate-scan-x {
+  animation: scan-x 12s linear infinite;
+}
+</style>
