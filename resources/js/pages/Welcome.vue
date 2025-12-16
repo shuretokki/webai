@@ -110,10 +110,6 @@ const staggerContainer = {
                             class="text-sm font-medium text-white hover:text-white/80 transition-colors">
                         Log in
                         </Link>
-                        <Link href="/register" v-if="canRegister"
-                            class="px-5 py-2.5 bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors rounded-sm">
-                        Get Started
-                        </Link>
                     </template>
                 </div>
 
