@@ -116,6 +116,8 @@ const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
 
+const chatInputRef = ref<any>(null);
+
 const uiMessages = computed(() => {
     return props.messages.map(msg => ({
         variant: msg.role === 'user' ? 'User/Text' : 'Responder/Text',
@@ -398,7 +400,7 @@ onUnmounted(() => {
                                     { icon: Code, text: 'Write a Python script to scrape a website' },
                                     { icon: FileText, text: 'Summarize this article for me' },
                                     { icon: Palette, text: 'Generate creative ideas for a marketing campaign' }
-                                ]" :key="idx" @click="handleSendMessage(suggestion.text)"
+                                ]" :key="idx" @click="chatInputRef?.setText(suggestion.text)"
                                     class="p-4 rounded-none border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-left flex flex-col gap-3 group">
                                     <component :is="suggestion.icon"
                                         class="size-6 text-primary/80 group-hover:text-primary transition-colors" />
@@ -409,22 +411,20 @@ onUnmounted(() => {
                         </div>
 
                         <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
-                            :content="msg.content" />
+                            :content="msg.content" :attachments="msg.attachments" />
 
                         <Message v-if="isStreaming || streaming" variant="Responder/Text" :content="streaming" />
                     </div>
                 </div>
 
-                <div
-                    class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-gradient-to-t from-[#1e1e1e] via-[#1e1e1e]/90 to-transparent pt-12 z-20">
+                <div class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center pt-12">
 
-                    <ChatInput @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl"
+                    <ChatInput ref="chatInputRef" @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl"
                         v-model:modelValue="model" :models="models" :userTier="userTier" :is-streaming="isStreaming" />
                 </div>
             </div>
         </div>
 
-        <!-- Search Modal -->
         <SearchModal v-model:open="isSearchOpen" />
 
         <Modal :show="showEditModal" title="Edit Chat Title" @close="showEditModal = false">
