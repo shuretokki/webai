@@ -30,8 +30,7 @@ const user = computed(() => page.props.auth.user);
 const mobileMenuOpen = ref(false);
 
 const logout = () => {
-    // @ts-ignore
-    router.post(route('logout'));
+    router.post('/logout');
 };
 </script>
 
