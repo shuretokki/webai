@@ -71,7 +71,7 @@ const motionExit = computed(() => {
                     class="relative w-full bg-popover border border-border rounded-none shadow-2xl overflow-hidden"
                     :class="[maxWidthClass, align === 'bottom' ? 'border-b-0' : '']">
                     <div v-if="!hideHeader" class="flex items-center justify-between px-6 py-4 border-b border-border">
-                        <h3 class="text-lg font-space text-popover-foreground">{{ title }}</h3>
+                        <h3 class="text-lg font-sans text-popover-foreground">{{ title }}</h3>
                         <button @click="close" class="text-muted-foreground hover:text-foreground transition-colors">
                             <X class="size-6" />
                         </button>
