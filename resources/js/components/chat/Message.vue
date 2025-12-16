@@ -120,14 +120,19 @@ const cleanContent = computed(() => {
             </div>
         </div>
 
-        <div v-if="attachments?.length" class="flex flex-wrap gap-3 mt-3">
-            <div v-for="(att, i) in attachments" :key="i" class="relative group">
+        <div v-if="attachments?.length" class="flex gap-3 mt-3 overflow-x-auto pb-2 custom-scrollbar">
+            <div v-for="(att, i) in attachments" :key="i" class="relative group shrink-0">
                 <img v-if="att.type === 'image'" :src="att.url" :alt="att.name || 'Image'"
-                    class="h-40 w-auto rounded-none border border-white/10 object-cover hover:border-primary/50 transition-colors" />
+                    class="h-[100px] w-[100px] rounded-none border border-white/10 object-cover hover:border-primary/50 transition-colors" />
                 <a v-else :href="att.url" target="_blank"
-                    class="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-none border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-colors">
-                    <FileText class="text-xl text-primary size-5" />
-                    <span class="text-sm font-space">{{ att.name || 'File' }}</span>
+                    class="h-[100px] min-w-[200px] flex items-center gap-3 bg-white/5 px-4 py-2 rounded-none border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-colors">
+                    <div class="p-2 bg-background/50 border border-white/10 rounded-none shrink-0">
+                        <FileText class="text-primary size-5" />
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-sm font-space truncate max-w-[120px]">{{ att.name || 'File' }}</span>
+                        <span class="text-xs text-muted-foreground">Attachment</span>
+                    </div>
                 </a>
             </div>
         </div>
