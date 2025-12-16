@@ -324,8 +324,7 @@ class ChatController extends Controller
                 'id' => $chat->id,
                 'title' => $chat->title,
                 'url' => "/chat/{$chat->id}",
-                'subtitle' => $chat
-                ->diffForHumans(),
+                'subtitle' => $chat->updated_at->diffForHumans(),
             ]);
 
         $messages = DB::table('messages')
