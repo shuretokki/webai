@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\UsageController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +48,19 @@ Route::inertia('/terms', 'Terms')
 
 Route::inertia('/privacy', 'Privacy')
     ->name('privacy');
+
+Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
+    ->name('social.redirect')
+    ->where('provider', 'github|google');
+
+Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])
+    ->name('social.callback')
+    ->where('provider', 'github|google');
+
+Route::delete('/auth/{provider}/disconnect', [SocialAuthController::class, 'disconnect'])
+    ->middleware('auth')
+    ->name('social.disconnect')
+    ->where('provider', 'github|google');
 
 Route::middleware(['auth', 'verified'])
     ->prefix('api')
