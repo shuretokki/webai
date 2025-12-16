@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { usePage, Link } from '@inertiajs/vue3';
 import { useStorage } from '@vueuse/core';
+import { User, Palette, BarChart2, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps<{
   activeTab: string;
@@ -25,13 +25,11 @@ const handleDeleteAllChats = () => {
 
 <template>
   <div class="h-full">
-    <!-- Account Tab -->
     <div v-if="activeTab === 'account'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div class="flex items-center p-4 border border-border bg-card/20 rounded-none gap-4">
         <div
           class="size-12 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground overflow-hidden border border-border">
-          <img v-if="user?.avatar" :src="user.avatar" class="w-full h-full object-cover" />
-          <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
+          <User class="size-6 object-cover" />
         </div>
         <div class="flex-1 min-w-0">
           <h4 class="font-space font-medium text-foreground truncate text-lg md:text-base">{{ user?.name }}</h4>
@@ -58,9 +56,7 @@ const handleDeleteAllChats = () => {
       </div>
     </div>
 
-    <!-- Behavior Tab -->
     <div v-if="activeTab === 'behavior'" class="space-y-1 animate-in fade-in slide-in-from-right-4 duration-300">
-      <!-- Setting Item -->
       <div class="flex items-center justify-between py-3 px-2 hover:bg-white/5 transition-colors rounded-none">
         <span class="text-lg md:text-sm font-space text-foreground">Enable Auto Scroll</span>
         <button @click="autoScroll = !autoScroll"
@@ -74,14 +70,12 @@ const handleDeleteAllChats = () => {
       </div>
     </div>
 
-    <!-- Customize Tab (Placeholder) -->
     <div v-if="activeTab === 'customize'"
       class="h-full flex flex-col items-center justify-center text-muted-foreground animate-in fade-in slide-in-from-right-4 duration-300">
       <Palette class="text-4xl mb-4 opacity-50 size-10" />
       <p class="font-space text-sm">Theme customization coming soon</p>
     </div>
 
-    <!-- Data Control Tab -->
     <div v-if="activeTab === 'data'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div class="space-y-1">
         <h4 class="font-space text-sm font-medium text-foreground">Usage</h4>
