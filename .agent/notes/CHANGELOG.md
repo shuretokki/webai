@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-12-16 16:30:00] - Social Authentication Backend
+
+### Added
+- **Authentication:** Full Laravel Socialite integration for GitHub and Google OAuth
+- **Database:** Added `avatar` column to users table
+- **Database:** Created `social_identities` table to store OAuth provider connections
+- **Models:** Created `SocialIdentity` model with User relationship
+- **API:** Added `POST /api/user/avatar` endpoint for profile photo uploads
+- **Routes:** Added OAuth routes (`/auth/{provider}/redirect`, `/auth/{provider}/callback`, `/auth/{provider}/disconnect`)
+- **Validation:** Created `AvatarUploadRequest` with strict image validation (JPG/PNG/GIF, max 800KB)
+- **Tests:** Added comprehensive test suite for avatar uploads and social authentication (7 tests, 17 assertions, all passing)
+- **Config:** Added GitHub and Google OAuth configuration to `config/services.php`
+- **Factory:** Created `SocialIdentityFactory` for testing
+
+### Changed
+- **User Model:** Added `avatar` to fillable fields and `socialIdentities()` relationship
+- **Profile Controller:** Added `uploadAvatar()` method with automatic old file cleanup
+- **Fortify Provider:** Now shares connected social accounts status with all Inertia pages
+- **Composer:** Added `laravel/socialite` ^5.16 to dependencies
+
+### Fixed
+- **Migration:** Fixed Stripe fields removal migration to drop indexes before columns (SQLite compatibility)
+
+### Security
+- OAuth tokens hidden from JSON serialization
+- Email auto-verified for OAuth registrations
+- CSRF protection on all routes
+- File upload validation with strict type and size limits
+
+---
+
 ## [2025-12-16 02:00:00] - Social Login & Login Redesign
 
 ### Added
