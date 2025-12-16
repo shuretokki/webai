@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Only drop columns that exist
+            if (Schema::hasColumn('users', 'stripe_id')) {
+                $table->dropIndex('users_stripe_id_index');
+            }
+        });
+
+        Schema::table('users', function (Blueprint $table) {
             if (Schema::hasColumn('users', 'currency')) {
                 $table->dropColumn('currency');
             }
