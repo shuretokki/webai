@@ -12,7 +12,9 @@ const emit = defineEmits(['update:open']);
     <Modal :show="open" title="Upgrade Plan" @close="emit('update:open', false)">
         <div class="flex flex-col gap-4">
             <p class="text-white/60 text-sm leading-relaxed">
-                Access to premium models like GPT-4o and Claude 3.5 Sonnet requires a Pro subscription.
+                Access to premium models like GPT-4o and Claude 3.5 Sonnet requires a <span
+                    class="font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient">ECNELIS+</span>
+                subscription.
                 Upgrade now to unlock advanced reasoning and faster speeds.
             </p>
 
@@ -29,3 +31,24 @@ const emit = defineEmits(['update:open']);
         </div>
     </Modal>
 </template>
+
+<style scoped>
+.animate-gradient {
+    background-size: 200% auto;
+    animation: gradient 4s linear infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+</style>
