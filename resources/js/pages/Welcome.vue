@@ -25,9 +25,9 @@ watchEffect(() => {
 });
 
 const navItems = [
-    { label: 'About', href: '#about' },
-    { label: 'Features', href: '#features' },
-    { label: 'Blog', href: '#' },
+    { label: 'About', href: '/about' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Changelog', href: '/changelog' },
 ];
 
@@ -117,7 +117,7 @@ const staggerContainer = {
                     </template>
                 </div>
 
-                <button @click="mobileMenuaOpen = !mobileMenuOpen" class="md:hidden z-50 text-white p-2">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 text-white p-2">
                     <Menu v-if="!mobileMenuOpen" />
                     <X v-else />
                 </button>
@@ -132,15 +132,23 @@ const staggerContainer = {
                         class="block py-2 border-b border-white/10 text-white/90">
                         {{ item.label }}
                     </a>
-                    <div class="flex flex-col gap-4 mt-8">
-                        <Link href="/login"
-                            class="block w-full text-center py-4 border border-white/20 text-white/90 hover:bg-white/5 transition-colors">
-                        Log in
-                        </Link>
-                        <Link href="/register"
-                            class="block w-full text-center py-4 bg-white text-black font-medium hover:bg-white/90 transition-colors">
-                        Get Started
-                        </Link>
+                    <div class="flex flex-col gap-4 mt-0">
+                        <template v-if="$page.props.auth.user">
+                            <Link href="/explore"
+                                class="text-2xl font-light block py-2 border-b border-white/10 text-white/90">
+                            Explore
+                            </Link>
+                        </template>
+                        <template v-else>
+                            <Link href="/login"
+                                class="block w-full text-center py-4 border border-white/20 text-white/90 hover:bg-white/5 transition-colors">
+                            Log in
+                            </Link>
+                            <Link href="/register"
+                                class="block w-full text-center py-4 bg-white text-black font-medium hover:bg-white/90 transition-colors">
+                            Get Started
+                            </Link>
+                        </template>
                     </div>
                 </div>
             </Motion>
@@ -300,9 +308,14 @@ const staggerContainer = {
                 </div>
             </section>
 
-            <section class="py-24 px-6 border-b border-white/5">
+            <section id="pricing" class="py-24 px-6 border-b border-white/5">
                 <div class="max-w-[1400px] mx-auto">
-                    <div class="text-center mb-16">
+                    <div class="flex items-center gap-4 mb-12">
+                        <div class="w-2 h-2 rounded-full bg-white/20"></div>
+                        <span class="text-sm text-white/40 font-medium">Introducing Benefit</span>
+                    </div>
+
+                    <div class=" mb-16">
                         <h2 class="text-3xl md:text-5xl font-light text-white mb-6">Simple, Transparent Pricing</h2>
                         <p class="text-white/60 text-lg">Choose the plan that's right for you. No hidden fees.</p>
                     </div>
@@ -429,7 +442,7 @@ const staggerContainer = {
                         Experience the tool right now. Just dive in and see what AI can do for you.
                     </p>
                     <Link href="/register"
-                        class="inline-block px-8 py-3 bg-white text-black font-medium rounded-full hover:scale-105 transition-transform duration-300">
+                        class="inline-block px-8 py-3 bg-white text-black font-medium hover:scale-105 transition-transform duration-300">
                     Try It Now
                     </Link>
                 </div>
@@ -501,8 +514,8 @@ const staggerContainer = {
                         <div>
                             <h4 class="font-medium mb-6 text-white text-sm">Legal</h4>
                             <ul class="space-y-4 text-sm text-white/50">
-                                <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
-                                <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+                                <li><a href="/privacy" class="hover:text-white transition-colors">Privacy</a></li>
+                                <li><a href="/terms" class="hover:text-white transition-colors">Terms</a></li>
                             </ul>
                         </div>
                     </div>

@@ -1,110 +1,173 @@
 <script setup lang="ts">
-import AppLogo from '@/components/AppLogo.vue';
-import UserMenuContent from '@/components/UserMenuContent.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    Sparkles,
+    MessageSquare,
+    Menu,
+    X,
+    User,
+    LogOut,
+    Settings
+} from 'lucide-vue-next';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import { ref, computed } from 'vue';
 import {
     DropdownMenu,
-    DropdownMenuContent,
     DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronsUpDown, Menu, MessageSquare } from 'lucide-vue-next';
-import type { BreadcrumbItemType } from '@/types';
+import { router } from '@inertiajs/vue3';
 
-interface Props {
-    breadcrumbs?: BreadcrumbItemType[];
-}
-
-withDefaults(defineProps<Props>(), {
-    breadcrumbs: () => [],
-});
+defineProps<{
+    breadcrumbs?: any[];
+}>();
 
 const page = usePage();
-const user = page.props.auth.user;
+const user = computed(() => page.props.auth.user);
+const mobileMenuOpen = ref(false);
 
+const logout = () => {
+    // @ts-ignore
+    router.post(route('logout'));
+};
 </script>
 
 <template>
-    <div class="min-h-screen bg-background text-foreground font-space">
-        <header
-            class="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div class="flex h-16 items-center px-4 sm:px-8 justify-between">
-                <div class="flex items-center gap-4">
-                    <Link href="/dashboard" class="flex items-center gap-2 transition-opacity hover:opacity-80">
-                    <AppLogo class="h-8 w-auto" />
+    <div class="min-h-screen bg-black text-white font-sans selection:bg-white/20">
+        <header class="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur">
+            <div class="flex h-20 items-center px-6 md:px-8 justify-between max-w-[1400px] mx-auto">
+
+                <div class="flex items-center gap-8">
+                    <Link href="/" class="flex items-center gap-2 group">
+                    <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
+                    <span class="font-medium text-lg tracking-tight">Ecnelis</span>
                     </Link>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button
-                                class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted/50 transition-colors focus:outline-none">
-                                <Avatar class="h-6 w-6 overflow-hidden rounded-full">
-                                    <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
-                                    <AvatarFallback class="rounded-full bg-muted text-xs">{{ user.name.charAt(0) }}
+                    <!-- Authenticated Nav -->
+                    <nav v-if="user" class="hidden md:flex items-center gap-6">
+                        <Link href="/explore"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors"
+                            :class="{ 'text-white': $page.url === '/explore' }">
+                        Explore
+                        </Link>
+                        <Link href="/chat" class="text-sm font-medium text-white/60 hover:text-white transition-colors"
+                            :class="{ 'text-white': $page.url.startsWith('/chat') }">
+                        Chat
+                        </Link>
+                        <Link href="/docs" target="_blank"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        Docs
+                        </Link>
+                    </nav>
+
+                    <!-- Guest Nav -->
+                    <nav v-else class="hidden md:flex items-center gap-6">
+                        <Link href="/about"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        About
+                        </Link>
+                        <Link href="/#pricing"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        Pricing
+                        </Link>
+                        <Link href="/blog" class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        Blog
+                        </Link>
+                        <Link href="/changelog"
+                            class="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                        Changelog
+                        </Link>
+                    </nav>
+                </div>
+
+                <div class="flex items-center gap-4">
+
+                    <!-- Authenticated User Dropdown -->
+                    <DropdownMenu v-if="user">
+                        <DropdownMenuTrigger class="focus:outline-none">
+                            <div
+                                class="flex items-center gap-3 pl-3 pr-1 py-1 rounded-sm hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+                                <div class="hidden md:block text-right">
+                                    <p class="text-sm font-medium text-white leading-none">{{ user.name }}</p>
+                                </div>
+                                <Avatar class="h-8 w-8 rounded-full border border-white/10">
+                                    <AvatarImage :src="user.avatar || ''" />
+                                    <AvatarFallback class="bg-white/10 text-white rounded-full">
+                                        {{ user.name.charAt(0) }}
                                     </AvatarFallback>
                                 </Avatar>
-                                <span class="text-sm font-medium text-foreground">{{ user.name }}</span>
-                                <ChevronsUpDown class="h-3 w-3 text-muted-foreground" />
-                            </button>
+                            </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" class="w-56 mt-2">
-                            <UserMenuContent :user="user" />
+                        <DropdownMenuContent align="end"
+                            class="w-56 bg-[#111] border-white/10 text-white rounded-sm p-1">
+                            <DropdownMenuItem class="focus:bg-white/10 focus:text-white rounded-sm cursor-pointer">
+                                <User class="w-4 h-4 mr-2 opacity-50" /> Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem class="focus:bg-white/10 focus:text-white rounded-sm cursor-pointer">
+                                <Link href="/settings" class="flex items-center w-full">
+                                <Settings class="w-4 h-4 mr-2 opacity-50" /> Settings
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator class="bg-white/10" />
+                            <DropdownMenuItem @click="logout"
+                                class="focus:bg-destructive/20 focus:text-destructive text-red-400 rounded-sm cursor-pointer">
+                                <LogOut class="w-4 h-4 mr-2 opacity-50" /> Log out
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                </div>
 
-                <div class="hidden md:flex items-center gap-6">
-                    <Link href="/chat"
-                        class="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mr-4">
-                    <MessageSquare class="h-4 w-4" />
-                    Return to Chat
-                    </Link>
-                    <Link href="/pricing"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Pricing</Link>
-                    <Link href="/enterprise"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Enterprise</Link>
-                    <Link href="/docs" target="_blank"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Docs
-                    </Link>
-                    <Link href="/blog"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Blog
-                    </Link>
-                </div>
+                    <!-- Guest Auth Buttons -->
+                    <div v-else class="hidden md:flex items-center gap-4">
+                        <Link href="/login"
+                            class="text-sm font-medium text-white hover:text-white/80 transition-colors">
+                        Log in
+                        </Link>
+                        <Link href="/register"
+                            class="px-5 py-2.5 bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors rounded-sm">
+                        Get Started
+                        </Link>
+                    </div>
 
-                <div class="md:hidden">
-                    <Sheet>
-                        <SheetTrigger as-child>
-                            <Button variant="ghost" size="icon" class="text-muted-foreground">
-                                <Menu class="h-5 w-5" />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                            class="bg-background justify-between p-8 text-center items-center border-l border-border text-foreground w-full max-w-64">
-                            <div class="flex flex-col gap-6 mt-8">
-                                <Link href="/pricing"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Pricing
-                                </Link>
-                                <Link href="/enterprise"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Enterprise
-                                </Link>
-                                <Link href="/docs"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Docs</Link>
-                                <Link href="/blog"
-                                    class="text-lg font-medium text-muted-foreground hover:text-foreground">Blog</Link>
-                            </div>
-                            <Link href="/chat" class="flex items-center gap-2 text-lg font-medium text-foreground">
-                            <MessageSquare class="h-5 w-5" />
-                            Return to Chat
-                            </Link>
-                        </SheetContent>
-                    </Sheet>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="md:hidden p-2 text-white/80 hover:text-white">
+                        <Menu v-if="!mobileMenuOpen" />
+                        <X v-else />
+                    </button>
                 </div>
             </div>
         </header>
+
+        <!-- Mobile Menu -->
+        <div v-if="mobileMenuOpen" class="fixed inset-0 top-20 z-40 bg-black p-6 md:hidden border-t border-white/5">
+            <nav v-if="user" class="flex flex-col gap-4">
+                <Link href="/explore" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Explore
+                </Link>
+                <Link href="/chat" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Chat</Link>
+                <Link href="/docs" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Docs</Link>
+                <button @click="logout" class="text-lg font-medium text-red-400 py-2 text-left">Log out</button>
+            </nav>
+            <nav v-else class="flex flex-col gap-4">
+                <Link href="/about" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">About</Link>
+                <Link href="/pricing" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Pricing
+                </Link>
+                <Link href="/blog" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Blog</Link>
+                <Link href="/changelog" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Changelog
+                </Link>
+                <div class="flex flex-col gap-4 mt-4">
+                    <Link href="/login"
+                        class="block w-full text-center py-4 border border-white/20 text-white/90 hover:bg-white/5 transition-colors">
+                    Log in
+                    </Link>
+                    <Link href="/register"
+                        class="block w-full text-center py-4 bg-white text-black font-medium hover:bg-white/90 transition-colors">
+                    Get Started
+                    </Link>
+                </div>
+            </nav>
+        </div>
 
         <main>
             <slot />

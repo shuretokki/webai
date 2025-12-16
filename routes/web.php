@@ -39,6 +39,15 @@ Route::inertia('/contact', 'Contact')
 Route::inertia('/community', 'Community')
     ->name('community');
 
+Route::inertia('/about', 'About')
+    ->name('about');
+
+Route::inertia('/terms', 'Terms')
+    ->name('terms');
+
+Route::inertia('/privacy', 'Privacy')
+    ->name('privacy');
+
 Route::middleware(['auth', 'verified'])
     ->prefix('api')
     ->group(function () {
@@ -73,3 +82,7 @@ Route::middleware(['auth', 'verified'])
     });
 
 require __DIR__.'/settings.php';
+
+Route::fallback(function () {
+    return Inertia::render('NotFound');
+});
