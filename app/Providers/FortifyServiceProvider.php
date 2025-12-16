@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -31,6 +32,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->shareInertiaData();
     }
 
     /**
@@ -87,5 +89,19 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($throttleKey);
         });
+    }
+
+    private function shareInertiaData(): void
+    {
+        Inertia::share([
+            'auth.user.socialAccounts' => fn () => Auth::check()
+                ? Auth::user()->socialIdentities->mapWithKeys(fn ($identity) => [
+                    $identity->provider_name => [
+                        'connected' => true,
+                        'avatar_url' => $identity->avatar_url,
+                    ],
+                ])->toArray()
+                : [],
+        ]);
     }
 }
