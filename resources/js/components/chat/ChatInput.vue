@@ -110,6 +110,12 @@ const handleKeydown = (e: KeyboardEvent) => {
 defineOptions({
     inheritAttrs: false
 });
+
+const setText = (text: string) => {
+    input.value = text;
+};
+
+defineExpose({ setText });
 </script>
 
 <template>
@@ -122,18 +128,26 @@ defineOptions({
             </button>
 
             <div class="flex-1 min-w-0 py-3 flex flex-col gap-3">
-                <div v-if="attachments.length > 0" class="flex flex-wrap gap-2">
+                <div v-if="attachments.length > 0" class="flex flex-wrap gap-3">
                     <div v-for="(item, index) in attachments" :key="index" class="relative group">
                         <img v-if="item.type === 'image'" :src="item.preview"
-                            class="h-16 w-16 rounded-none object-cover border border-border" />
+                            class="h-[100px] w-[100px] rounded-none object-cover border border-border" />
 
                         <div v-else
-                            class="h-16 w-16 rounded-none border border-border bg-muted flex items-center justify-center">
-                            <FileText class="size-6 text-muted-foreground" />
+                            class="h-[100px] min-w-[200px] px-4 rounded-none border border-border bg-muted flex items-center gap-3">
+                            <div class="p-2 bg-background border border-border rounded-none shrink-0">
+                                <FileText class="size-5 text-muted-foreground" />
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span
+                                    class="text-sm font-medium text-foreground truncate max-w-[120px]">{{ item.file.name }}</span>
+                                <span class="text-xs text-muted-foreground">{{ (item.file.size / 1024).toFixed(1) }}
+                                    KB</span>
+                            </div>
                         </div>
 
                         <button type="button" @click="removeAttachment(index)"
-                            class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 border border-border opacity-0 group-hover:opacity-100 transition-opacity">
+                            class="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 border border-border opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10">
                             <X class="size-3" />
                         </button>
                     </div>
