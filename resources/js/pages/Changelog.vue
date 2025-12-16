@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 const changes = [
   {
     version: 'v1.0.0',
-    date: 'December 16, 2024',
+    date: 'December 16, 2025',
     title: 'Initial Release',
     items: [
       'Launched Ecnelis AI platform.',
