@@ -46,7 +46,6 @@ const logout = () => {
                     <span class="font-medium text-lg tracking-tight">Ecnelis</span>
                     </Link>
 
-                    <!-- Authenticated Nav -->
                     <nav v-if="user" class="hidden md:flex items-center gap-6">
                         <Link href="/explore"
                             class="text-sm font-medium text-white/60 hover:text-white transition-colors"
@@ -68,7 +67,6 @@ const logout = () => {
                         </Link>
                     </nav>
 
-                    <!-- Guest Nav -->
                     <nav v-else class="hidden md:flex items-center gap-6">
                         <Link href="/about"
                             class="text-sm font-medium text-white/60 hover:text-white transition-colors">
@@ -94,7 +92,6 @@ const logout = () => {
 
                 <div class="flex items-center gap-4">
 
-                    <!-- Authenticated User Dropdown -->
                     <DropdownMenu v-if="user">
                         <DropdownMenuTrigger class="focus:outline-none">
                             <div
@@ -113,7 +110,9 @@ const logout = () => {
                         <DropdownMenuContent align="end"
                             class="w-56 bg-[#111] border-white/10 text-white rounded-sm p-1">
                             <DropdownMenuItem class="focus:bg-white/10 focus:text-white rounded-sm cursor-pointer">
+                                <Link href="/settings" class="flex items-center w-full">
                                 <User class="w-4 h-4 mr-2 opacity-50" /> Profile
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem class="focus:bg-white/10 focus:text-white rounded-sm cursor-pointer">
                                 <Link href="/settings" class="flex items-center w-full">
@@ -123,12 +122,13 @@ const logout = () => {
                             <DropdownMenuSeparator class="bg-white/10" />
                             <DropdownMenuItem @click="logout"
                                 class="focus:bg-destructive/20 focus:text-destructive text-red-400 rounded-sm cursor-pointer">
-                                <LogOut class="w-4 h-4 mr-2 opacity-50" /> Log out
+                                <div class="flex items-center w-full">
+                                    <LogOut class="w-4 h-4 mr-2 opacity-50" /> Log out
+                                </div>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <!-- Guest Auth Buttons -->
                     <div v-else class="hidden md:flex items-center gap-4">
                         <Link href="/login"
                             class="text-sm font-medium text-white hover:text-white/80 transition-colors">
@@ -149,7 +149,6 @@ const logout = () => {
             </div>
         </header>
 
-        <!-- Mobile Menu -->
         <div v-if="mobileMenuOpen" class="fixed inset-0 top-20 z-40 bg-black p-6 md:hidden border-t border-white/5">
             <nav v-if="user" class="flex flex-col gap-4">
                 <Link href="/explore" class="text-lg font-medium text-white/80 py-2 border-b border-white/5">Explore
