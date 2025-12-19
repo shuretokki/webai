@@ -130,6 +130,27 @@ const lineDraw = {
   onscreen: { pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: "easeInOut" as const } }
 };
 
+const preFooterContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const preFooterItem = {
+  hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as const }
+  }
+};
+
 </script>
 
 <template>
@@ -545,26 +566,39 @@ const lineDraw = {
         </div>
 
         <div class="relative z-30 max-w-5xl mx-auto px-6 text-center">
-          <Motion :initial="{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }"
-            :while-in-view="{ opacity: 1, scale: 1, filter: 'blur(0px)' }" :viewport="{ once: true, margin: '-10%' }"
-            :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }">
-            <span
-              class="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/10 text-xs font-mono uppercase tracking-widest text-white/70 mb-8 backdrop-blur-md">
-              Start your journey
-            </span>
-            <h2 class="text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-10 tracking-tighter leading-[0.9]">
-              Shape the <br /> <span
-                class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">Future.</span>
-            </h2>
+          <Motion :variants="preFooterContainer" initial="hidden" while-in-view="visible"
+            :viewport="{ once: true, margin: '-20%' }">
 
-            <div class="flex flex-col items-center gap-6">
+            <Motion :variants="preFooterItem">
+              <span
+                class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/60 mb-10 backdrop-blur-md hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-default">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Start your journey
+              </span>
+            </Motion>
+
+            <Motion :variants="preFooterItem">
+              <h2 class="text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-12 tracking-tighter leading-[0.9]">
+                Shape the <br />
+                <span
+                  class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">
+                  Future.
+                </span>
+              </h2>
+            </Motion>
+
+            <Motion :variants="preFooterItem" class="flex flex-col items-center gap-6">
               <Link href="/register"
-                class="group relative inline-flex items-center gap-2 px-10 py-5 bg-white text-black text-lg font-medium rounded-sm overflow-hidden transition-all hover:bg-white/90 hover:scale-105 active:scale-95">
-                <span>Get Started Now</span>
-                <ArrowRight class="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                class="group relative inline-flex items-center justify-center gap-3 px-12 py-6 bg-white text-black text-lg font-medium rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95">
+                <span class="relative z-10">Get Started Now</span>
+                <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
+                </div>
               </Link>
               <p class="text-white/40 text-sm">No credit card required for standard plans.</p>
-            </div>
+            </Motion>
+
           </Motion>
         </div>
       </section>
