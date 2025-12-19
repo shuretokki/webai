@@ -225,23 +225,28 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </Motion>
 
-      <div class="relative z-20 text-center px-6 max-w-7xl mx-auto mt-20 w-full">
-        <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.15 } } }">
-          <Motion class="mb-16 md:mb-24" :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
+      <div class="relative z-20 text-center px-6 max-w-[90rem] mx-auto mt-20 w-full">
+        <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
+          <Motion class="mb-10 md:mb-16" :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
             :animate="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const } }">
             <Motion is="h1"
-              class="text-5xl md:text-8xl lg:text-[9rem] font-medium tracking-tighter text-white leading-[0.9] origin-center will-change-transform"
+              class="text-hero font-medium tracking-tighter leading-[0.85] origin-center will-change-transform text-white"
               :style="{ y: headerY, scale: headerScale, filter: headerBlur, opacity: headerOpacity }">
-              Where <span class="font-serif italic opacity-90 mx-2">thoughts</span> <br />
-              become <span class="font-serif italic opacity-90 mx-2">actions</span>.
+              Where <span
+                class="font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 mx-2">thoughts</span>
+              <br class="md:hidden" />
+              become <span
+                class="font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 mx-2">actions</span>.
             </Motion>
           </Motion>
 
-          <Motion class="md:max-w-2xl mx-auto text-center" :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
-            :animate="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const } }">
-            <Motion is="p" class="text-xl md:text-2xl text-white/80 font-light leading-relaxed"
+          <Motion class="max-w-xl md:max-w-3xl mx-auto text-center"
+            :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
+            :animate="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const, delay: 0.2 } }">
+            <Motion is="p" class="text-lg md:text-xl font-light text-white/60 leading-relaxed md:leading-normal"
               :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
-              An AI companion that whispers clarity, conjures ideas, and guides your every move.
+              An AI companion that <span class="text-white/90">whispers clarity</span>, <br class="hidden md:block" />
+              conjures ideas, and guides your every move into the void.
             </Motion>
           </Motion>
         </Motion>
@@ -259,7 +264,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
     <div class="bg-black relative z-10 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
 
-      <section class="pt-32 px-6">
+      <section class="pt-section px-6">
         <div class="max-w-[1400px] mx-auto">
           <Motion :initial="false" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true, margin: '-100px' }"
             class="flex items-center gap-4 mb-12">
@@ -278,7 +283,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
           <Motion :initial="{ opacity: 0, y: 50, filter: 'blur(10px)' }"
             :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }" :viewport="{ once: true }"
             :transition="{ duration: 1 }">
-            <h2 class="text-4xl md:text-6xl font-light text-white/90 max-w-4xl leading-[1.1] tracking-tight mb-20">
+            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white/90 max-w-4xl mb-12 md:mb-24">
               Harness invisible power to write faster, <br class="hidden md:block" />
               focus deeper, and save hours.
             </h2>
@@ -286,7 +291,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="features" class="pb-32 px-6">
+      <section id="features" class="pb-section px-6">
         <div class="max-w-[1400px] mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -319,8 +324,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
                   </div>
                 </div>
               </Motion>
-              <h3 class="text-2xl font-light text-white mb-3">Time Unfolded</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+              <h3 class="text-title font-light tracking-tight text-white mb-3">Time Unfolded</h3>
+              <p class="text-white/50">
                 Automate tasks and reclaim hours, your AI assistant turns routine into seconds so you can focus on
                 growth.
               </p>
@@ -388,7 +393,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="pricing" class="py-24 px-6 border-b border-white/5">
+      <section id="pricing" class="py-section px-6 border-b border-white/5">
         <div class="max-w-[1400px] mx-auto">
           <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
             class="flex items-center gap-4 mb-12">
@@ -396,9 +401,10 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
             <span class="text-sm text-white/40 font-medium">Introducing Benefit</span>
           </Motion>
 
-          <div class=" mb-16">
-            <h2 class="text-3xl md:text-5xl font-light text-white mb-6">Simple, Transparent Pricing</h2>
-            <p class="text-white/60 text-lg">Choose the plan that's right for you. No hidden fees.</p>
+          <div class="mb-12 md:mb-24">
+            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white mb-4 md:mb-6">Simple, Transparent
+              Pricing</h2>
+            <p class="text-base text-white/60">Choose the plan that's right for you. No hidden fees.</p>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -408,7 +414,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
               :while-hover="{ borderColor: 'rgba(255,255,255,0.2)' }">
               <h3 class="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Ecnelis</h3>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-4xl font-bold text-white">$0</span>
+                <span class="text-white" style="font-size: var(--text-title);">$0</span>
                 <span class="text-white/40">/mo</span>
               </div>
               <p class="text-white/60 mb-8 h-12">Perfect for getting started with AI</p>
@@ -454,7 +460,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
                 Ecnelis+
               </Motion>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-4xl font-bold text-white">$20</span>
+                <span class="text-white" style="font-size: var(--text-title);">$20</span>
                 <span class="text-white/40">/mo</span>
               </div>
               <p class="text-white/60 mb-8 h-12">For power users who need more available resources.</p>
@@ -494,7 +500,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
               <h3 class="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Enterprise</h3>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-4xl font-bold text-white">Custom</span>
+                <span class="text-white" style="font-size: var(--text-title);">Custom</span>
               </div>
               <p class="text-white/60 mb-8 h-12">For organizations with custom needs to scale.</p>
 
@@ -519,11 +525,11 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="faq" class="py-32 px-6 border-t border-white/5 bg-[#050505]">
+      <section id="faq" class="py-section px-6 border-t border-white/5 bg-[#050505]">
         <div class="max-w-[1000px] mx-auto">
-          <div class="text-center mb-20">
-            <span class="text-sm font-mono text-white/40 mb-4 block uppercase tracking-widest">Support</span>
-            <h2 class="text-3xl md:text-5xl font-light text-white/90 leading-tight">
+          <div class="text-center mb-12 md:mb-24">
+            <span class="text-xs font-mono text-white/40 mb-4 block uppercase tracking-widest">Support</span>
+            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white/90">
               Frequently asked questions.
             </h2>
           </div>
@@ -532,8 +538,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
             <div v-for="(faq, index) in faqs" :key="index"
               class="border-t border-white/10 bg-transparent transition-colors">
               <button @click="toggleFaq(index)" class="w-full flex items-center justify-between py-6 text-left group">
-                <Motion is="span" class="font-light text-xl text-white/90 transition-colors"
-                  :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
+                <Motion is="span" class="font-light text-white/90 transition-colors"
+                  :style="{ fontSize: 'var(--text-lg)' }" :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
                 <span class="text-white/30 group-hover:text-white transition-colors relative">
                   <Plus v-if="!faq.open" class="w-5 h-5" />
                   <X v-else class="w-5 h-5" />
@@ -575,14 +581,13 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
             <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
               :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }">
-              <h2
-                class="text-4xl sm:text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-8 md:mb-12 tracking-tighter leading-[0.9]">
+              <h1 class="text-hero font-medium tracking-tighter leading-[0.9] text-white mb-8 md:mb-12">
                 Shape the <br />
                 <span
                   class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">
                   Future.
                 </span>
-              </h2>
+              </h1>
             </Motion>
 
             <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
