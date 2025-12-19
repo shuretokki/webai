@@ -9,20 +9,17 @@ import {
   Menu,
   X,
   Plus,
-  Instagram,
-  Facebook,
-  Linkedin,
-  Dribbble,
   Sparkles
 } from 'lucide-vue-next';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import SplineHero from '@/components/SplineHero.vue';
+import { ui } from '@/config/ui';
 
 defineProps<{
   canRegister?: boolean;
 }>();
 
 const mobileMenuOpen = ref(false);
-
 const scrollY = useMotionValue(0);
 
 if (typeof window !== 'undefined') {
@@ -31,30 +28,68 @@ if (typeof window !== 'undefined') {
   });
 }
 
-const heroImageY = useTransform(scrollY, [0, 1000], [0, 800 * 0.8]);
-const heroImageScale = useTransform(scrollY, [0, 1000], [1, 1 + 1000 * 0.001]);
-const headerY = useTransform(scrollY, [0, 1000], [0, 1000 * 1]);
-const headerScale = useTransform(scrollY, [0, 1000], [1, Math.max(0, 1 - 1000 * 0.0008)]);
-const headerBlur = useTransform(scrollY, [0, 500], ['blur(0px)', 'blur(10px)']);
-const headerOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+const heroImageY = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.range,
+  ui.animations.scrollEffects.hero.imageY);
 
-const preFooterImageY = useTransform(scrollY, value => -50 + value * 0.05);
-const preFooterImageScale = useTransform(scrollY, value => 1 + value * 0.0001);
+const heroImageScale = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.range,
+  ui.animations.scrollEffects.hero.imageScale);
+
+const headerY = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.range,
+  ui.animations.scrollEffects.hero.headerY);
+
+const headerScale = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.range,
+  ui.animations.scrollEffects.hero.headerScale
+);
+
+const headerBlur = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.opacityRange,
+  ui.animations.scrollEffects.hero.blur
+);
+
+const headerOpacity = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.hero.opacityRange,
+  ui.animations.scrollEffects.hero.opacity
+);
+
+const preFooterImageY = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.preFooter.y
+);
+
+const preFooterImageScale = useTransform(
+  scrollY,
+  ui.animations.scrollEffects.preFooter.scale
+);
 
 const navBackground = useTransform(
   scrollY,
-  [0, 50],
-  ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.8)']
+  ui.navigation.scrollThreshold,
+  [ui.navigation.background.initial,
+  ui.navigation.background.scrolled]
 );
+
 const navBorder = useTransform(
   scrollY,
-  [0, 50],
-  ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.05)']
+  ui.navigation.scrollThreshold,
+  [ui.navigation.border.initial,
+  ui.navigation.border.scrolled]
 );
+
 const navBackdrop = useTransform(
   scrollY,
-  [0, 50],
-  ['blur(0px)', 'blur(12px)']
+  ui.navigation.scrollThreshold,
+  [ui.navigation.backdrop.initial,
+  ui.navigation.backdrop.scrolled]
 );
 
 
@@ -68,17 +103,17 @@ const nav = [
 const footer = {
   index: [
     { label: 'Home', href: '/' },
-    { label: 'Work', href: '#' },
+    { label: 'Work', href: '/work' },
     { label: 'About', href: '/about' },
-    { label: 'Services', href: '#' },
+    { label: 'Services', href: '/services' },
     { label: 'Privacy Policy', href: '/privacy' },
   ],
   social: [
-    { label: 'Instagram', href: '#', icon: Instagram },
-    { label: 'Facebook', href: '#', icon: Facebook },
-    { label: 'LinkedIn', href: '#', icon: Linkedin },
+    { label: 'Instagram', href: '#', },
+    { label: 'Facebook', href: '#', },
+    { label: 'LinkedIn', href: '#', },
     { label: 'Awwwards', href: '#' },
-    { label: 'Behance', href: '#', icon: Dribbble },
+    { label: 'Behance', href: '#' },
   ]
 };
 
@@ -86,7 +121,7 @@ const faqs = ref([
   {
     question: "What is this AI platform designed for?",
     answer: "It helps you generate, test, and deploy ideas with advanced AI models — all in one simple workspace.",
-    open: true
+    open: false
   },
   {
     question: "Do I need technical knowledge to use it?",
@@ -114,9 +149,6 @@ const toggleFaq = (index: number) => {
   faqs.value[index].open = !faqs.value[index].open;
 };
 
-const navItemHover = { scale: 1.05, color: '#ffffff' };
-const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
-
 </script>
 
 <template>
@@ -126,16 +158,15 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
   </Head>
 
-  <div class="min-h-screen bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative">
+  <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative">
 
-    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.8] mix-blend-overlay"
+    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.3] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
     </div>
 
-    <!-- Motion Navbar -->
-    <Motion is="nav" class="fixed top-0 left-0 right-0 z-50 border-b"
-      :style="{ backgroundColor: navBackground, borderColor: navBorder, backdropFilter: navBackdrop }">
-      <div class="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between md:justify-center gap-8">
+    <Motion is="nav" :class="ui.navigation.classes.nav"
+      :style="{ borderColor: navBorder, backdropFilter: navBackdrop, paddingTop: 'var(--sat, 0px)' }">
+      <div :class="ui.navigation.classes.wrapper">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
           <span class="font-medium text-lg tracking-tight">Ecnelis</span>
@@ -145,14 +176,14 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
           <template v-for="item in nav" :key="item.label">
             <Link v-if="item.href.startsWith('/')" :href="item.href"
               class="text-sm font-medium cursor-pointer relative">
-              <Motion is="span" class="block" :style="{ color: 'rgba(255, 255, 255, 0.7)' }"
-                :while-hover="{ color: '#ffffff', scale: 1.05 }" :transition="{ duration: 0.2 }">
+              <Motion is="span" class="block" :style="{ color: ui.colors.muted }"
+                :while-hover="ui.animations.hover.navLink">
                 {{ item.label }}
               </Motion>
             </Link>
             <a v-else :href="item.href" class="text-sm font-medium cursor-pointer relative">
-              <Motion is="span" class="block" :style="{ color: 'rgba(255, 255, 255, 0.7)' }"
-                :while-hover="{ color: '#ffffff', scale: 1.05 }" :transition="{ duration: 0.2 }">
+              <Motion is="span" class="block" :style="{ color: ui.colors.muted }"
+                :while-hover="ui.animations.hover.navLink">
                 {{ item.label }}
               </Motion>
             </a>
@@ -162,8 +193,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         <div class="hidden md:flex items-center gap-4">
           <template v-if="$page.props.auth.user">
             <Link href="/explore">
-              <Motion is="span" class="text-sm font-medium block" :style="{ color: 'rgba(255, 255, 255, 0.7)' }"
-                :while-hover="{ color: '#ffffff' }">
+              <Motion is="span" class="text-sm font-medium block" :style="{ color: ui.colors.muted }"
+                :while-hover="{ color: ui.colors.primary }">
                 Explore
               </Motion>
             </Link>
@@ -187,7 +218,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
     <AnimatePresence>
       <Motion v-if="mobileMenuOpen" :initial="{ opacity: 0, y: -20 }" :animate="{ opacity: 1, y: 0 }"
-        :exit="{ opacity: 0, y: -20 }" class="fixed inset-0 z-40 bg-black pt-28 px-6 md:hidden">
+        :exit="{ opacity: 0, y: -20 }" class="fixed inset-0 z-40 bg-black pt-28 px-6 md:hidden flex flex-col"
+        :style="{ paddingBottom: 'var(--sab, 0px)', paddingTop: 'calc(var(--sat, 0px) + 7rem)' }">
         <div class="flex flex-col gap-8 text-2xl font-light">
           <a v-for="item in nav" :key="item.label" :href="item.href" @click="mobileMenuOpen = false"
             class="block py-2 border-b border-white/10 text-white/90">
@@ -214,36 +246,31 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
       </Motion>
     </AnimatePresence>
 
-    <section class="min-h-screen flex items-center justify-center relative overflow-hidden group">
+    <section class="min-h-dvh flex items-center justify-center relative overflow-hidden group">
       <Motion class="absolute inset-0 z-0 overflow-hidden" :style="{ y: heroImageY }">
-        <div class="absolute inset-0 bg-black/70 z-10 w-full h-full"></div>
+        <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
 
         <Motion class="w-full h-[120%] will-change-transform" :style="{ scale: heroImageScale }">
-          <img src="/images/heroSection.jpg" class="w-full h-full object-cover object-center opacity-80 ease-out" />
+          <SplineHero />
         </Motion>
         <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
         </div>
       </Motion>
 
-      <div class="relative z-20 text-center px-6 max-w-[90rem] mx-auto mt-20 w-full">
+      <div :class="ui.layout.hero">
         <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
-          <Motion class="mb-10 md:mb-16" :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
-            :animate="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const } }">
-            <Motion is="h1"
-              class="text-hero font-medium tracking-tighter leading-[0.85] origin-center will-change-transform text-white"
+          <Motion class="mb-10 md:mb-16" :initial="ui.animations.pageTransition.initial"
+            :animate="ui.animations.pageTransition.enter">
+            <Motion is="h1" :class="[ui.typography.hero, 'origin-center will-change-transform']"
               :style="{ y: headerY, scale: headerScale, filter: headerBlur, opacity: headerOpacity }">
-              Where <span
-                class="font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 mx-2">thoughts</span>
-              <br class="md:hidden" />
-              become <span
-                class="font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 mx-2">actions</span>.
+              Where <span :class="[ui.typography.accentHero, 'mx-2']">thoughts</span> <br class="md:hidden" />
+              become <span :class="[ui.typography.accentHero, 'mx-2']">actions</span>.
             </Motion>
           </Motion>
 
-          <Motion class="max-w-xl md:max-w-3xl mx-auto text-center"
-            :initial="{ opacity: 0, y: 40, filter: 'blur(10px)' }"
-            :animate="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const, delay: 0.2 } }">
-            <Motion is="p" class="text-lg md:text-xl font-light text-white/60 leading-relaxed md:leading-normal"
+          <Motion class="max-w-xl md:max-w-3xl mx-auto text-center" :initial="ui.animations.pageTransition.initial"
+            :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.2 } }">
+            <Motion is="p" :class="[ui.typography.body, 'md:text-xl md:leading-normal']"
               :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
               An AI companion that <span class="text-white/90">whispers clarity</span>, <br class="hidden md:block" />
               conjures ideas, and guides your every move into the void.
@@ -264,8 +291,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
     <div class="bg-black relative z-10 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
 
-      <section class="pt-section px-6">
-        <div class="max-w-[1400px] mx-auto">
+      <section class="pt-section" :class="ui.layout.sectionPadding">
+        <div :class="ui.layout.sectionContainer">
           <Motion :initial="false" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true, margin: '-100px' }"
             class="flex items-center gap-4 mb-12">
 
@@ -283,7 +310,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
           <Motion :initial="{ opacity: 0, y: 50, filter: 'blur(10px)' }"
             :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }" :viewport="{ once: true }"
             :transition="{ duration: 1 }">
-            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white/90 max-w-4xl mb-12 md:mb-24">
+            <h2 :class="[ui.typography.display, 'max-w-4xl mb-12 md:mb-24']">
               Harness invisible power to write faster, <br class="hidden md:block" />
               focus deeper, and save hours.
             </h2>
@@ -291,8 +318,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="features" class="pb-section px-6">
-        <div class="max-w-[1400px] mx-auto">
+      <section id="features" class="pb-section" :class="ui.layout.sectionPadding">
+        <div :class="ui.layout.sectionContainer">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
             <Motion :initial="{ opacity: 0, y: 50 }"
@@ -324,7 +351,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
                   </div>
                 </div>
               </Motion>
-              <h3 class="text-title font-light tracking-tight text-white mb-3">Time Unfolded</h3>
+              <h3 :class="[ui.typography.title, 'mb-3']">Time Unfolded</h3>
               <p class="text-white/50">
                 Automate tasks and reclaim hours, your AI assistant turns routine into seconds so you can focus on
                 growth.
@@ -393,8 +420,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="pricing" class="py-section px-6 border-b border-white/5">
-        <div class="max-w-[1400px] mx-auto">
+      <section id="pricing" class="py-section border-b border-white/5" :class="ui.layout.sectionPadding">
+        <div :class="ui.layout.sectionContainer">
           <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
             class="flex items-center gap-4 mb-12">
             <div class="w-2 h-2 rounded-full bg-white/20"></div>
@@ -402,9 +429,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
           </Motion>
 
           <div class="mb-12 md:mb-24">
-            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white mb-4 md:mb-6">Simple, Transparent
-              Pricing</h2>
-            <p class="text-base text-white/60">Choose the plan that's right for you. No hidden fees.</p>
+            <h2 :class="[ui.typography.display, 'text-white mb-4 md:mb-6']">Simple, Transparent Pricing</h2>
+            <p :class="ui.typography.body">Choose the plan that's right for you. No hidden fees.</p>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -412,9 +438,9 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
               :transition="{ delay: 0.1, duration: 0.5 }" :viewport="{ once: true }"
               class="p-8 border border-white/10 bg-[#111] relative group h-full cursor-default"
               :while-hover="{ borderColor: 'rgba(255,255,255,0.2)' }">
-              <h3 class="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Ecnelis</h3>
+              <h3 :class="[ui.typography.title, 'mb-4']">Ecnelis</h3>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-white" style="font-size: var(--text-title);">$0</span>
+                <span class="text-white" :style="{ fontSize: 'var(--text-title)' }">$0</span>
                 <span class="text-white/40">/mo</span>
               </div>
               <p class="text-white/60 mb-8 h-12">Perfect for getting started with AI</p>
@@ -432,9 +458,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
               </ul>
 
               <Link href="/explore">
-                <Motion
-                  class="block w-full py-3 px-4 border border-white/20 text-center text-white text-sm font-medium rounded-sm"
-                  :while-hover="{ backgroundColor: '#ffffff', color: '#000000', borderColor: '#ffffff' }">
+                <Motion :class="ui.layout.buttonOutline" :while-hover="ui.animations.hover.buttonOutline">
                   Start Building
                 </Motion>
               </Link>
@@ -460,7 +484,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
                 Ecnelis+
               </Motion>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-white" style="font-size: var(--text-title);">$20</span>
+                <span class="text-white" :style="{ fontSize: 'var(--text-title)' }">$20</span>
                 <span class="text-white/40">/mo</span>
               </div>
               <p class="text-white/60 mb-8 h-12">For power users who need more available resources.</p>
@@ -500,7 +524,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
               <h3 class="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Enterprise</h3>
               <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-white" style="font-size: var(--text-title);">Custom</span>
+                <span class="text-white" :style="{ fontSize: 'var(--text-title)' }">Custom</span>
               </div>
               <p class="text-white/60 mb-8 h-12">For organizations with custom needs to scale.</p>
 
@@ -516,8 +540,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
                 </li>
               </ul>
 
-              <button disabled
-                class="block w-full py-3 px-4 border border-white/20 text-center text-white text-sm font-medium hover:bg-white hover:text-black transition-colors rounded-sm cursor-not-allowed opacity-50">
+              <button disabled :class="[ui.layout.buttonOutline, 'w-full cursor-not-allowed opacity-50']">
                 Contact Sales
               </button>
             </Motion>
@@ -525,7 +548,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section id="faq" class="py-section px-6 border-t border-white/5 bg-[#050505]">
+      <section id="faq" class="py-section border-t border-white/5 bg-[#050505]" :class="ui.layout.sectionPadding">
         <div class="max-w-[1000px] mx-auto">
           <div class="text-center mb-12 md:mb-24">
             <span class="text-xs font-mono text-white/40 mb-4 block uppercase tracking-widest">Support</span>
@@ -538,8 +561,8 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
             <div v-for="(faq, index) in faqs" :key="index"
               class="border-t border-white/10 bg-transparent transition-colors">
               <button @click="toggleFaq(index)" class="w-full flex items-center justify-between py-6 text-left group">
-                <Motion is="span" class="font-light text-white/90 transition-colors"
-                  :style="{ fontSize: 'var(--text-lg)' }" :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
+                <Motion is="span" :class="ui.typography.title" :style="{ color: 'rgba(255, 255, 255, 0.9)' }"
+                  :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
                 <span class="text-white/30 group-hover:text-white transition-colors relative">
                   <Plus v-if="!faq.open" class="w-5 h-5" />
                   <X v-else class="w-5 h-5" />
@@ -560,8 +583,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
         </div>
       </section>
 
-      <section
-        class="min-h-screen relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
+      <section class="min-h-dvh relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
         <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
 
         <Motion class="absolute inset-0 w-full h-full overflow-hidden opacity-60 mix-blend-screen grayscale"
@@ -581,10 +603,9 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
 
             <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
               :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }">
-              <h1 class="text-hero font-medium tracking-tighter leading-[0.9] text-white mb-8 md:mb-12">
+              <h1 :class="[ui.typography.hero, 'mb-8 md:mb-12']">
                 Shape the <br />
-                <span
-                  class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">
+                <span :class="ui.typography.accentHero">
                   Future.
                 </span>
               </h1>
@@ -593,8 +614,7 @@ const buttonHover = { scale: 1.05, transition: { duration: 0.2 } };
             <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
               :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }"
               class="flex flex-col items-center gap-6">
-              <Link href="/register"
-                class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 md:px-12 md:py-6 bg-white text-black text-base md:text-lg font-medium rounded-full overflow-hidden">
+              <Link href="/register" :class="ui.layout.button">
 
                 <Motion class="absolute inset-0 bg-white" :while-hover="{ scale: 1.05 }" />
                 <Motion class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
