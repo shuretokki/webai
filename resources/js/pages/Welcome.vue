@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Motion, AnimatePresence, useMotionValue, useTransform } from 'motion-v';
-import { useEventListener } from '@vueuse/core';
+import Lenis from 'lenis';
 import {
   ChevronDown,
   ArrowRight,
@@ -21,12 +21,32 @@ defineProps<{
 
 const mobileMenuOpen = ref(false);
 const scrollY = useMotionValue(0);
+let lenis: Lenis | null = null;
 
-if (typeof window !== 'undefined') {
-  useEventListener(window, 'scroll', () => {
-    scrollY.set(window.scrollY);
+onMounted(() => {
+  lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
   });
-}
+
+  lenis.on('scroll', (e: any) => {
+    scrollY.set(e.scroll);
+  });
+
+  function raf(time: number) {
+    lenis?.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+});
+
+onBeforeUnmount(() => {
+  lenis?.destroy();
+});
 
 const heroImageY = useTransform(
   scrollY,
