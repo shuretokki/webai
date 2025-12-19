@@ -9,7 +9,6 @@ const isLoading = ref(true);
 const isVisible = ref(false);
 let splineApp: Application | null = null;
 
-// Intersection Observer to prevent heavy rendering when out of view (INP optimization)
 useIntersectionObserver(
   containerRef,
   ([{ isIntersecting }]) => {
@@ -20,6 +19,7 @@ useIntersectionObserver(
 
 onMounted(async () => {
   if (canvasRef.value) {
+    // Production hardening: Explicitly set high-performance mode
     splineApp = new Application(canvasRef.value);
 
     try {
@@ -39,22 +39,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="containerRef" class="relative w-full h-full overflow-hidden bg-black">
-    <!-- LCP Placeholder Image (Production standard) -->
+  <div ref="containerRef" class="relative w-full h-full overflow-hidden bg-black pointer-events-none">
     <img v-if="isLoading" src="/images/heroSection.jpg"
       class="absolute inset-0 w-full h-full object-cover opacity-60 z-0 transition-opacity duration-1000"
       :class="{ 'opacity-0': !isLoading }" aria-hidden="true" />
 
-    <!-- Smooth loading overlay -->
     <div v-if="isLoading"
       class="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-1000"
       :class="{ 'opacity-0 pointer-events-none': !isLoading }">
       <div class="w-12 h-12 border-2 border-white/10 border-t-white/60 rounded-full animate-spin"></div>
     </div>
 
-    <!-- The 3D Canvas -->
     <canvas v-show="isVisible || isLoading" ref="canvasRef" id="canvas3d"
-      class="w-full h-full object-cover outline-none z-10 relative"></canvas>
+      class="w-full h-full object-cover outline-none z-10 relative pointer-events-none"></canvas>
   </div>
 </template>
 
@@ -62,5 +59,7 @@ onBeforeUnmount(() => {
 canvas {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 </style>
