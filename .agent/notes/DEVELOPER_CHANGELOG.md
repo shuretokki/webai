@@ -128,21 +128,21 @@ public function callback(string $provider): RedirectResponse
 {
     $this->validateProvider($provider);
     $socialUser = Socialite::driver($provider)->user();
-    
+
     // Check existing social identity
     $socialIdentity = SocialIdentity::where('provider_name', $provider)
         ->where('provider_id', $socialUser->getId())
         ->first();
-    
+
     if ($socialIdentity) {
         // Update tokens and avatar
         $user = $socialIdentity->user;
         // ... login existing user
     }
-    
+
     // Check for existing user by email
     $user = User::where('email', $socialUser->getEmail())->first();
-    
+
     if ($user) {
         // Link social account to existing user
         $this->linkSocialAccount($user, $provider, $socialUser);
@@ -150,7 +150,7 @@ public function callback(string $provider): RedirectResponse
         // Create new user from social profile
         $user = $this->createUserFromSocial($provider, $socialUser);
     }
-    
+
     Auth::login($user);
     return redirect()->intended('/chat');
 }
@@ -168,11 +168,11 @@ public function disconnect(string $provider): RedirectResponse
     $socialIdentity = $user->socialIdentities()
         ->where('provider_name', $provider)
         ->first();
-    
+
     if ($socialIdentity) {
         $socialIdentity->delete();
     }
-    
+
     return back()->with('status', ucfirst($provider).' account disconnected.');
 }
 ```
@@ -463,7 +463,7 @@ public function up(): void
 
 ### Production Best Practices Applied
 
-1. **Security:** 
+1. **Security:**
    - Provider tokens hidden from serialization
    - CSRF protection on all POST routes
    - Email verification auto-granted for OAuth users
