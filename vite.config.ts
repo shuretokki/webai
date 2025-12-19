@@ -1,4 +1,5 @@
 import { wayfinder } from '@laravel/vite-plugin-wayfinder';
+import viteImagemin from 'vite-plugin-imagemin';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
@@ -56,6 +57,33 @@ export default defineConfig({
                 }
             ],
             dts: 'resources/js/types/components.d.ts',
+        }),
+        viteImagemin({
+            gifsicle: {
+                optimizationLevel: 7,
+                interlaced: false,
+            },
+            optipng: {
+                optimizationLevel: 7,
+            },
+            mozjpeg: {
+                quality: 20,
+            },
+            pngquant: {
+                quality: [0.8, 0.9],
+                speed: 4,
+            },
+            svgo: {
+                plugins: [
+                    {
+                        name: 'removeViewBox',
+                    },
+                    {
+                        name: 'removeEmptyAttrs',
+                        active: false,
+                    },
+                ],
+            },
         }),
     ],
 });
