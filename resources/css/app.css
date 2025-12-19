@@ -169,15 +169,25 @@
     --sidebar-border: hsl(0 0% 20%);
     --sidebar-ring: hsl(0 0% 83%);
     --sidebar: hsl(0 0% 0%);
-}
+    }
 
 @layer base {
     * {
         @apply border-border outline-ring/50;
     }
+
+    :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+    }
+
     body {
-        @apply bg-background text-foreground font-sans;
-        font-size: var(--text-base);
+        @apply bg-background text-foreground;
+        min-height: 100dvh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     h1 {
@@ -230,7 +240,15 @@
     .pt-section {
         padding-top: var(--space-section);
     }
-    .pb-section {
-        padding-bottom: var(--space-section);
+    .min-h-section {
+        min-height: clamp(400px, 80dvh, 1000px);
+    }
+
+    .h-dvh {
+        height: 100dvh;
+    }
+
+    .min-h-dvh {
+        min-height: 100dvh;
     }
 }
