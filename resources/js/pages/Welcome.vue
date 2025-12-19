@@ -120,42 +120,9 @@ const navBackdrop = useTransform(
   ui.navigation.backdrop.scrolled]
 );
 
-const secondaryStackScale = useTransform(
-  scrollY,
-  [300, 1200],
-  [1, 0.7]
-);
-
-const content = {
-  hero: {
-    title: {
-      l1: 'Where',
-      accent1: 'thoughts',
-      l2: 'become',
-      accent2: 'actions',
-    },
-    subtitle: {
-      prefix: 'An AI companion that',
-      highlight: 'whispers clarity',
-      suffix: ', conjures ideas, and guides your every move into the void.'
-    }
-  },
-  features: {
-    label: 'Introducing Message',
-    mainTitle: 'Harness invisible power to write faster,',
-    subTitle: 'and think clearer.',
-    cta: 'Get Started Now',
-    note: 'No credit card required for standard plans.'
-  },
-  footer: {
-    contact: {
-      phone: '+27 (0) 78 054 8476',
-      email: 'Write Us',
-      newsletter: 'Newsletter Signup'
-    },
-    brand: 'Ecnelis'
-  }
-};
+const globalContentScale = useTransform(scrollY, [600, 1600], [1, 0.7]);
+const secondaryStackScale = useTransform(scrollY, [600, 1600], [1, 0.8]);
+const welcomeSpacerOpacity = useTransform(scrollY, [0, 600], [1, 0]);
 
 const nav = [
   { label: 'About', href: '/about' },
@@ -358,6 +325,9 @@ const toggleFaq = (index: number) => {
         </Motion>
       </Motion>
     </section>
+
+    <!-- Transition Spacer for clean scale centering -->
+    <div class="h-[60dvh] w-full bg-black pointer-events-none"></div>
 
     <Motion :style="{ scale: secondaryStackScale }" class="origin-top">
       <div class="bg-black relative z-10 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
@@ -683,7 +653,7 @@ const toggleFaq = (index: number) => {
                 <h1 :class="[ui.typography.hero, 'mb-8 md:mb-12']">
                   Shape the <br />
                   <span :class="ui.typography.accentHero">
-                    {{ content.features.subTitle }}
+                    Future.
                   </span>
                 </h1>
               </Motion>
@@ -746,23 +716,21 @@ const toggleFaq = (index: number) => {
                     Tell us about your project.<br>
                     Let's collaborate.
                   </p>
-                  <p class="text-white text-base tracking-wide">{{ content.footer.contact.phone }}</p>
+                  <p class="text-white text-base tracking-wide">+27 (0) 78 054 8476</p>
                   <div class="flex flex-col md:items-end gap-2 text-white/70">
-                    <Motion is="a" href="#" :while-hover="{ color: '#fff' }">{{ content.footer.contact.email }}</Motion>
-                    <Motion is="a" href="#" :while-hover="{ color: '#fff' }">{{ content.footer.contact.newsletter }}
-                    </Motion>
+                    <Motion is="a" href="#" :while-hover="{ color: '#fff' }">Write Us</Motion>
+                    <Motion is="a" href="#" :while-hover="{ color: '#fff' }">Newsletter Signup</Motion>
                   </div>
                   <p class="pt-8 opacity-30">20:40:16 (GMT+2)</p>
                 </div>
               </div>
             </div>
 
-            <div
-              class="border-t border-white/10 pt-4 md:pt-8 flex justify-center overflow-hidden w-full pb-0 mb-[-1px]">
+            <div class="border-t border-white/10 pt-4 md:pt-8 flex justify-center overflow-hidden w-full">
               <h1
-                class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap select-none pointer-events-none w-full block text-transparent translate-y-[10%]"
+                class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap select-none pointer-events-none w-full block text-transparent"
                 style="-webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);">
-                {{ content.footer.brand }}
+                Ecnelis
               </h1>
             </div>
           </div>
