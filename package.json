@@ -48,6 +48,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.1.0",
         "@shikijs/markdown-it": "^3.19.0",
+        "@splinetool/runtime": "^1.12.26",
         "@types/markdown-it": "^14.1.2",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
