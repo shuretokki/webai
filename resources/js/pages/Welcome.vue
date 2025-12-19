@@ -570,14 +570,6 @@ const preFooterItem = {
             :viewport="{ once: true, margin: '-20%' }">
 
             <Motion :variants="preFooterItem">
-              <span
-                class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-white/60 mb-10 backdrop-blur-md hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-default">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Start your journey
-              </span>
-            </Motion>
-
-            <Motion :variants="preFooterItem">
               <h2 class="text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-12 tracking-tighter leading-[0.9]">
                 Shape the <br />
                 <span
@@ -646,7 +638,8 @@ const preFooterItem = {
 
           <div class="border-t border-white/10 pt-4 md:pt-8 flex justify-center overflow-hidden w-full">
             <h1
-              class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap opacity-90 select-none pointer-events-none w-full block">
+              class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap select-none pointer-events-none w-full block text-transparent"
+              style="-webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);">
               Ecnelis
             </h1>
           </div>
