@@ -81,6 +81,7 @@ export const ui = {
         opacityRange: [0, 500],
         blur: ['blur(0px)', 'blur(10px)'],
         opacity: [1, 0],
+        lineHeight: [0.85, 1.1], // New line-height animation
       },
       preFooter: {
         y: (v: number) => -50 + v * 0.05,
