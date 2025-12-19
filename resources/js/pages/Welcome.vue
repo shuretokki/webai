@@ -156,6 +156,9 @@ const toggleFaq = (index: number) => {
   <Head title="Welcome">
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="preload" href="/images/heroSection.jpg" as="image" />
+    <link rel="preload" href="https://prod.spline.design/CCJpn9mqbF1JOqmZ/scene.splinecode" as="fetch"
+      crossorigin="anonymous" />
   </Head>
 
   <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative">
@@ -246,7 +249,7 @@ const toggleFaq = (index: number) => {
       </Motion>
     </AnimatePresence>
 
-    <section class="min-h-dvh flex items-center justify-center relative overflow-hidden group">
+    <section class="min-h-dvh h-hero-reserved flex items-center justify-center relative overflow-hidden group">
       <Motion class="absolute inset-0 z-0 overflow-hidden" :style="{ y: heroImageY }">
         <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
 
