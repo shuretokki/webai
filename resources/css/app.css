@@ -251,4 +251,16 @@
     .min-h-dvh {
         min-height: 100dvh;
     }
+
+    /* CLS & LCP Hardening */
+    .h-hero-reserved {
+        height: 100dvh;
+        min-height: 600px;
+        background-color: #000;
+    }
+
+    .aspect-video-reserved {
+        aspect-ratio: 16/9;
+        background-color: rgba(255, 255, 255, 0.02);
+    }
 }
