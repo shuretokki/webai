@@ -125,31 +125,7 @@ const zoomIn = {
   onscreen: { scale: 1, opacity: 1, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
-const lineDraw = {
-  offscreen: { pathLength: 0, opacity: 0 },
-  onscreen: { pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: "easeInOut" as const } }
-};
 
-const preFooterContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.1
-    }
-  }
-};
-
-const preFooterItem = {
-  hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as const }
-  }
-};
 
 </script>
 
@@ -286,7 +262,9 @@ const preFooterItem = {
             <div class="w-12 h-[1px] relative">
               <Motion is="svg" viewBox="0 0 48 1" class="absolute inset-0 w-full h-full text-white/40">
                 <Motion is="line" x1="0" y1="0.5" x2="48" y2="0.5" stroke="currentColor" stroke-width="1"
-                  :variants="lineDraw" initial="offscreen" while-in-view="onscreen" :viewport="{ once: true }" />
+                  :initial="{ pathLength: 0, opacity: 0 }"
+                  :while-in-view="{ pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: 'easeInOut' } }"
+                  :viewport="{ once: true }" />
               </Motion>
             </div>
             <span class="text-sm text-white/40 font-medium">Introducing Message</span>
@@ -552,7 +530,8 @@ const preFooterItem = {
         </div>
       </section>
 
-      <section class="h-screen relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
+      <section
+        class="min-h-screen relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
         <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
 
         <div
@@ -566,11 +545,14 @@ const preFooterItem = {
         </div>
 
         <div class="relative z-30 max-w-5xl mx-auto px-6 text-center">
-          <Motion :variants="preFooterContainer" initial="hidden" while-in-view="visible"
+          <Motion :initial="{ opacity: 0 }"
+            :while-in-view="{ opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.1 } }"
             :viewport="{ once: true, margin: '-20%' }">
 
-            <Motion :variants="preFooterItem">
-              <h2 class="text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-12 tracking-tighter leading-[0.9]">
+            <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
+              :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }">
+              <h2
+                class="text-4xl sm:text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-8 md:mb-12 tracking-tighter leading-[0.9]">
                 Shape the <br />
                 <span
                   class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">
@@ -579,16 +561,18 @@ const preFooterItem = {
               </h2>
             </Motion>
 
-            <Motion :variants="preFooterItem" class="flex flex-col items-center gap-6">
+            <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
+              :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }"
+              class="flex flex-col items-center gap-6">
               <Link href="/register"
-                class="group relative inline-flex items-center justify-center gap-3 px-12 py-6 bg-white text-black text-lg font-medium rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95">
+                class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 md:px-12 md:py-6 bg-white text-black text-base md:text-lg font-medium rounded-full overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95">
                 <span class="relative z-10">Get Started Now</span>
                 <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
                 <div
                   class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
                 </div>
               </Link>
-              <p class="text-white/40 text-sm">No credit card required for standard plans.</p>
+              <p class="text-white/40 text-xs md:text-sm">No credit card required for standard plans.</p>
             </Motion>
 
           </Motion>
