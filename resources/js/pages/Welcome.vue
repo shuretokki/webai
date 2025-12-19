@@ -531,27 +531,40 @@ const lineDraw = {
         </div>
       </section>
 
-      <section class="relative h-[600px] flex items-center mb-10 mx-6 rounded-sm overflow-hidden">
-        <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
+      <section class="h-screen relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
+        <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
 
-        <div class="absolute inset-0 w-full h-full overflow-hidden">
+        <div
+          class="absolute inset-0 w-full h-full overflow-hidden opacity-60 mix-blend-screen grayscale group-hover:grayscale-0 transition-all duration-[2s]">
           <img src="/images/preFooter.jpg" alt="Pre footer bg"
-            class="absolute inset-0 w-full h-[115%] object-cover object-center"
+            class="absolute inset-0 w-full h-full object-cover object-center scale-110 group-hover:scale-100 transition-transform duration-[2s] ease-out"
             :style="{ transform: `translateY(${-50 + y * 0.05}px) scale(${1 + y * 0.0001})` }" />
         </div>
 
-        <div class="relative z-20 max-w-[1400px] mx-auto px-12 md:px-20 w-full">
-          <Motion :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }">
-            <h2 class="text-4xl md:text-6xl font-light text-white mb-6 max-w-2xl leading-tight">
-              Step into the future, <br /> guided by AI clarity
+        <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-transparent to-transparent z-20">
+        </div>
+
+        <div class="relative z-30 max-w-5xl mx-auto px-6 text-center">
+          <Motion :initial="{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }"
+            :while-in-view="{ opacity: 1, scale: 1, filter: 'blur(0px)' }" :viewport="{ once: true, margin: '-10%' }"
+            :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }">
+            <span
+              class="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/10 text-xs font-mono uppercase tracking-widest text-white/70 mb-8 backdrop-blur-md">
+              Start your journey
+            </span>
+            <h2 class="text-5xl md:text-8xl lg:text-9xl font-medium text-white mb-10 tracking-tighter leading-[0.9]">
+              Shape the <br /> <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic font-serif">Future.</span>
             </h2>
-            <p class="text-white/80 text-lg mb-10 max-w-md font-light">
-              Experience the tool right now. Just dive in and see what AI can do for you.
-            </p>
-            <Link href="/register"
-              class="inline-block px-8 py-3 bg-white text-black font-medium hover:scale-105 transition-transform duration-300">
-              Try It Now
-            </Link>
+
+            <div class="flex flex-col items-center gap-6">
+              <Link href="/register"
+                class="group relative inline-flex items-center gap-2 px-10 py-5 bg-white text-black text-lg font-medium rounded-sm overflow-hidden transition-all hover:bg-white/90 hover:scale-105 active:scale-95">
+                <span>Get Started Now</span>
+                <ArrowRight class="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <p class="text-white/40 text-sm">No credit card required for standard plans.</p>
+            </div>
           </Motion>
         </div>
       </section>
