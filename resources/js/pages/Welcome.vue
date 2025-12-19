@@ -141,8 +141,8 @@ const lineDraw = {
 
   <div class="min-h-screen bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative">
 
-    <div class="fixed inset-0 pointer-events-none z-[60] opacity-[0.15] mix-blend-screen"
-      style="background-image: url('/images/noise.svg'); background-size: 150px;">
+    <div class="fixed inset-0 pointer-events-none z-[60] opacity-[0.8] mix-blend-overlay"
+      style="background-image: url('/images/noise.jpg');">
     </div>
 
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b border-transparent"
@@ -213,7 +213,7 @@ const lineDraw = {
       <div class="absolute inset-0 z-0 overflow-hidden" :style="{ transform: `translateY(${y * 0.8}px)` }">
         <div class="absolute inset-0 bg-black/70 z-10 w-full h-full"></div>
 
-        <img src="/images/heroSection.jpg" :style="{ transform: `scale(${1 + y * 0.0002})` }"
+        <img src="/images/heroSection.jpg" :style="{ transform: `scale(${1 + y * 0.001})` }"
           class="w-full h-[120%] object-cover object-center opacity-80 ease-out will-change-transform" />
         <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
         </div>
@@ -223,7 +223,7 @@ const lineDraw = {
         <Motion initial="initial" animate="enter" :variants="staggerContainer">
           <Motion :variants="fadeInUp" class="mb-16 md:mb-24">
             <h1 :style="{
-              transform: `translateY(${y * 0.3}px) scale(${headerScale})`,
+              transform: `translateY(${y * 1}px) scale(${headerScale})`,
               filter: `blur(${headerBlur}px)`
             }"
               class="text-5xl md:text-8xl lg:text-[9rem] font-medium tracking-tighter text-white leading-[0.9] origin-center will-change-transform">
@@ -234,7 +234,7 @@ const lineDraw = {
 
           <Motion :variants="fadeInUp" class="md:max-w-2xl mx-auto text-center">
             <p :style="{
-              transform: `translateY(${y * 0.3}px) scale(${headerScale})`,
+              transform: `translateY(${y * 1}px) scale(${headerScale})`,
               opacity: Math.max(0, 1 - (y * 0.002))
             }" class="text-xl md:text-2xl text-white/80 font-light leading-relaxed">
               An AI companion that whispers clarity, conjures ideas, and guides your every move.
@@ -243,7 +243,10 @@ const lineDraw = {
         </Motion>
       </div>
 
-      <div
+      <div :style="{
+        transform: `translateY(${y * 1}px) scale(${headerScale})`,
+        opacity: Math.max(0, 1 - (y * 0.002))
+      }"
         class="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/40 text-xs uppercase tracking-[0.2em] flex flex-col items-center gap-4 z-20">
         Scroll to explore
         <Motion :animate="{ y: [0, 10, 0] }" :transition="{ duration: 2, repeat: Infinity, ease: 'easeInOut' }">
@@ -252,7 +255,7 @@ const lineDraw = {
       </div>
     </section>
 
-    <div class="bg-[#050505] relative z-10 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
+    <div class="bg-black relative z-10 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
 
       <section class="pt-32 px-6">
         <div class="max-w-[1400px] mx-auto">
@@ -498,31 +501,6 @@ const lineDraw = {
         </div>
       </section>
 
-      <section class="relative h-[600px] flex items-center mb-10 mx-6 rounded-sm overflow-hidden">
-        <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
-
-        <div class="absolute inset-0 w-full h-full overflow-hidden">
-          <img src="/images/preFooter.jpg" alt="Pre footer bg"
-            class="absolute inset-0 w-full h-[115%] object-cover object-center"
-            :style="{ transform: `translateY(${-50 + y * 0.05}px) scale(${1 + y * 0.0001})` }" />
-        </div>
-
-        <div class="relative z-20 max-w-[1400px] mx-auto px-12 md:px-20 w-full">
-          <Motion :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }">
-            <h2 class="text-4xl md:text-6xl font-light text-white mb-6 max-w-2xl leading-tight">
-              Step into the future, <br /> guided by AI clarity
-            </h2>
-            <p class="text-white/80 text-lg mb-10 max-w-md font-light">
-              Experience the tool right now. Just dive in and see what AI can do for you.
-            </p>
-            <Link href="/register"
-              class="inline-block px-8 py-3 bg-white text-black font-medium hover:scale-105 transition-transform duration-300">
-              Try It Now
-            </Link>
-          </Motion>
-        </div>
-      </section>
-
       <section id="faq" class="py-32 px-6 border-t border-white/5 bg-[#050505]">
         <div class="max-w-[1000px] mx-auto">
           <div class="text-center mb-20">
@@ -550,6 +528,31 @@ const lineDraw = {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="relative h-[600px] flex items-center mb-10 mx-6 rounded-sm overflow-hidden">
+        <div class="absolute inset-0 bg-black/40 z-10 w-full h-full"></div>
+
+        <div class="absolute inset-0 w-full h-full overflow-hidden">
+          <img src="/images/preFooter.jpg" alt="Pre footer bg"
+            class="absolute inset-0 w-full h-[115%] object-cover object-center"
+            :style="{ transform: `translateY(${-50 + y * 0.05}px) scale(${1 + y * 0.0001})` }" />
+        </div>
+
+        <div class="relative z-20 max-w-[1400px] mx-auto px-12 md:px-20 w-full">
+          <Motion :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }">
+            <h2 class="text-4xl md:text-6xl font-light text-white mb-6 max-w-2xl leading-tight">
+              Step into the future, <br /> guided by AI clarity
+            </h2>
+            <p class="text-white/80 text-lg mb-10 max-w-md font-light">
+              Experience the tool right now. Just dive in and see what AI can do for you.
+            </p>
+            <Link href="/register"
+              class="inline-block px-8 py-3 bg-white text-black font-medium hover:scale-105 transition-transform duration-300">
+              Try It Now
+            </Link>
+          </Motion>
         </div>
       </section>
 
@@ -596,8 +599,8 @@ const lineDraw = {
 
           <div class="border-t border-white/10 pt-4 md:pt-8 flex justify-center overflow-hidden w-full">
             <h1
-              class="text-[13vw] md:text-[15.5vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap opacity-90 select-none pointer-events-none w-full block">
-              Ecnelis Studio
+              class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap opacity-90 select-none pointer-events-none w-full block">
+              Ecnelis
             </h1>
           </div>
         </div>
