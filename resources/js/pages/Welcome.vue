@@ -107,7 +107,7 @@ const fadeInUp = {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }
   }
 };
 
@@ -117,17 +117,17 @@ const staggerContainer = {
 
 const slideUp = {
   offscreen: { opacity: 0, y: 50 },
-  onscreen: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  onscreen: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
 };
 
 const zoomIn = {
   offscreen: { scale: 0.95, opacity: 0.5 },
-  onscreen: { scale: 1, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } }
+  onscreen: { scale: 1, opacity: 1, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 const lineDraw = {
   offscreen: { pathLength: 0, opacity: 0 },
-  onscreen: { pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: "easeInOut" } }
+  onscreen: { pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: "easeInOut" as const } }
 };
 
 </script>
@@ -262,15 +262,15 @@ const lineDraw = {
             <div class="w-12 h-[1px] relative">
               <Motion is="svg" viewBox="0 0 48 1" class="absolute inset-0 w-full h-full text-white/40">
                 <Motion is="line" x1="0" y1="0.5" x2="48" y2="0.5" stroke="currentColor" stroke-width="1"
-                  :variants="lineDraw" initial="offscreen" while-in-view="onscreen" viewport="{ once: true }" />
+                  :variants="lineDraw" initial="offscreen" while-in-view="onscreen" :viewport="{ once: true }" />
               </Motion>
             </div>
             <span class="text-sm text-white/40 font-medium">Introducing Message</span>
           </Motion>
 
-          <Motion initial="{ opacity: 0, y: 50, filter: 'blur(10px)' }"
-            while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }" viewport="{ once: true }"
-            transition="{ duration: 1 }">
+          <Motion :initial="{ opacity: 0, y: 50, filter: 'blur(10px)' }"
+            :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }" :viewport="{ once: true }"
+            :transition="{ duration: 1 }">
             <h2 class="text-4xl md:text-6xl font-light text-white/90 max-w-4xl leading-[1.1] tracking-tight mb-20">
               Harness invisible power to write faster, <br class="hidden md:block" />
               focus deeper, and save hours.
@@ -318,7 +318,7 @@ const lineDraw = {
             </Motion>
 
             <Motion :variants="slideUp" initial="offscreen" while-in-view="onscreen"
-              viewport="{ once: true, margin: '-50px' }" transition="{ delay: 0.2 }" class="group">
+              :viewport="{ once: true, margin: '-50px' }" :transition="{ delay: 0.2 }" class="group">
               <div
                 class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5 hover:border-white/10 transition-colors">
                 <div class="absolute inset-0 w-full h-full overflow-hidden">
@@ -343,7 +343,7 @@ const lineDraw = {
             </Motion>
 
             <Motion :variants="slideUp" initial="offscreen" while-in-view="onscreen"
-              viewport="{ once: true, margin: '-100px' }" transition="{ delay: 0.4 }" class="group">
+              :viewport="{ once: true, margin: '-100px' }" :transition="{ delay: 0.4 }" class="group">
               <div
                 class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5 hover:border-white/10 transition-colors">
                 <div class="absolute inset-0 w-full h-full overflow-hidden">
@@ -377,7 +377,7 @@ const lineDraw = {
 
       <section id="pricing" class="py-24 px-6 border-b border-white/5">
         <div class="max-w-[1400px] mx-auto">
-          <Motion initial="{ opacity: 0 }" while-in-view="{ opacity: 1 }" viewport="{ once: true }"
+          <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
             class="flex items-center gap-4 mb-12">
             <div class="w-2 h-2 rounded-full bg-white/20"></div>
             <span class="text-sm text-white/40 font-medium">Introducing Benefit</span>
@@ -390,8 +390,8 @@ const lineDraw = {
 
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             <!-- Pricing cards slide from bottom -->
-            <Motion initial="{ y: 50, opacity: 0 }" while-in-view="{ y: 0, opacity: 1 }"
-              transition="{ delay: 0.1, duration: 0.5 }" viewport="{ once: true }"
+            <Motion :initial="{ y: 50, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
+              :transition="{ delay: 0.1, duration: 0.5 }" :viewport="{ once: true }"
               class="p-8 border border-white/10 bg-[#111] hover:border-white/20 transition-colors relative group h-full">
               <h3 class="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Ecnelis</h3>
               <div class="flex items-baseline gap-1 mb-6">
@@ -418,8 +418,8 @@ const lineDraw = {
               </Link>
             </Motion>
 
-            <Motion initial="{ y: 70, opacity: 0 }" while-in-view="{ y: 0, opacity: 1 }"
-              transition="{ delay: 0.2, duration: 0.6 }" viewport="{ once: true }"
+            <Motion :initial="{ y: 70, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
+              :transition="{ delay: 0.2, duration: 0.6 }" :viewport="{ once: true }"
               class="p-8 border border-white/20 bg-white/5 relative group h-full scale-[1.02]">
               <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
@@ -460,8 +460,8 @@ const lineDraw = {
               </button>
             </Motion>
 
-            <Motion initial="{ y: 90, opacity: 0 }" while-in-view="{ y: 0, opacity: 1 }"
-              transition="{ delay: 0.3, duration: 0.6 }" viewport="{ once: true }"
+            <Motion :initial="{ y: 90, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
+              :transition="{ delay: 0.3, duration: 0.6 }" :viewport="{ once: true }"
               class="p-8 border border-white/10 bg-[#111] hover:border-white/20 transition-colors relative group h-full">
 
               <div
@@ -508,7 +508,7 @@ const lineDraw = {
         </div>
 
         <div class="relative z-20 max-w-[1400px] mx-auto px-12 md:px-20 w-full">
-          <Motion initial="{ opacity: 0, y: 30 }" while-in-view="{ opacity: 1, y: 0 }" viewport="{ once: true }">
+          <Motion :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }">
             <h2 class="text-4xl md:text-6xl font-light text-white mb-6 max-w-2xl leading-tight">
               Step into the future, <br /> guided by AI clarity
             </h2>
