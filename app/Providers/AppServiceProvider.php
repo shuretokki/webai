@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -34,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         Gate::policy(Chat::class, ChatPolicy::class);
+
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 
     /**
