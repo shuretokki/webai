@@ -30,6 +30,8 @@ export const ui = {
     hero: 'relative z-20 text-center px-6 max-w-[90rem] mx-auto mt-20 w-full',
     sectionContainer: 'max-w-[1400px] mx-auto',
     sectionPadding: 'px-6',
+    clampWidth: 'mx-auto w-[clamp(320px,70%,1400px)]',
+    footerClamp: 'mx-auto w-[clamp(320px,70%,1600px)]',
     button: 'group relative inline-flex items-center justify-center gap-3 px-8 py-4 md:px-12 md:py-6 bg-white text-black text-base md:text-lg font-medium rounded-full overflow-hidden',
     buttonOutline: 'group relative inline-flex items-center justify-center gap-3 px-8 py-3 border border-white/20 text-white text-sm font-medium rounded-sm overflow-hidden hover:bg-white hover:text-black transition-colors',
   },
@@ -78,10 +80,14 @@ export const ui = {
         imageScale: [1, 2],
         headerY: [0, 1000],
         headerScale: [1, 0.2],
+        lineSpacing: ['1em', '4em'],
         opacityRange: [0, 500],
         blur: ['blur(0px)', 'blur(10px)'],
         opacity: [1, 0],
-        lineHeight: [0.85, 1.1], // New line-height animation
+      },
+      topStack: {
+        range: [600, 1600],
+        scale: [1, 0.7],
       },
       preFooter: {
         y: (v: number) => -50 + v * 0.05,
