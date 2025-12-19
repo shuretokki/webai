@@ -19,14 +19,15 @@ useIntersectionObserver(
 
 onMounted(async () => {
   if (canvasRef.value) {
-    // Production hardening: Explicitly set high-performance mode
+    // Production standard: Self-hosted asset for zero-latency streaming
     splineApp = new Application(canvasRef.value);
 
     try {
-      await splineApp.load('https://prod.spline.design/CCJpn9mqbF1JOqmZ/scene.splinecode');
+      // Local fetch is much faster and more stable for compositor synchronization
+      await splineApp.load('/assets/spline/hero.splinecode');
       isLoading.value = false;
     } catch (error) {
-      console.error('Spline failed to load:', error);
+      console.error('Spline failed to load local asset:', error);
     }
   }
 });
