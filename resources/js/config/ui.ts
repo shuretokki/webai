@@ -91,10 +91,6 @@ export const ui = {
         blur: ['blur(0px)', 'blur(16px)'],
         opacity: [1, 0],
       },
-      topStack: {
-        range: [0, 800],
-        scale: [1, 0.9],
-      },
       preFooter: {
         y: (v: number) => -50 + v * 0.05,
         scale: (v: number) => 1 + v * 0.0001,
