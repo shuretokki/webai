@@ -15,6 +15,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          script_stop: true
           script: |
             bash -l -c "cd /home/user/htdocs/srv1202798.hstgr.cloud && dploy deploy master"
