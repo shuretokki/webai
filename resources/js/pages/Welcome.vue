@@ -353,7 +353,7 @@ const toggleFaq = (index: number) => {
       </Motion>
     </AnimatePresence>
 
-    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.3] mix-blend-overlay"
+    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.35] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
     </div>
 
