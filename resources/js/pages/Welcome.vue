@@ -11,8 +11,9 @@ import {
   Plus,
   Sparkles
 } from 'lucide-vue-next';
+import RevealFooter from '@/components/RevealFooter.vue';
+import MagneticButton from '@/components/MagneticButton.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import SplineHero from '@/components/SplineHero.vue';
 import { ui } from '@/config/ui';
 
 defineProps<{
@@ -20,7 +21,11 @@ defineProps<{
 }>();
 
 const mobileMenuOpen = ref(false);
+const featuresSection = ref<HTMLElement | null>(null);
+const featuresScrollRange = ref([0, 0]);
 const scrollY = useMotionValue(0);
+const loading = ref(true);
+const loadingProgress = ref(0);
 
 const smoothScrollY = useSpring(scrollY, {
   damping: 30,
@@ -44,12 +49,34 @@ onMounted(() => {
     scrollY.set(e.scroll);
   });
 
+  const updateFeaturesRange = () => {
+    if (featuresSection.value) {
+      const top = featuresSection.value.offsetTop;
+      featuresScrollRange.value = [top, top + 3000];
+    }
+  };
+
+  updateFeaturesRange();
+
+  window.addEventListener('resize', updateFeaturesRange);
+
   function raf(time: number) {
     lenis?.raf(time);
     requestAnimationFrame(raf);
   }
 
   requestAnimationFrame(raf);
+
+  const interval = setInterval(() => {
+    loadingProgress.value += Math.floor(Math.random() * 10) + 1;
+    if (loadingProgress.value >= 100) {
+      loadingProgress.value = 100;
+      clearInterval(interval);
+      setTimeout(() => {
+        loading.value = false;
+      }, 500);
+    }
+  }, 100);
 });
 
 onBeforeUnmount(() => {
@@ -67,30 +94,30 @@ const heroImageScale = useTransform(
   ui.animations.scrollEffects.hero.imageScale);
 
 const headerY = useTransform(
-  scrollY,
+  smoothScrollY,
   ui.animations.scrollEffects.hero.range,
   ui.animations.scrollEffects.hero.headerY);
 
 const headerScale = useTransform(
-  scrollY,
+  smoothScrollY,
   ui.animations.scrollEffects.hero.range,
   ui.animations.scrollEffects.hero.headerScale
 );
 
 const headerLineHeight = useTransform(
-  scrollY,
+  smoothScrollY,
   ui.animations.scrollEffects.hero.range,
   ui.animations.scrollEffects.hero.lineSpacing
 );
 
 const headerBlur = useTransform(
-  scrollY,
+  smoothScrollY,
   ui.animations.scrollEffects.hero.opacityRange,
   ui.animations.scrollEffects.hero.blur
 );
 
 const headerOpacity = useTransform(
-  scrollY,
+  smoothScrollY,
   ui.animations.scrollEffects.hero.opacityRange,
   ui.animations.scrollEffects.hero.opacity
 );
@@ -132,7 +159,14 @@ const topStackScale = useTransform(
   ui.animations.scrollEffects.topStack.scale
 );
 
-const welcomeSpacerOpacity = useTransform(scrollY, [0, 600], [1, 0]);
+const featuresX = useTransform(() => {
+  const current = scrollY.get();
+  const [start, end] = featuresScrollRange.value;
+  if (current < start) return '0%';
+  if (current > end) return '-66%';
+  const progress = (current - start) / (end - start);
+  return `${-progress * 66}%`;
+});
 
 const content = {
   appName: 'Ecnelis',
@@ -143,6 +177,7 @@ const content = {
     { label: 'Changelog', href: '/changelog' },
   ],
   hero: {
+    image: '/images/heroSection.jpg',
     title: {
       line1: 'Where',
       line2: 'thoughts',
@@ -294,62 +329,74 @@ const toggleFaq = (index: number) => {
     <link rel="preload" href="/images/heroSection.jpg" as="image" />
   </Head>
 
-  <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative">
+  <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative z-10">
+    <AnimatePresence>
+      <Motion v-if="loading" initial="initial" animate="animate" exit="exit"
+        :variants="{ initial: { y: 0 }, exit: { y: '-100%', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } } }"
+        class="fixed inset-0 z-[100] bg-black flex items-end justify-between p-8 md:p-12 cursor-wait">
+        <Motion :initial="{ opacity: 0 }" :animate="{ opacity: 1 }"
+          class="text-white text-5xl md:text-8xl font-medium tracking-tighter">
+          {{ loadingProgress }}%
+        </Motion>
+        <div class="text-xs uppercase tracking-widest text-white/40 animate-pulse">
+          Initializing System...
+        </div>
+      </Motion>
+    </AnimatePresence>
+
     <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.4] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
     </div>
 
-    <Motion is="nav" :class="ui.navigation.classes.nav"
-      :style="{ borderColor: navBorder, backdropFilter: navBackdrop, paddingTop: 'var(--sat, 0px)' }">
-      <div :class="ui.navigation.classes.wrapper">
+    <nav class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
+      :style="{ paddingTop: 'var(--sat, 0px)' }">
+      <Motion
+        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
+        :style="{ backgroundColor: navBackground, borderColor: navBorder }">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
-          <span class="font-medium text-lg tracking-tight">{{ content.appName }}</span>
+          <span class="font-medium text-lg tracking-tight sr-only md:not-sr-only">{{ content.appName }}</span>
         </Link>
 
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden md:flex items-center gap-6">
           <template v-for="item in content.navigation" :key="item.label">
             <Link v-if="item.href.startsWith('/')" :href="item.href"
-              class="text-sm font-medium cursor-pointer relative">
-              <Motion is="span" class="block" :style="{ color: ui.colors.muted }"
-                :while-hover="ui.animations.hover.navLink">
-                {{ item.label }}
-              </Motion>
+              class="text-sm font-medium cursor-pointer relative px-2 py-1">
+              <span class="relative z-10 text-white/60 hover:text-white transition-colors">{{ item.label }}</span>
             </Link>
-            <a v-else :href="item.href" class="text-sm font-medium cursor-pointer relative">
-              <Motion is="span" class="block" :style="{ color: ui.colors.muted }"
-                :while-hover="ui.animations.hover.navLink">
-                {{ item.label }}
-              </Motion>
+            <a v-else :href="item.href" class="text-sm font-medium cursor-pointer relative px-2 py-1">
+              <span class="relative z-10 text-white/60 hover:text-white transition-colors">{{ item.label }}</span>
             </a>
           </template>
         </div>
 
-        <div class="hidden md:flex items-center gap-4">
+        <div class="flex items-center gap-4 pl-4 border-l border-white/10">
           <template v-if="$page.props.auth.user">
             <Link href="/explore">
-              <Motion is="span" class="text-sm font-medium block" :style="{ color: ui.colors.muted }"
-                :while-hover="{ color: ui.colors.primary }">
+              <Motion is="span" class="text-sm font-medium block text-white/60 hover:text-white transition-colors">
                 Explore
               </Motion>
             </Link>
           </template>
           <template v-else>
-            <Link href="/login">
-              <Motion is="span" class="text-sm font-medium text-white block cursor-pointer"
-                :while-hover="{ opacity: 0.8 }">
+            <Link href="/login" class="hidden md:block">
+              <span class="text-sm font-medium text-white/60 hover:text-white transition-colors cursor-pointer">
                 Log in
-              </Motion>
+              </span>
+            </Link>
+            <Link href="/register"
+              class="bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full hover:bg-white/90 transition-colors">
+              Get Started
             </Link>
           </template>
         </div>
 
-        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 text-white p-2">
-          <Menu v-if="!mobileMenuOpen" />
-          <X v-else />
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white ml-2">
+          <Menu v-if="!mobileMenuOpen" class="w-5 h-5" />
+          <X v-else class="w-5 h-5" />
         </button>
-      </div>
-    </Motion>
+      </Motion>
+    </nav>
 
     <AnimatePresence>
       <Motion v-if="mobileMenuOpen" :initial="{ opacity: 0, y: -20 }" :animate="{ opacity: 1, y: 0 }"
@@ -385,11 +432,9 @@ const toggleFaq = (index: number) => {
       <div class="bg-black relative">
         <section class="min-h-dvh h-hero-reserved flex items-center justify-center relative overflow-hidden group">
           <Motion class="absolute inset-0 z-0 pointer-events-none will-change-transform"
-            :style="{ y: heroImageY, transform: 'translateZ(0)' }">
-            <div class="absolute inset-0 bg-black/40 z-10"></div>
-            <div class="w-full h-full scale-110">
-              <SplineHero />
-            </div>
+            :style="{ y: heroImageY, scale: heroImageScale, transform: 'translateZ(0)' }">
+            <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
+            <img :src="content.hero.image" alt="Hero background" class="w-full h-full object-cover" />
             <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
             </div>
           </Motion>
@@ -409,10 +454,22 @@ const toggleFaq = (index: number) => {
 
               <Motion class="max-w-xl md:max-w-3xl mx-auto text-center" :initial="ui.animations.pageTransition.initial"
                 :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.2 } }">
-                <Motion is="p" :class="[ui.typography.body, 'md:text-xl md:leading-normal']"
+                <Motion is="p" :class="[ui.typography.body, 'text-lg md:leading-normal']"
                   :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
                   {{ content.hero.description }}
                 </Motion>
+              </Motion>
+
+              <Motion class="mt-10 md:mt-14" :initial="ui.animations.pageTransition.initial"
+                :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.45 } }">
+                <Link href="/explore">
+                  <MagneticButton>
+                    <span :class="ui.layout.button">
+                      Get Started
+                      <ArrowRight class="w-5 h-5" />
+                    </span>
+                  </MagneticButton>
+                </Link>
               </Motion>
             </Motion>
           </div>
@@ -426,8 +483,6 @@ const toggleFaq = (index: number) => {
             </Motion>
           </Motion>
         </section>
-
-        <div class="h-[60dvh] w-full bg-black pointer-events-none"></div>
 
         <section class="pt-section" :class="ui.layout.sectionPadding">
           <div :class="ui.layout.sectionContainer">
@@ -444,273 +499,252 @@ const toggleFaq = (index: number) => {
               <span class="text-sm text-white/40 font-medium">{{ content.sections.introducing.label }}</span>
             </Motion>
 
-            <Motion :initial="{ opacity: 0, y: 50, filter: 'blur(10px)' }"
-              :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }" :viewport="{ once: true }"
-              :transition="{ duration: 1 }">
-              <h2 :class="[ui.typography.display, 'max-w-4xl mb-12 md:mb-24']">
-                {{ content.sections.introducing.title }}
+            <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-10%' }"
+              class="max-w-4xl mb-12 md:mb-24">
+              <h2 :class="[ui.typography.display, 'overflow-hidden flex flex-wrap gap-x-[0.3em] gap-y-[0.1em]']">
+                <div v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i"
+                  class="overflow-hidden">
+                  <Motion :variants="{
+                    initial: { y: '100%', opacity: 0, rotateZ: 5 },
+                    enter: {
+                      y: 0,
+                      opacity: 1,
+                      rotateZ: 0,
+                      transition: {
+                        duration: 0.8,
+                        ease: ui.animations.easing.smooth,
+                        delay: i * 0.03
+                      }
+                    }
+                  }" class="inline-block origin-top-left">
+                    {{ word }}
+                  </Motion>
+                </div>
               </h2>
             </Motion>
           </div>
         </section>
 
-        <section id="features" class="pb-section" :class="ui.layout.sectionPadding">
-          <div :class="ui.layout.sectionContainer">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div ref="featuresSection" class="relative h-[300vh]">
+          <div class="sticky top-0 h-screen overflow-hidden flex items-center bg-black">
+            <Motion class="flex gap-16 px-[10vw] items-center will-change-transform" :style="{ x: featuresX }">
               <Motion v-for="(feature, idx) in content.sections.features" :key="feature.id"
-                :initial="{ opacity: 0, y: 50 }"
-                :while-in-view="{ opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' as const, delay: idx * 0.2 } }"
-                :viewport="{ once: true, margin: '-50px' }" class="group cursor-default">
-                <Motion class="aspect-square bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5"
+                class="min-w-[80vw] md:min-w-[40vw] group cursor-default">
+                <Motion class="aspect-[4/3] bg-[#111] overflow-hidden rounded-sm relative mb-8 border border-white/5"
                   :while-hover="{ borderColor: 'rgba(255,255,255,0.1)' }">
                   <div class="absolute inset-0 w-full h-full overflow-hidden">
-                    <Motion class="w-full h-full" :while-hover="{ scale: 1.1 }" :transition="{ duration: 1 }">
+                    <Motion class="w-full h-full" :while-hover="{ scale: 1.05 }"
+                      :transition="{ duration: 1.2, ease: ui.animations.easing.smooth }">
                       <img :src="feature.image" class="w-full h-full object-cover opacity-50 grayscale mix-blend-screen"
                         :alt="feature.label" />
                     </Motion>
                   </div>
                   <div v-if="feature.id === 'time'" class="absolute inset-0 flex items-center justify-center p-8">
-                    <div class="w-full space-y-4 opacity-90">
+                    <div
+                      class="w-full space-y-4 opacity-90 transform group-hover:scale-105 transition-transform duration-700">
                       <div
-                        class="bg-zinc-800/80 backdrop-blur px-4 py-2 rounded text-xs text-center border border-white/10 w-max mx-auto">
+                        class="bg-zinc-800/80 backdrop-blur px-4 py-2 rounded text-xs text-center border border-white/10 w-max mx-auto shadow-2xl">
                         8:00 AM Trigger</div>
-                      <div class="w-0.5 h-4 bg-white/20 mx-auto"></div>
+                      <div class="w-0.5 h-6 bg-gradient-to-b from-white/20 to-white/5 mx-auto"></div>
                       <div
-                        class="bg-black/80 backdrop-blur px-4 py-3 rounded text-sm border border-white/10 flex items-center gap-2">
-                        <div class="w-3 h-3 border border-white/50"></div> Fetch stats
+                        class="bg-black/90 backdrop-blur-md px-5 py-4 rounded text-sm border border-white/10 flex items-center gap-3 shadow-2xl">
+                        <div class="w-3 h-3 border border-white/50 bg-white/5"></div> Fetch stats
                       </div>
                       <div
-                        class="bg-black/80 backdrop-blur px-4 py-3 rounded text-sm border border-white/10 flex items-center gap-2">
-                        <Sparkles class="w-3 h-3" /> AI Summary
+                        class="bg-black/90 backdrop-blur-md px-5 py-4 rounded text-sm border border-white/10 flex items-center gap-3 shadow-2xl">
+                        <Sparkles class="w-3 h-3 text-white" /> AI Summary
                       </div>
                     </div>
                   </div>
                   <div v-if="feature.id === 'words'" class="absolute inset-0 flex items-center justify-center p-8">
-                    <div class="bg-[#1a1a1a] border border-white/10 p-6 rounded-lg w-full max-w-xs shadow-2xl relative">
+                    <div
+                      class="bg-[#1a1a1a] border border-white/10 p-6 rounded-lg w-full max-w-xs shadow-2xl relative group-hover:-translate-y-2 transition-transform duration-700">
                       <div class="w-3 h-3 rounded-full bg-white/20 mb-3"></div>
-                      <div class="h-2 bg-white/10 rounded w-3/4 mb-2"></div>
+                      <div class="h-2 bg-white/10 rounded w-3/4 mb-2 animate-pulse"></div>
                       <div class="h-2 bg-white/10 rounded w-full mb-2"></div>
                       <div class="h-2 bg-white/10 rounded w-5/6"></div>
                     </div>
                   </div>
                   <div v-if="feature.id === 'guide'"
                     class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8">
-                    <div class="flex gap-2 justify-end w-full max-w-[200px]">
+                    <div
+                      class="flex gap-2 justify-end w-full max-w-[200px] group-hover:translate-x-2 transition-transform duration-700">
                       <div class="bg-white text-black text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm">Unfold
                       </div>
                     </div>
                     <div
-                      class="bg-zinc-900/90 border border-white/10 p-4 rounded-sm w-full max-w-[200px] backdrop-blur">
+                      class="bg-zinc-900/90 border border-white/10 p-4 rounded-sm w-full max-w-[200px] backdrop-blur text-center shadow-2xl">
                       <p class="text-xs text-white/80">Ready to turn thoughts into actions?</p>
                     </div>
-                    <div class="flex gap-2 justify-end w-full max-w-[200px]">
+                    <div
+                      class="flex gap-2 justify-end w-full max-w-[200px] group-hover:-translate-x-2 transition-transform duration-700">
                       <div class="bg-white text-black text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm">Capture
                       </div>
                     </div>
                   </div>
                 </Motion>
-                <h3 :class="[ui.typography.title, 'mb-3']">{{ feature.label }}</h3>
-                <p class="text-white/50 leading-relaxed text-sm">
+                <div class="flex items-baseline gap-4 mb-3">
+                  <span class="text-xs font-mono text-white/30">0{{ idx + 1 }}</span>
+                  <h3 :class="ui.typography.title">{{ feature.label }}</h3>
+                </div>
+                <p class="text-white/50 leading-relaxed text-sm max-w-md">
                   {{ feature.description }}
                 </p>
               </Motion>
-            </div>
+            </Motion>
           </div>
-        </section>
+        </div>
+        <div class="h-[60dvh] bg-black pointer-events-none"></div>
       </div>
     </Motion>
-
-    <div class="bg-black relative z-10">
-      <section id="pricing" class="py-section border-b border-white/5" :class="ui.layout.sectionPadding">
-        <div :class="ui.layout.clampWidth">
-          <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
-            class="flex items-center gap-4 mb-12">
-            <div class="w-2 h-2 rounded-full bg-white/20"></div>
-            <span class="text-sm text-white/40 font-medium">{{ content.sections.pricing.label }}</span>
-          </Motion>
-
-          <div class="mb-12 md:mb-24">
-            <h2 :class="[ui.typography.display, 'text-white mb-4 md:mb-6']">{{ content.sections.pricing.title }}</h2>
-            <p :class="ui.typography.body">{{ content.sections.pricing.description }}</p>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            <Motion v-for="(plan, idx) in content.sections.pricing.plans" :key="plan.name"
-              :initial="{ y: 50 + idx * 20, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
-              :transition="{ delay: idx * 0.1, duration: 0.5 + idx * 0.1 }" :viewport="{ once: true }"
-              class="p-8 border border-white/10 bg-[#111] relative group h-full cursor-default"
-              :class="{ 'scale-[1.02] border-white/20 bg-white/5': plan.name.includes('+') }"
-              :while-hover="{ borderColor: 'rgba(255,255,255,0.2)' }">
-              <div v-if="plan.name.includes('+')"
-                class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-              <div v-if="plan.comingSoon"
-                class="absolute inset-0 bg-black/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center text-center p-6">
-                <div class="bg-white text-black px-4 py-2 text-sm font-bold uppercase tracking-widest mb-4">Coming Soon
-                </div>
-                <p class="text-white/80 font-medium">We're finalizing the details.</p>
-              </div>
-
-              <Motion v-if="plan.name.includes('+')" is="h3"
-                class="text-sm font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 mb-4"
-                :animate="{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }"
-                :transition="{ duration: 4, repeat: Infinity, ease: 'linear' }"
-                :style="{ backgroundSize: '200% auto' }">
-                {{ plan.name }}
-              </Motion>
-              <h3 v-else
-                :class="[ui.typography.title, 'mb-4', plan.name === 'Enterprise' ? 'text-sm font-bold uppercase tracking-widest text-white/50' : '']">
-                {{ plan.name }}</h3>
-
-              <div class="flex items-baseline gap-1 mb-6">
-                <span class="text-white" :style="{ fontSize: 'var(--text-title)' }">{{ plan.price }}</span>
-                <span v-if="plan.period" class="text-white/40">{{ plan.period }}</span>
-              </div>
-              <p class="text-white/60 mb-8 h-12">{{ plan.description }}</p>
-
-              <ul class="space-y-4 mb-8">
-                <li v-for="feat in plan.features" :key="feat" class="flex items-center gap-3 text-white/80 text-sm">
-                  <div class="w-1.5 h-1.5 rounded-full bg-white"></div> {{ feat }}
-                </li>
-              </ul>
-
-              <template v-if="plan.link">
-                <Link :href="plan.link">
-                  <Motion :class="ui.layout.buttonOutline" :while-hover="ui.animations.hover.buttonOutline">
-                    {{ plan.cta }}
-                  </Motion>
-                </Link>
-              </template>
-              <button v-else :disabled="plan.comingSoon"
-                :class="[ui.layout.buttonOutline, 'w-full', plan.comingSoon ? 'cursor-not-allowed opacity-50' : '']">
-                {{ plan.cta }}
-              </button>
-            </Motion>
-          </div>
-        </div>
-      </section>
-
-      <section id="faq" class="py-section border-t border-white/5 bg-[#050505]" :class="ui.layout.sectionPadding">
-        <div :class="ui.layout.clampWidth">
-          <div class="text-center mb-12 md:mb-24">
-            <span
-              class="text-xs font-mono text-white/40 mb-4 block uppercase tracking-widest">{{ content.sections.faq.label }}</span>
-            <h2 class="text-display font-light tracking-tight leading-[1.1] text-white/90">
-              {{ content.sections.faq.title }}
-            </h2>
-          </div>
-
-          <div class="space-y-4">
-            <div v-for="(faq, index) in faqs" :key="index"
-              class="border-t border-white/10 bg-transparent transition-colors">
-              <button @click="toggleFaq(index)" class="w-full flex items-center justify-between py-6 text-left group">
-                <Motion is="span" :class="ui.typography.title" :style="{ color: 'rgba(255, 255, 255, 0.9)' }"
-                  :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
-                <span class="text-white/30 group-hover:text-white transition-colors relative">
-                  <Plus v-if="!faq.open" class="w-5 h-5" />
-                  <X v-else class="w-5 h-5" />
-                </span>
-              </button>
-              <AnimatePresence>
-                <Motion v-if="faq.open" :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
-                  :exit="{ height: 0, opacity: 0 }" class="overflow-hidden">
-                  <div class="pb-8">
-                    <div class="text-white/60 leading-relaxed max-w-2xl">{{ faq.answer }}</div>
-                  </div>
-                </Motion>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        class="min-h-dvh h-[80dvh] relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
-        <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
-        <Motion class="absolute inset-0 w-full h-full overflow-hidden opacity-60 mix-blend-screen grayscale"
-          :while-hover="{ filter: 'grayscale(0%)' }" :transition="{ duration: 2 }">
-          <Motion class="w-full h-full" :style="{ y: preFooterImageY, scale: preFooterImageScale }">
-            <img :src="content.sections.preFooter.image" alt="Pre footer bg"
-              class="w-full h-full object-cover object-center" />
-          </Motion>
+    <section id="pricing" class="py-section border-b border-white/5" :class="ui.layout.sectionPadding">
+      <div :class="ui.layout.clampWidth">
+        <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
+          class="flex items-center gap-4 mb-12">
+          <div class="w-2 h-2 rounded-full bg-white/20"></div>
+          <span class="text-sm text-white/40 font-medium">{{ content.sections.pricing.label }}</span>
         </Motion>
 
-        <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-transparent to-transparent z-20">
+        <div class="mb-12 md:mb-24">
+          <h2 :class="[ui.typography.display, 'text-white mb-4 md:mb-6']">{{ content.sections.pricing.title }}</h2>
+          <p :class="ui.typography.body">{{ content.sections.pricing.description }}</p>
         </div>
 
-        <div class="relative z-30 w-[clamp(320px,70%,1400px)] mx-auto px-6 text-center">
-          <Motion :initial="{ opacity: 0 }"
-            :while-in-view="{ opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.1 } }"
-            :viewport="{ once: true, margin: '-20%' }">
-            <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
-              :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }">
-              <h1 :class="[ui.typography.hero, 'mb-8 md:mb-12']">{{ content.sections.preFooter.title }}</h1>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <Motion v-for="(plan, idx) in content.sections.pricing.plans" :key="plan.name"
+            :initial="{ y: 50 + idx * 20, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
+            :transition="{ delay: idx * 0.1, duration: 0.5 + idx * 0.1 }" :viewport="{ once: true }"
+            class="p-8 border border-white/10 bg-[#0A0A0A] relative group/card h-full cursor-default overflow-hidden"
+            :class="{ 'scale-[1.02] border-white/20 bg-white/5': plan.name.includes('+') }"
+            :while-hover="{ borderColor: 'rgba(255,255,255,0.3)' }">
+
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 pointer-events-none">
+            </div>
+
+            <div v-if="plan.name.includes('+')"
+              class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            <div v-if="plan.comingSoon"
+              class="absolute inset-0 bg-black/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center text-center p-6">
+              <div class="bg-white text-black px-4 py-2 text-sm font-bold uppercase tracking-widest mb-4">Coming Soon
+              </div>
+              <p class="text-white/80 font-medium">We're finalizing the details.</p>
+            </div>
+
+            <Motion v-if="plan.name.includes('+')" is="h3"
+              class="text-sm font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 mb-4"
+              :animate="{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }"
+              :transition="{ duration: 4, repeat: Infinity, ease: 'linear' }" :style="{ backgroundSize: '200% auto' }">
+              {{ plan.name }}
             </Motion>
-            <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
-              :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }"
-              class="flex flex-col items-center gap-6">
-              <Link href="/register" :class="ui.layout.button">
-                <Motion class="absolute inset-0 bg-white" :while-hover="{ scale: 1.05 }" />
-                <Motion class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                  :initial="{ x: '-100%' }" :while-hover="{ x: '100%', transition: { duration: 0.7 } }" />
-                <Motion class="absolute inset-0 rounded-full"
-                  :while-hover="{ boxShadow: '0 0 40px rgba(255,255,255,0.4)' }" />
-                <span class="relative z-10">{{ content.sections.preFooter.cta }}</span>
-                <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+            <h3 v-else
+              :class="[ui.typography.title, 'mb-4', plan.name === 'Enterprise' ? 'text-sm font-bold uppercase tracking-widest text-white/50' : '']">
+              {{ plan.name }}</h3>
+
+            <div class="flex items-baseline gap-1 mb-6">
+              <span class="text-white" :style="{ fontSize: 'var(--text-title)' }">{{ plan.price }}</span>
+              <span v-if="plan.period" class="text-white/40">{{ plan.period }}</span>
+            </div>
+            <p class="text-white/60 mb-8 h-12">{{ plan.description }}</p>
+
+            <ul class="space-y-4 mb-8">
+              <li v-for="feat in plan.features" :key="feat" class="flex items-center gap-3 text-white/80 text-sm">
+                <div class="w-1.5 h-1.5 rounded-full bg-white"></div> {{ feat }}
+              </li>
+            </ul>
+
+            <template v-if="plan.link">
+              <Link :href="plan.link">
+                <Motion :class="ui.layout.buttonOutline" :while-hover="ui.animations.hover.buttonOutline">
+                  {{ plan.cta }}
+                </Motion>
               </Link>
-              <p class="text-white/40 text-xs md:text-sm">{{ content.sections.preFooter.subtext }}</p>
-            </Motion>
+            </template>
+            <button v-else :disabled="plan.comingSoon"
+              :class="[ui.layout.buttonOutline, 'w-full', plan.comingSoon ? 'cursor-not-allowed opacity-50' : '']">
+              {{ plan.cta }}
+            </button>
           </Motion>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <footer class="bg-black text-white px-6 pt-32 pb-4 relative overflow-hidden">
-        <div :class="ui.layout.footerClamp" class="relative z-10 font-sans">
-          <div class="grid grid-cols-1 md:grid-cols-8 gap-12 mb-32">
-            <div class="md:col-span-2">
-              <h4 class="text-sm text-white/50 mb-8 font-normal tracking-wide">Site index</h4>
-              <ul class="space-y-3 text-sm text-white/80">
-                <li v-for="link in content.footer.links.index" :key="link.label">
-                  <Link :href="link.href">
-                    <Motion is="span" class="inline-block" :while-hover="{ color: '#fff', x: 2 }">{{ link.label }}
-                    </Motion>
-                  </Link>
-                </li>
-              </ul>
-            </div>
+    <section id="faq" class="py-section border-t border-white/5 bg-[#050505]" :class="ui.layout.sectionPadding">
+      <div :class="ui.layout.clampWidth">
+        <div class="text-center mb-12 md:mb-24">
+          <span
+            class="text-xs font-mono text-white/40 mb-4 block uppercase tracking-widest">{{ content.sections.faq.label }}</span>
+          <h2 :class="ui.typography.display">
+            {{ content.sections.faq.title }}
+          </h2>
+        </div>
 
-            <div class="md:col-span-2">
-              <h4 class="text-sm text-white/50 mb-8 font-normal tracking-wide">Social</h4>
-              <ul class="space-y-3 text-sm text-white/80">
-                <li v-for="link in content.footer.links.social" :key="link.label">
-                  <a :href="link.href" class="flex items-center gap-2 group">
-                    <Motion is="span" class="flex items-center gap-2" :while-hover="{ color: '#fff', x: 2 }">
-                      {{ link.label }}</Motion>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div class="md:col-span-4 flex flex-col items-start md:items-end md:text-right">
-              <div
-                class="w-full text-left md:text-right space-y-6 text-sm text-white/50 font-light whitespace-pre-line">
-                <p class="leading-relaxed">{{ content.footer.contact.title }}</p>
-                <p class="text-white text-base tracking-wide">{{ content.footer.contact.phone }}</p>
-                <div class="flex flex-col md:items-end gap-2 text-white/70">
-                  <Motion v-for="action in content.footer.contact.actions" :key="action.label" is="a"
-                    :href="action.href" :while-hover="{ color: '#fff' }">{{ action.label }}</Motion>
+        <div class="space-y-4">
+          <div v-for="(faq, index) in faqs" :key="index"
+            class="border-t border-white/10 bg-transparent transition-colors">
+            <button @click="toggleFaq(index)" class="w-full flex items-center justify-between py-6 text-left group">
+              <Motion is="span" :class="ui.typography.title" :style="{ color: 'rgba(255, 255, 255, 0.9)' }"
+                :while-hover="{ color: '#fff' }">{{ faq.question }}</Motion>
+              <span class="text-white/30 group-hover:text-white transition-colors relative">
+                <Plus v-if="!faq.open" class="w-5 h-5" />
+                <X v-else class="w-5 h-5" />
+              </span>
+            </button>
+            <AnimatePresence>
+              <Motion v-if="faq.open" :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
+                :exit="{ height: 0, opacity: 0 }" class="overflow-hidden">
+                <div class="pb-8">
+                  <div class="text-white/60 leading-relaxed max-w-2xl">{{ faq.answer }}</div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="border-t border-white/10 pt-4 md:pt-8 flex justify-center overflow-hidden w-full">
-            <h1
-              class="text-[19vw] md:text-[20vw] leading-[0.8] font-semibold tracking-tighter text-center uppercase whitespace-nowrap select-none pointer-events-none w-full block text-transparent"
-              style="-webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);">{{ content.appName }}</h1>
+              </Motion>
+            </AnimatePresence>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </section>
+
+    <section
+      class="min-h-dvh h-[80dvh] relative flex items-center justify-center overflow-hidden mb-10 mx-6 rounded-sm group">
+      <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
+      <Motion class="absolute inset-0 w-full h-full overflow-hidden opacity-60 mix-blend-screen grayscale"
+        :while-hover="{ filter: 'grayscale(0%)' }" :transition="{ duration: 2 }">
+        <Motion class="w-full h-full" :style="{ y: preFooterImageY, scale: preFooterImageScale }">
+          <img :src="content.sections.preFooter.image" alt="Pre footer bg"
+            class="w-full h-full object-cover object-center" />
+        </Motion>
+      </Motion>
+
+      <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-transparent to-transparent z-20">
+      </div>
+
+      <div class="relative z-30 w-[clamp(320px,70%,1400px)] mx-auto px-6 text-center">
+        <Motion :initial="{ opacity: 0 }"
+          :while-in-view="{ opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.1 } }"
+          :viewport="{ once: true, margin: '-20%' }">
+          <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
+            :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }">
+            <h1 :class="[ui.typography.hero, 'mb-8 md:mb-12']">{{ content.sections.preFooter.title }}</h1>
+          </Motion>
+          <Motion :initial="{ opacity: 0, y: 20, filter: 'blur(10px)' }"
+            :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }"
+            class="flex flex-col items-center gap-6">
+            <Link href="/register" :class="ui.layout.button">
+              <Motion class="absolute inset-0 bg-white" :while-hover="{ scale: 1.05 }" />
+              <Motion class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                :initial="{ x: '-100%' }" :while-hover="{ x: '100%', transition: { duration: 0.7 } }" />
+              <Motion class="absolute inset-0 rounded-full"
+                :while-hover="{ boxShadow: '0 0 40px rgba(255,255,255,0.4)' }" />
+              <span class="relative z-10">{{ content.sections.preFooter.cta }}</span>
+              <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <p class="text-white/40 text-xs md:text-sm">{{ content.sections.preFooter.subtext }}</p>
+          </Motion>
+        </Motion>
+      </div>
+    </section>
+
+    <div class="h-[10dvh] bg-black relative z-20"></div>
+    <RevealFooter :content="content" />
   </div>
 </template>
 
