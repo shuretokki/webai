@@ -15,4 +15,4 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/user/htdocs/srv1202798.hstgr.cloud && dploy deploy master
+            bash -l -c "cd /home/user/htdocs/srv1202798.hstgr.cloud && dploy deploy master"
