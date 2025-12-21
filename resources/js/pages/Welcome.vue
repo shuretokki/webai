@@ -43,8 +43,12 @@ const pricingMouseXPx = useTransform(pricingMouseX, (v) => `${v}px`);
 const pricingMouseYPx = useTransform(pricingMouseY, (v) => `${v}px`);
 const vh = ref(typeof window !== "undefined" ? window.innerHeight : 0);
 const pricingBillingCycle = ref<'monthly' | 'yearly'>('monthly');
-const faqOpen = ref<number | null>(0);
+const faqOpen = ref<number | null>(null);
+const isMobile = ref(false);
 
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768;
+};
 
 const smoothScrollY = useSpring(scrollY, {
   damping: 30,
@@ -500,7 +504,15 @@ const toggleFaq = (index: number) => {
         <div :class="ui.layout.sectionContainer" class="relative z-10 flex justify-center">
           <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
             class="max-w-6xl">
-            <h2 :class="[ui.typography.manifesto]">
+
+            <!-- Mobile Optimized: Single Node -->
+            <Motion v-if="isMobile" :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }"
+              :transition="{ duration: 1, ease: ui.animations.easing.default }" :class="ui.typography.manifesto">
+              {{ content.sections.introducing.title }}
+            </Motion>
+
+            <!-- Desktop: Cinematic Word Reveal -->
+            <h2 v-else :class="[ui.typography.manifesto]">
               <template v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i">
                 <Motion :variants="ui.animations.wordReveal(i)" class="inline-block"
                   :class="{ 'opacity-30': ['invisible', 'power'].includes(word.toLowerCase().replace(/[.,]/g, '')) }">
