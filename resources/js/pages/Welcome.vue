@@ -168,26 +168,23 @@ const navBackdrop = useTransform(
 
 
 const content = {
-  appName: 'WebAI',
+  appName: 'Ecnelis',
   navigation: [
-    { label: 'Store', href: '/store' },
-    { label: 'Pro', href: '/pro' },
-    { label: 'AI', href: '/ai' },
-    { label: 'iOS', href: '/ios' },
-    { label: 'Windows', href: '/windows' },
-    { label: 'Teams', href: '/teams' },
+    { label: 'About', href: '/about' },
+    { label: 'Pricing', href: '#pricing' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Pricing', href: '/pricing' },
+    { label: 'Changelog', href: '/changelog' },
   ],
   hero: {
-    badge: 'Introducing Raycast for Windows',
-    title: 'Your shortcut to everything.',
-    description: 'A collection of powerful productivity tools all within an extendable launcher. Fast, ergonomic and reliable.',
-    cta: [
-      { label: 'Download for Mac', href: '/download/mac', icon: 'Apple' },
-      { label: 'Download for Windows', href: '/download/windows', variant: 'outline' }
-    ],
-    version: 'v1.104.1  |  macOS 13+  |  Install via homebrew'
+    image: '/images/heroSection.png',
+    title: {
+      line1: 'Where',
+      line2: 'thoughts',
+      line3: 'become',
+      line4: 'actions'
+    },
+    description: "An AI companion that whispers clarity, conjures ideas, and guides your every move into the void.",
+    cta: 'Scroll to explore'
   },
   sections: {
     introducing: {
@@ -417,56 +414,58 @@ const toggleFaq = (index: number) => {
       </Motion>
     </AnimatePresence>
 
-    <div class="bg-black relative pt-32 md:pt-48 overflow-hidden min-h-screen">
-      <section class="flex flex-col items-center text-center px-6 relative z-10 max-w-6xl mx-auto">
-        <Motion initial="{ opacity: 0, y: 10 }" animate="{ opacity: 1, y: 0 }" transition="{ duration: 0.6 }" class="mb-10">
-          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[11px] font-medium tracking-wide text-white/60 hover:text-white transition-colors cursor-pointer group">
-            <span class="text-indigo-400">New</span> {{ content.hero.badge }}
-            <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+    <div class="bg-black relative">
+      <section class="min-h-dvh h-hero-reserved flex items-center justify-center relative overflow-hidden group">
+        <Motion class="absolute inset-0 z-0 pointer-events-none will-change-transform"
+          :style="{ y: heroImageY, scale: heroImageScale, transform: 'translateZ(0)' }">
+          <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
+          <img :src="content.hero.image" alt="Hero background" class="w-full h-full object-cover" />
+          <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
           </div>
         </Motion>
 
-        <Motion initial="{ opacity: 0 }" animate="{ opacity: 1 }" transition="{ delay: 0.2, duration: 1 }">
-          <h1 class="text-6xl md:text-[5.5rem] font-medium tracking-tight leading-[1] mb-8 max-w-4xl text-white">
-            {{ content.hero.title }}
-          </h1>
-        </Motion>
+        <div :class="ui.layout.hero">
+          <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
+            <Motion class="mb-10 md:mb-16" :initial="ui.animations.pageTransition.initial"
+              :animate="ui.animations.pageTransition.enter">
+              <Motion is="h1" :class="[ui.typography.hero, 'origin-center will-change-transform']"
+                :style="{ y: headerY, scale: headerScale, filter: headerBlur, opacity: headerOpacity, lineHeight: headerLineHeight }">
+                {{ content.hero.title.line1 }} <span :class="[ui.typography.accentHero, 'mx-2']">{{
+                  content.hero.title.line2 }}</span> <br class="md:hidden" />
+                {{ content.hero.title.line3 }} <span :class="[ui.typography.accentHero, 'mx-2']">{{
+                  content.hero.title.line4 }}</span>.
+              </Motion>
+            </Motion>
 
-        <Motion initial="{ opacity: 0 }" animate="{ opacity: 1 }" transition="{ delay: 0.3, duration: 1 }">
-          <p class="text-lg md:text-xl text-white/50 mb-12 max-w-2xl leading-relaxed">
-            {{ content.hero.description }}
-          </p>
-        </Motion>
+            <Motion class="max-w-xl md:max-w-3xl mx-auto text-center" :initial="ui.animations.pageTransition.initial"
+              :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.2 } }">
+              <Motion is="p" :class="[ui.typography.body, 'text-lg md:leading-normal']"
+                :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
+                {{ content.hero.description }}
+              </Motion>
+            </Motion>
 
-        <Motion initial="{ opacity: 0, scale: 0.95 }" animate="{ opacity: 1, scale: 1 }" transition="{ delay: 0.4, duration: 0.8 }" class="flex flex-col sm:flex-row items-center gap-4 mb-8">
-          <Link href="/download/mac" class="h-12 px-8 flex items-center justify-center bg-white text-black font-medium rounded-lg hover:bg-neutral-200 transition-colors gap-2">
-            <Apple class="w-5 h-5" />
-            <span class="text-sm">Download for Mac</span>
-          </Link>
-          <Link href="/download/windows" class="h-12 px-8 flex items-center justify-center bg-transparent text-white font-medium rounded-lg border border-white/10 hover:bg-white/5 transition-colors gap-2">
-             <Monitor class="w-5 h-5" />
-             <span class="text-sm">Download for Windows (beta)</span>
-          </Link>
-        </Motion>
-
-        <div class="text-[11px] font-mono text-white/20 uppercase tracking-[0.1em] mb-20 whitespace-pre">
-           {{ content.hero.version }}
+            <Motion class="mt-10 md:mt-14" :initial="ui.animations.pageTransition.initial"
+              :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.45 } }">
+              <Link href="/explore">
+                <MagneticButton>
+                  <span :class="ui.layout.button">
+                    Get Started
+                    <ArrowRight class="w-5 h-5" />
+                  </span>
+                </MagneticButton>
+              </Link>
+            </Motion>
+          </Motion>
         </div>
 
-        <Motion initial="{ opacity: 0, y: 40 }" animate="{ opacity: 1, y: 0 }" transition="{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }" class="w-full relative group">
-           <div class="absolute inset-0 bg-indigo-500/20 blur-[120px] rounded-full opacity-30 group-hover:opacity-50 transition-opacity pointer-events-none"></div>
-           <div class="relative bg-[#0A0A0A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-5xl aspect-[16/10] flex items-center justify-center shimmer-raycast">
-              <div class="w-3/4 aspect-[16/6] bg-black/60 border border-white/5 rounded-xl flex items-center px-10 gap-6">
-                 <Sparkles class="w-8 h-8 text-white/40" />
-                 <div class="flex-1 text-left text-2xl text-white/30 font-light tracking-wide">
-                    Search for apps and commands...
-                 </div>
-                 <div class="flex items-center gap-2">
-                    <div class="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-white/40">⌘</div>
-                    <div class="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-white/40">K</div>
-                 </div>
-              </div>
-           </div>
+        <Motion
+          class="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/40 text-xs uppercase tracking-[0.2em] flex flex-col items-center gap-4 z-20"
+          :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
+          {{ content.hero.cta }}
+          <Motion :animate="{ y: [0, 10, 0] }" :transition="{ duration: 2, repeat: Infinity, ease: 'easeInOut' }">
+            <ChevronDown class="w-5 h-5 opacity-50" />
+          </Motion>
         </Motion>
       </section>
       <section class="pt-section" :class="ui.layout.sectionPadding">
@@ -513,20 +512,29 @@ const toggleFaq = (index: number) => {
         <div :class="ui.layout.clampWidth">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Motion v-for="(feature, idx) in content.sections.features" :key="feature.id"
-              :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :transition="{ delay: idx * 0.1, duration: 0.8 }" :viewport="{ once: true }"
+              :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }"
+              :transition="{ delay: idx * 0.1, duration: 0.8 }" :viewport="{ once: true }"
               class="group relative bg-[#080808] border border-white/5 rounded-2xl p-8 overflow-hidden hover:border-white/10 transition-colors">
-              <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div
+                class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+              </div>
               <div class="relative z-10">
-                <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
-                  <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)" class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+                <div
+                  class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                  <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)"
+                    class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
                 </div>
                 <h3 class="text-xl font-medium text-white mb-4 tracking-tight">{{ feature.label }}</h3>
                 <p class="text-sm text-white/40 leading-relaxed mb-10 min-h-[4em]">
                   {{ feature.description }}
                 </p>
-                <div class="aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative group-hover:border-white/10 transition-colors">
-                   <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-50"></div>
-                   <img :src="feature.image" class="w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000" />
+                <div
+                  class="aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative group-hover:border-white/10 transition-colors">
+                  <div
+                    class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-50">
+                  </div>
+                  <img :src="feature.image"
+                    class="w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000" />
                 </div>
               </div>
             </Motion>
@@ -579,12 +587,16 @@ const toggleFaq = (index: number) => {
             :transition="{ delay: idx * 0.1, duration: 0.5 + idx * 0.1 }" :viewport="{ once: true }"
             class="p-8 md:p-10 rounded-2xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors">
 
-            <div v-if="plan.name.includes('+')" class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none opacity-40"></div>
+            <div v-if="plan.name.includes('+')"
+              class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none opacity-40">
+            </div>
 
             <div class="relative z-10 mb-auto">
-              <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-6">{{ plan.name }}</span>
+              <span
+                class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-6">{{ plan.name }}</span>
               <div class="flex items-baseline gap-1 mb-8">
-                <span class="text-5xl md:text-6xl font-light tracking-tighter">{{ pricingBillingCycle === 'yearly' && plan.price !== 'Custom' ? '$' + (parseInt(plan.price.replace('$', '')) * 10) : plan.price }}</span>
+                <span
+                  class="text-5xl md:text-6xl font-light tracking-tighter">{{ pricingBillingCycle === 'yearly' && plan.price !== 'Custom' ? '$' + (parseInt(plan.price.replace('$', '')) * 10) : plan.price }}</span>
                 <span v-if="plan.period" class="text-white/20 text-sm">/mo</span>
               </div>
               <p class="text-sm text-white/40 leading-relaxed mb-10 min-h-[3em]">{{ plan.description }}</p>
