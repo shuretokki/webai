@@ -11,7 +11,8 @@ import {
   Plus,
   Sparkles,
   Apple,
-  Monitor
+  Monitor,
+  Terminal
 } from 'lucide-vue-next';
 import RevealFooter from '@/components/RevealFooter.vue';
 import MagneticButton from '@/components/MagneticButton.vue';
@@ -243,6 +244,41 @@ const content = {
           features: ['Custom model fine-tuning', 'Dedicated support manager', 'SLA guarantees'],
           cta: 'Contact Sales',
           comingSoon: true
+        }
+      ]
+    },
+    developers: {
+      title: 'Build the perfect tools.',
+      description: 'Our extension API is designed to allow anyone with web development skills to unleash the power of Raycast.',
+      cta: 'Read the docs',
+      cards: [
+        {
+          id: 'macos',
+          title: 'React to macOS',
+          description: 'Build rich, native extensions with the technologies you already know: React, TypeScript and Node.',
+          image: '/images/dev_macintosh_1766309616558.png',
+          span: 'col-span-1 md:col-span-7'
+        },
+        {
+          id: 'ui',
+          title: 'Built-in UI',
+          description: 'Our UI component library allows you to create beautiful tools in minutes while we push the pixels.',
+          image: '/images/dev_ui_components_blueprint_1766309631142.png',
+          span: 'col-span-1 md:col-span-5'
+        },
+        {
+          id: 'batteries',
+          title: 'Batteries included',
+          description: 'A strongly typed API, hot reloading and secure tooling that make it a blast to work with.',
+          image: '/images/dev_battery_charger_1766309647277.png',
+          span: 'col-span-1 md:col-span-5'
+        },
+        {
+          id: 'store',
+          title: 'Publish to the Store',
+          description: 'Submit your extension to the Raycast Store and share it with thousands of users.',
+          image: '/images/dev_floppy_disk_1766309662097.png',
+          span: 'col-span-1 md:col-span-7'
         }
       ]
     },
@@ -538,6 +574,56 @@ const toggleFaq = (index: number) => {
                 </div>
               </div>
             </Motion>
+          </div>
+        </div>
+      </section>
+
+      <section id="developer" class="py-32 md:py-48 relative overflow-hidden" :class="ui.layout.sectionPadding">
+        <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+          style="background-image: linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px); background-size: 4rem 4rem;">
+        </div>
+
+        <div :class="ui.layout.clampWidth" class="relative z-10">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center mb-32">
+            <div class="md:col-span-5">
+              <Motion :initial="{ opacity: 0, x: -20 }" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true }" :transition="{ duration: 0.8 }">
+                <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">{{ content.sections.developers.title }}</h2>
+                <p class="text-white/40 mb-10 text-lg leading-relaxed max-w-sm">{{ content.sections.developers.description }}</p>
+                <Link href="/docs" class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 hover:text-white transition-colors group">
+                  {{ content.sections.developers.cta }}
+                  <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Motion>
+            </div>
+            <div class="md:col-span-7">
+              <Motion :initial="{ opacity: 0, scale: 0.95 }" :while-in-view="{ opacity: 1, scale: 1 }" :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
+                <div class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-raycast">
+                   <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80" />
+                </div>
+              </Motion>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+             <Motion v-for="(card, i) in content.sections.developers.cards" :key="card.id"
+               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }" :transition="{ delay: i * 0.1, duration: 0.8 }"
+               :class="[card.span, 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors h-[480px] md:h-[540px] flex flex-col']">
+
+               <div :class="[i % 2 === 0 ? 'flex-col' : 'flex-col-reverse', 'h-full flex']">
+                  <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12">
+                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]"></div>
+                     <img :src="card.image" class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
+                  </div>
+                  <div class="p-10 border-t border-white/5 bg-black/40 backdrop-blur-sm relative z-10">
+                     <h3 class="text-xl font-medium text-white mb-3 tracking-tight">{{ card.title }}</h3>
+                     <p class="text-[13px] text-white/30 leading-relaxed max-w-xs">{{ card.description }}</p>
+                  </div>
+               </div>
+
+               <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowRight class="w-4 h-4 text-white/40" />
+               </div>
+             </Motion>
           </div>
         </div>
       </section>
