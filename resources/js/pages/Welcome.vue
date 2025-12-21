@@ -9,7 +9,6 @@ import RevealFooter from '@/components/RevealFooter.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Hero from '@/components/landing/Hero.vue';
 import Manifesto from '@/components/landing/Manifesto.vue';
-import Features from '@/components/landing/Features.vue';
 import Developer from '@/components/landing/Developer.vue';
 import Pricing from '@/components/landing/Pricing.vue';
 import Faq from '@/components/landing/Faq.vue';
@@ -155,10 +154,9 @@ const content = {
   footer: {
     links: {
       index: [
-        { label: 'About', href: '/about' },
-        { label: 'Pricing', href: '#pricing' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'Changelog', href: '/changelog' },
+        { label: 'Works', href: '/works' },
+        { label: 'Enterprise', href: '/enterprise' },
+        { label: 'Docs', href: '/docs' },
       ],
       social: [
         { label: 'Twitter', href: '#' },
@@ -168,7 +166,7 @@ const content = {
     }
   },
   hero: {
-    image: '/images/heroSection.png',
+    image: '/images/heroSection.webp',
     title: {
       line1: 'Chat',
       line2: 'with our',
@@ -183,26 +181,6 @@ const content = {
       label: 'About Ecnelis',
       title: 'Chat with AI using text, images, voice, and video all in one place.'
     },
-    features: [
-      {
-        id: 'context',
-        label: 'Stateful Context Windows',
-        description: 'Persistent conversation state with automatic checkpoint management. Never lose context across sessions—your AI agent maintains memory like a long-running process.',
-        image: '/images/featureTime.png'
-      },
-      {
-        id: 'models',
-        label: 'Hot-Swappable Models',
-        description: 'Switch between GPT-4, Claude, Llama, and custom fine-tunes mid-conversation. A unified interface for heterogeneous model architectures with zero API rewrites.',
-        image: '/images/featureWords.png'
-      },
-      {
-        id: 'reasoning',
-        label: 'Multi-Modal Inference',
-        description: 'Native support for text, image, audio, and video inputs. Chain reasoning across modalities—analyze screenshots, transcribe voice, generate code from diagrams.',
-        image: '/images/featureGuide.png'
-      }
-    ],
     pricing: {
       label: 'Plans',
       title: 'Simple, Transparent Pricing',
@@ -240,43 +218,43 @@ const content = {
       ]
     },
     developers: {
-      title: 'Built for Developers',
-      description: 'Use our API to integrate powerful AI into your own apps and services. Start building in minutes.',
-      cta: 'View Documentation',
+      title: 'Your AI Assistant',
+      description: 'Write code, analyze data, or bring your creative ideas to life. All in one conversation.',
+      cta: 'Start Chatting',
       cards: [
         {
           id: 'inference',
           title: 'Lightning Fast',
           description: 'Get AI responses in milliseconds thanks to our optimized servers located around the world.',
-          image: '/images/dev_macintosh_1766309616558.png',
+          image: '/images/landing/lightning.webp',
           span: 'col-span-1 md:col-span-7'
         },
         {
           id: 'tools',
           title: 'Powerful Tools',
           description: 'Give your AI the ability to run code, search the web, and connect with other services seamlessly.',
-          image: '/images/dev_ui_components_blueprint_1766309631142.png',
+          image: '/images/landing/bot.webp',
           span: 'col-span-1 md:col-span-5'
         },
         {
           id: 'security',
           title: 'Your Data is Safe',
           description: 'Enterprise encryption and private servers mean your data stays completely secure and private.',
-          image: '/images/dev_battery_charger_1766309647277.png',
+          image: '/images/landing/shield.webp',
           span: 'col-span-1 md:col-span-5'
         },
         {
           id: 'scaling',
           title: 'Grows With You',
           description: 'Whether you have 10 users or 10 million, our infrastructure automatically scales to match your needs.',
-          image: '/images/dev_floppy_disk_1766309662097.png',
+          image: '/images/landing/server.webp',
           span: 'col-span-1 md:col-span-7'
         }
       ]
     },
     faq: {
       label: 'Help',
-      title: 'Common questions',
+      title: 'Frequently Asked Questions',
       items: [
         {
           question: "What can I do with Ecnelis?",
@@ -328,14 +306,14 @@ const content = {
 
   <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative z-10">
 
-    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.35] mix-blend-overlay"
+    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.1] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
     </div>
 
     <header class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
       :style="{ paddingTop: 'var(--sat, 0px)' }">
       <Motion
-        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 shadow-2xl"
+        :class="['pointer-events-auto px-6 rounded-full border border-white/10 flex items-center gap-8 shadow-2xl', ui.navigation.height]"
         :style="{
           backgroundColor: navBackground,
           borderColor: navBorder,
@@ -398,13 +376,13 @@ const content = {
             </template>
             <template v-else>
               <Link href="/login"
-                class="block w-full text-center py-4 border border-white/20 text-white/90 transition-colors"
+                class="block w-full text-center font-medium py-4 border border-white/20 text-white/90 transition-colors active-press"
                 :class="{ 'hover:bg-white/5': canHover }">
                 Log in
               </Link>
               <Link href="/register"
-                class="block w-full text-center py-3 bg-white text-black font-medium transition-colors"
-                :class="{ 'hover:bg-neutral-200': canHover }">
+                class="block w-full text-center font-medium py-4 border bg-white border-white/20 text-black/90 transition-colors active-press"
+                :style="{ paddingTop: '0.75rem', paddingBottom: '0.75rem' }">
                 Get Started
               </Link>
             </template>
@@ -420,8 +398,6 @@ const content = {
           :header-line-height="headerLineHeight" />
 
         <Manifesto id="manifesto-section" :content="content.sections.introducing" :is-mobile="isMobile" />
-
-        <Features id="features-section" :content="content.sections.features" :can-hover="canHover" />
 
         <Developer id="developer-section" :content="content.sections.developers" :can-hover="canHover" />
       </div>
