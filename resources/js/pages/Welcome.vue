@@ -445,14 +445,15 @@ const toggleFaq = (index: number) => {
         <Motion class="absolute inset-0 z-0 pointer-events-none will-change-transform"
           :style="{ y: heroImageY, scale: heroImageScale, transform: 'translateZ(0)' }">
           <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
-          <img :src="content.hero.image" alt="Hero background" class="w-full h-full object-cover" />
+          <img :src="content.hero.image" alt="Hero background" class="w-full h-full object-cover" width="1920"
+            height="1080" decoding="async" />
           <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
           </div>
         </Motion>
 
-        <div :class="ui.layout.hero">
+        <div :class="ui.layout.hero" class="flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
           <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
-            <Motion class="mb-10 md:mb-16" :initial="ui.animations.pageTransition.initial"
+            <Motion class="mb-8 md:mb-12" :initial="ui.animations.pageTransition.initial"
               :animate="ui.animations.pageTransition.enter">
               <Motion is="h1" :class="[ui.typography.hero, 'origin-center will-change-transform']"
                 :style="{ y: headerY, scale: headerScale, filter: headerBlur, opacity: headerOpacity, lineHeight: headerLineHeight }">
@@ -462,25 +463,26 @@ const toggleFaq = (index: number) => {
                   content.hero.title.line4 }}</span>.
               </Motion>
             </Motion>
-
             <Motion class="max-w-xl md:max-w-3xl mx-auto text-center" :initial="ui.animations.pageTransition.initial"
               :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.2 } }">
-              <Motion is="p" :class="[ui.typography.body, 'text-lg md:leading-normal']"
+              <Motion is="p" :class="[ui.typography.body, 'text-lg md:text-xl md:leading-relaxed text-white/40']"
                 :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
                 {{ content.hero.description }}
               </Motion>
             </Motion>
-
           </Motion>
         </div>
 
+        <!-- Premium Scroll Indicator -->
         <Motion
-          class="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/40 text-xs uppercase tracking-[0.2em] flex flex-col items-center gap-4 z-20"
-          :style="{ y: headerY, scale: headerScale, opacity: headerOpacity }">
-          {{ content.hero.cta }}
-          <Motion :animate="{ y: [0, 10, 0] }" :transition="{ duration: 2, repeat: Infinity, ease: 'easeInOut' }">
-            <ChevronDown class="w-5 h-5 opacity-50" />
-          </Motion>
+          class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 z-20 pointer-events-none"
+          :style="{ opacity: headerOpacity }">
+          <span class="text-[10px] uppercase tracking-[0.4em] text-white/20 font-medium">{{ content.hero.cta }}</span>
+          <div class="w-5 h-9 rounded-full border border-white/10 flex justify-center p-1.5">
+            <Motion :animate="{ y: [0, 12, 0], opacity: [0.2, 1, 0.2] }"
+              :transition="{ duration: 2, repeat: Infinity, ease: 'easeInOut' }"
+              class="w-1 h-1.5 rounded-full bg-white" />
+          </div>
         </Motion>
       </section>
       <section class="py-48 md:py-64 relative overflow-hidden" :class="ui.layout.sectionPadding">
@@ -544,7 +546,8 @@ const toggleFaq = (index: number) => {
                   </div>
                   <img :src="feature.image"
                     class="w-full h-full object-cover grayscale opacity-30 transition-all duration-1000"
-                    :class="{ 'group-hover:grayscale-0 group-hover:opacity-80': canHover }" />
+                    :class="{ 'group-hover:grayscale-0 group-hover:opacity-80': canHover }" width="800" height="450"
+                    loading="lazy" decoding="async" />
                 </div>
               </div>
             </Motion>
@@ -579,7 +582,8 @@ const toggleFaq = (index: number) => {
                 :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
                 <div
                   class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-raycast">
-                  <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80" />
+                  <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80"
+                    width="800" height="600" loading="lazy" decoding="async" />
                 </div>
               </Motion>
             </div>
@@ -603,7 +607,8 @@ const toggleFaq = (index: number) => {
                   </div>
                   <img :src="card.image"
                     class="w-full h-full object-contain filter brightness-75 transition-all duration-1000"
-                    :class="{ 'group-hover:brightness-100 group-hover:scale-105': canHover }" />
+                    :class="{ 'group-hover:brightness-100 group-hover:scale-105': canHover }" width="600" height="400"
+                    loading="lazy" decoding="async" />
                 </div>
               </div>
 
