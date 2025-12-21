@@ -18,6 +18,7 @@ import RevealFooter from '@/components/RevealFooter.vue';
 import MagneticButton from '@/components/MagneticButton.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { ui } from '@/config/ui';
+import { useDevice } from '@/composables/useDevice';
 
 defineProps<{
   canRegister?: boolean;
@@ -41,14 +42,10 @@ const pricingMouseX = useMotionValue(0);
 const pricingMouseY = useMotionValue(0);
 const pricingMouseXPx = useTransform(pricingMouseX, (v) => `${v}px`);
 const pricingMouseYPx = useTransform(pricingMouseY, (v) => `${v}px`);
+const { isMobile } = useDevice();
 const vh = ref(typeof window !== "undefined" ? window.innerHeight : 0);
 const pricingBillingCycle = ref<'monthly' | 'yearly'>('monthly');
 const faqOpen = ref<number | null>(null);
-const isMobile = ref(false);
-
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
 
 const smoothScrollY = useSpring(scrollY, {
   damping: 30,
@@ -377,8 +374,12 @@ const toggleFaq = (index: number) => {
     <nav class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
       :style="{ paddingTop: 'var(--sat, 0px)' }">
       <Motion
-        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
-        :style="{ backgroundColor: navBackground, borderColor: navBorder }">
+        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 shadow-2xl"
+        :style="{
+          backgroundColor: navBackground,
+          borderColor: navBorder,
+          backdropFilter: isMobile ? 'none' : navBackdrop
+        }">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
           <span class="font-medium text-lg tracking-tight sr-only md:not-sr-only">{{ content.appName }}</span>
@@ -498,7 +499,9 @@ const toggleFaq = (index: number) => {
       </section>
       <section class="py-48 md:py-64 relative overflow-hidden" :class="ui.layout.sectionPadding">
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div class="w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] animate-pulse"></div>
+          <div class="w-[600px] h-[600px] bg-white/5 rounded-full animate-pulse transition-all duration-1000"
+            :class="isMobile ? 'blur-[60px] opacity-20' : 'blur-[120px] opacity-100'">
+          </div>
         </div>
 
         <div :class="ui.layout.sectionContainer" class="relative z-10 flex justify-center">
