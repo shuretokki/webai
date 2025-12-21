@@ -30,12 +30,23 @@ export const ui = {
     hero: 'relative z-20 text-center px-6 max-w-[90rem] mx-auto mt-20 w-full',
     sectionContainer: 'max-w-[1400px] mx-auto',
     sectionPadding: 'px-6',
+    sectionVertical: 'py-32 md:py-48',
     clampWidth: 'mx-auto w-[clamp(320px,70%,1400px)]',
     footerClamp: 'mx-auto w-[clamp(320px,70%,1600px)]',
-    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-full bg-white text-black text-[13px] font-medium overflow-hidden transition-all active:scale-[0.98]',
-    buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-[13px] font-medium rounded-lg overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-[0.98]',
-    pricingButton: 'w-full h-10 flex items-center justify-center rounded-lg bg-white text-black font-medium text-[13px] hover:bg-neutral-200 transition-colors active:scale-[0.98]',
-    pricingButtonDisabled: 'w-full h-10 flex items-center justify-center rounded-lg border border-white/10 text-white/20 text-[13px] cursor-not-allowed',
+    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-full bg-white text-black text-sm font-medium overflow-hidden transition-all active:scale-[0.98]',
+    buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-sm font-medium rounded-lg overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-[0.98]',
+    pricingButton: 'w-full h-8 flex items-center justify-center rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors active:scale-[0.98]',
+    pricingButtonDisabled: 'w-full h-8 flex items-center justify-center rounded-full border border-white/10 text-white/20 text-sm cursor-not-allowed',
+    card: {
+      base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors',
+      pricing: 'p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors',
+      developer: 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors flex flex-col',
+    },
+    section: {
+      dark: 'bg-[#050505]',
+      deeper: 'bg-black',
+      header: 'flex items-center gap-4 mb-12',
+    }
   },
   typography: {
     hero: 'text-hero font-medium tracking-tighter leading-[0.85] text-white',
@@ -43,8 +54,31 @@ export const ui = {
     title: 'text-title font-light tracking-tight text-white',
     body: 'text-base font-light text-white/60 leading-relaxed',
     accentHero: 'font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40',
+    label: 'text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2',
+    cardTitle: 'text-xl font-medium text-white tracking-tight',
+    cardBody: 'text-[13px] text-white/40 leading-relaxed',
+    pricingPlan: 'text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-6',
+    pricingPrice: 'text-5xl md:text-6xl font-light tracking-tighter',
   },
   animations: {
+    stagger: (idx: number) => ({
+      delay: idx * 0.1,
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1] as const
+    }),
+    wordReveal: (i: number) => ({
+      initial: { y: '100%', opacity: 0, rotateZ: 5 },
+      enter: {
+        y: 0,
+        opacity: 1,
+        rotateZ: 0,
+        transition: {
+          duration: 0.8,
+          ease: [0.33, 1, 0.68, 1] as const,
+          delay: i * 0.03
+        }
+      }
+    }),
     hover: {
       navLink: {
         color: '#ffffff',
@@ -98,6 +132,10 @@ export const ui = {
         scale: (v: number) => 1 + v * 0.0001,
       },
     },
+  },
+  patterns: {
+    blueprint: 'background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 4rem 4rem;',
+    spotlight: 'radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)',
   },
   colors: {
     primary: '#ffffff',

@@ -495,7 +495,7 @@ const toggleFaq = (index: number) => {
       <section class="pt-section" :class="ui.layout.sectionPadding">
         <div :class="ui.layout.sectionContainer">
           <Motion :initial="false" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true, margin: '-100px' }"
-            class="flex items-center gap-4 mb-12">
+            :class="ui.layout.section.header">
             <div class="w-12 h-[1px] relative">
               <Motion is="svg" viewBox="0 0 48 1" class="absolute inset-0 w-full h-full text-white/40">
                 <Motion is="line" x1="0" y1="0.5" x2="48" y2="0.5" stroke="currentColor" stroke-width="1"
@@ -504,26 +504,14 @@ const toggleFaq = (index: number) => {
                   :viewport="{ once: true }" />
               </Motion>
             </div>
-            <span class="text-sm text-white/40 font-medium">{{ content.sections.introducing.label }}</span>
+            <span :class="ui.typography.label">{{ content.sections.introducing.label }}</span>
           </Motion>
 
           <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-10%' }"
             class="max-w-4xl mb-12 md:mb-24">
             <h2 :class="[ui.typography.display, 'overflow-hidden flex flex-wrap gap-x-[0.3em] gap-y-[0.1em]']">
               <div v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i" class="overflow-hidden">
-                <Motion :variants="{
-                  initial: { y: '100%', opacity: 0, rotateZ: 5 },
-                  enter: {
-                    y: 0,
-                    opacity: 1,
-                    rotateZ: 0,
-                    transition: {
-                      duration: 0.8,
-                      ease: ui.animations.easing.smooth,
-                      delay: i * 0.03
-                    }
-                  }
-                }" class="inline-block origin-top-left">
+                <Motion :variants="ui.animations.wordReveal(i)" class="inline-block origin-top-left">
                   {{ word }}
                 </Motion>
               </div>
@@ -532,13 +520,12 @@ const toggleFaq = (index: number) => {
         </div>
       </section>
 
-      <section id="features" class="py-32 md:py-48" :class="ui.layout.sectionPadding">
+      <section id="features" :class="[ui.layout.sectionVertical, ui.layout.sectionPadding]">
         <div :class="ui.layout.clampWidth">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Motion v-for="(feature, idx) in content.sections.features" :key="feature.id"
               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }"
-              :transition="{ delay: idx * 0.1, duration: 0.8 }" :viewport="{ once: true }"
-              class="group relative bg-[#080808] border border-white/5 rounded-2xl p-8 overflow-hidden hover:border-white/10 transition-colors">
+              :transition="ui.animations.stagger(idx)" :viewport="{ once: true }" :class="[ui.layout.card.base, 'p-8']">
               <div
                 class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               </div>
@@ -548,8 +535,8 @@ const toggleFaq = (index: number) => {
                   <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)"
                     class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
                 </div>
-                <h3 class="text-xl font-medium text-white mb-4 tracking-tight">{{ feature.label }}</h3>
-                <p class="text-sm text-white/40 leading-relaxed mb-10 min-h-[4em]">
+                <h3 :class="ui.typography.cardTitle" class="mb-4">{{ feature.label }}</h3>
+                <p :class="ui.typography.cardBody" class="mb-10 min-h-[4em]">
                   {{ feature.description }}
                 </p>
                 <div
@@ -566,9 +553,9 @@ const toggleFaq = (index: number) => {
         </div>
       </section>
 
-      <section id="developer" class="py-32 md:py-48 relative overflow-hidden" :class="ui.layout.sectionPadding">
-        <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-          style="background-image: linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px); background-size: 4rem 4rem;">
+      <section id="developer" class="relative overflow-hidden"
+        :class="[ui.layout.sectionVertical, ui.layout.sectionPadding]">
+        <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" :style="ui.patterns.blueprint">
         </div>
 
         <div :class="ui.layout.clampWidth" class="relative z-10">
@@ -578,7 +565,7 @@ const toggleFaq = (index: number) => {
                 :transition="{ duration: 0.8 }">
                 <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">
                   {{ content.sections.developers.title }}</h2>
-                <p class="text-white/40 mb-10 text-lg leading-relaxed max-w-sm">
+                <p :class="ui.typography.body" class="mb-10 text-lg max-w-sm">
                   {{ content.sections.developers.description }}</p>
                 <Link href="/docs"
                   class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 hover:text-white transition-colors group">
@@ -601,8 +588,8 @@ const toggleFaq = (index: number) => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <Motion v-for="(card, i) in content.sections.developers.cards" :key="card.id"
               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
-              :transition="{ delay: i * 0.1, duration: 0.8 }"
-              :class="[card.span, 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors h-[480px] md:h-[540px] flex flex-col']">
+              :transition="ui.animations.stagger(i)"
+              :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]']">
 
               <div :class="[i % 2 === 0 ? 'flex-col' : 'flex-col-reverse', 'h-full flex']">
                 <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12">
@@ -613,8 +600,8 @@ const toggleFaq = (index: number) => {
                     class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
                 </div>
                 <div class="p-10 border-t border-white/5 bg-black/40 backdrop-blur-sm relative z-10">
-                  <h3 class="text-xl font-medium text-white mb-3 tracking-tight">{{ card.title }}</h3>
-                  <p class="text-[13px] text-white/30 leading-relaxed max-w-xs">{{ card.description }}</p>
+                  <h3 :class="ui.typography.cardTitle" class="mb-3">{{ card.title }}</h3>
+                  <p :class="ui.typography.cardBody" class="max-w-xs">{{ card.description }}</p>
                 </div>
               </div>
 
@@ -634,17 +621,16 @@ const toggleFaq = (index: number) => {
         :style="{
           '--x': pricingMouseXPx,
           '--y': pricingMouseYPx,
-          background: `radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)`
+          background: ui.patterns.spotlight
         }" />
 
       <div :class="ui.layout.clampWidth" class="relative z-20">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8">
           <div class="max-w-xl">
             <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
-              class="flex items-center gap-4 mb-8">
+              :class="ui.layout.section.header">
               <div class="w-1 h-4 bg-white/20"></div>
-              <span
-                class="text-sm text-white/40 font-mono uppercase tracking-widest">{{ content.sections.pricing.label }}</span>
+              <span :class="ui.typography.label">{{ content.sections.pricing.label }}</span>
             </Motion>
             <h2 :class="[ui.typography.display, 'text-white mb-6 leading-none']">{{ content.sections.pricing.title }}
             </h2>
@@ -668,23 +654,21 @@ const toggleFaq = (index: number) => {
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
           <Motion v-for="(plan, idx) in content.sections.pricing.plans" :key="plan.name"
             :initial="{ y: 50 + idx * 20, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
-            :transition="{ delay: idx * 0.1, duration: 0.5 + idx * 0.1 }" :viewport="{ once: true }"
-            class="p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors">
+            :transition="ui.animations.stagger(idx)" :viewport="{ once: true }" :class="ui.layout.card.pricing">
 
             <div v-if="plan.name.includes('+')"
               class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none opacity-40">
             </div>
 
             <div class="relative z-10 mb-auto">
-              <span
-                class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-6">{{ plan.name }}</span>
+              <span :class="ui.typography.pricingPlan">{{ plan.name }}</span>
               <div class="flex items-baseline gap-1 mb-8">
                 <span
-                  class="text-5xl md:text-6xl font-light tracking-tighter">{{ pricingBillingCycle === 'yearly' && plan.price !== 'Custom' ? '$' + (parseInt(plan.price.replace('$', '')) * 10) : plan.price }}</span>
+                  :class="ui.typography.pricingPrice">{{ pricingBillingCycle === 'yearly' && plan.price !== 'Custom' ? '$' + (parseInt(plan.price.replace('$', '')) * 10) : plan.price }}</span>
                 <span v-if="plan.period"
                   class="text-white/20 text-sm">{{ pricingBillingCycle === 'yearly' ? '/yr' : '/mo' }}</span>
               </div>
-              <p class="text-sm text-white/40 leading-relaxed mb-10 min-h-[3em]">{{ plan.description }}</p>
+              <p :class="ui.typography.cardBody" class="mb-10 min-h-[3em]">{{ plan.description }}</p>
 
               <ul class="space-y-4 mb-12">
                 <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-3 text-[13px] text-white/60">
@@ -713,7 +697,7 @@ const toggleFaq = (index: number) => {
           <div class="md:col-span-4">
             <Motion :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
               class="sticky top-32">
-              <span class="text-xs font-mono text-white/40 mb-6 uppercase tracking-widest flex items-center gap-2">
+              <span :class="ui.typography.label">
                 <span class="w-1 h-1 bg-white/40 rounded-full"></span>
                 {{ content.sections.faq.label }}
               </span>
