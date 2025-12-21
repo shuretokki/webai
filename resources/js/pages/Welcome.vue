@@ -26,7 +26,6 @@ defineProps<{
 
 const mobileMenuOpen = ref(false);
 const scrollY = useMotionValue(0);
-const pricingSection = ref<HTMLElement | null>(null);
 const featuresSection = ref<HTMLElement | null>(null);
 const featuresScrollRange = ref([0, 0]);
 
@@ -38,10 +37,6 @@ const updateFeaturesRange = () => {
     featuresScrollRange.value = [start, start + featuresSection.value.offsetHeight];
   }
 };
-const pricingMouseX = useMotionValue(0);
-const pricingMouseY = useMotionValue(0);
-const pricingMouseXPx = useTransform(pricingMouseX, (v) => `${v}px`);
-const pricingMouseYPx = useTransform(pricingMouseY, (v) => `${v}px`);
 const { isMobile } = useDevice();
 const vh = ref(typeof window !== "undefined" ? window.innerHeight : 0);
 const pricingBillingCycle = ref<'monthly' | 'yearly'>('monthly');
@@ -68,14 +63,6 @@ onMounted(() => {
   lenis.on('scroll', (e: any) => {
     scrollY.set(e.scroll);
   });
-
-  if (pricingSection.value) {
-    pricingSection.value.addEventListener('mousemove', (e) => {
-      const rect = pricingSection.value!.getBoundingClientRect();
-      pricingMouseX.set(e.clientX - rect.left);
-      pricingMouseY.set(e.clientY - rect.top);
-    });
-  }
 
   updateFeaturesRange();
   vh.value = window.innerHeight;
@@ -622,16 +609,8 @@ const toggleFaq = (index: number) => {
         </div>
       </section>
     </div>
-    <section id="pricing" ref="pricingSection" class="py-section border-b border-white/5 relative group/spotlight"
+    <section id="pricing" class="py-section border-b border-white/5 relative group/spotlight"
       :class="ui.layout.sectionPadding">
-
-      <Motion
-        class="pointer-events-none absolute -inset-px opacity-0 group-hover/spotlight:opacity-100 transition-opacity duration-500 z-10"
-        :style="{
-          '--x': pricingMouseXPx,
-          '--y': pricingMouseYPx,
-          background: ui.patterns.spotlight
-        }" />
 
       <div :class="ui.layout.clampWidth" class="relative z-20">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8">

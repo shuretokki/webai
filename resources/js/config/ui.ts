@@ -136,7 +136,6 @@ export const ui = {
   },
   patterns: {
     blueprint: 'background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 4rem 4rem;',
-    spotlight: 'radial-gradient(600px circle at var(--x) var(--y), rgba(255,255,255,0.06), transparent 40%)',
   },
   colors: {
     primary: '#ffffff',

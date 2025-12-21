@@ -1,36 +1,24 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { useBreakpoints, breakpointsTailwind, useElementHover } from '@vueuse/core';
+import { ref, onMounted } from 'vue';
 
 /**
- * Global Device Detection Composable
- * Centralizes breakpoint logic and event listeners for better performance.
+ * Global Device Detection Composable (VueUse based)
+ * Uses matchMedia for superior performance over resize listeners.
  */
 
-const isMobile = ref(false);
-const isTablet = ref(false);
-const isDesktop = ref(false);
-const canHover = ref(false);
-
-const checkDevice = () => {
-  if (typeof window === 'undefined') return;
-
-  const width = window.innerWidth;
-  isMobile.value = width < 768;
-  isTablet.value = width >= 768 && width < 1024;
-  isDesktop.value = width >= 1024;
-
-  // Check if the device has a primary pointer that can hover (mouse/trackpad)
-  canHover.value = window.matchMedia('(hover: hover)').matches;
-};
-
-// Singleton pattern: shared state across all components
 export function useDevice() {
-  onMounted(() => {
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-  });
+  const breakpoints = useBreakpoints(breakpointsTailwind);
 
-  onUnmounted(() => {
-    window.removeEventListener('resize', checkDevice);
+  const isMobile = breakpoints.smaller('md'); // < 768px
+  const isTablet = breakpoints.between('md', 'lg'); // 768px - 1024px
+  const isDesktop = breakpoints.greaterOrEqual('lg'); // >= 1024px
+
+  const canHover = ref(false);
+
+  onMounted(() => {
+    if (typeof window !== 'undefined') {
+      canHover.value = window.matchMedia('(hover: hover)').matches;
+    }
   });
 
   return {
