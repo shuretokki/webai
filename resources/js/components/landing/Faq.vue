@@ -39,8 +39,7 @@ defineEmits(['update:faqOpen']);
               <button @click="$emit('update:faqOpen', faqOpen === idx ? null : idx)"
                 class="w-full py-6 md:py-8 flex items-start justify-between text-left focus:outline-none transition-colors relative active-press"
                 :class="{ 'hover:bg-white/[0.02]': canHover }">
-                <span class="text-xl md:text-2xl font-light tracking-tight text-white/80 transition-colors pr-8"
-                  :class="{ 'group-hover:text-white': canHover }">
+                <span :class="[ui.typography.title, 'text-white/80 transition-colors pr-8', { 'group-hover:text-white': canHover }]">
                   {{ item.question }}
                 </span>
                 <span class="relative flex-shrink-0 w-6 h-6 flex items-center justify-center mt-1">
