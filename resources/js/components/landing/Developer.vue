@@ -23,11 +23,11 @@ defineProps<Props>();
         <div class="md:col-span-5">
           <Motion :initial="{ opacity: 0, x: -20 }" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true }"
             :transition="{ duration: 0.8 }">
-            <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">
+            <h2 :class="[ui.typography.display, 'mb-8']">
               {{ content.title }}</h2>
             <p :class="ui.typography.body" class="mb-10 text-lg max-w-sm">
               {{ content.description }}</p>
-            <Link href="/docs"
+            <Link href="/explore"
               class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 transition-colors group"
               :class="{ 'hover:text-white': canHover }">
               {{ content.cta }}
@@ -40,7 +40,7 @@ defineProps<Props>();
             :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
             <div
               class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-ecnelis">
-              <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80"
+              <img src="/images/landing/chat.webp" class="w-full h-full object-cover opacity-80"
                 width="800" height="600" loading="lazy" decoding="async" />
             </div>
           </Motion>
