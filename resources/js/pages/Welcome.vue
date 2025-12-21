@@ -12,7 +12,8 @@ import {
   Sparkles,
   Apple,
   Monitor,
-  Terminal
+  Terminal,
+  ArrowUpRight
 } from 'lucide-vue-next';
 import RevealFooter from '@/components/RevealFooter.vue';
 import MagneticButton from '@/components/MagneticButton.vue';
@@ -103,25 +104,29 @@ const headerY = useTransform(
 const headerScale = useTransform(
   smoothScrollY,
   ui.animations.scrollEffects.hero.range,
-  ui.animations.scrollEffects.hero.headerScale
+  ui.animations.scrollEffects.hero.headerScale,
+  { clamp: true }
 );
 
 const headerLineHeight = useTransform(
   smoothScrollY,
   ui.animations.scrollEffects.hero.range,
-  ui.animations.scrollEffects.hero.lineSpacing
+  [0.9, 4],
+  { clamp: true }
 );
 
 const headerBlur = useTransform(
   smoothScrollY,
   ui.animations.scrollEffects.hero.opacityRange,
-  ui.animations.scrollEffects.hero.blur
+  ui.animations.scrollEffects.hero.blur,
+  { clamp: true }
 );
 
 const headerOpacity = useTransform(
   smoothScrollY,
   ui.animations.scrollEffects.hero.opacityRange,
-  ui.animations.scrollEffects.hero.opacity
+  ui.animations.scrollEffects.hero.opacity,
+  { clamp: true }
 );
 
 const preFooterImageY = useTransform(
@@ -212,7 +217,7 @@ const content = {
           description: 'Perfect for getting started with AI',
           features: ['Access to standard models', '50 messages / month', 'Community support'],
           cta: 'Start Building',
-          link: '/explore',
+          href: '/explore',
           comingSoon: false
         },
         {
@@ -231,6 +236,7 @@ const content = {
           description: 'For organizations with custom needs to scale.',
           features: ['Custom model fine-tuning', 'Dedicated support manager', 'SLA guarantees'],
           cta: 'Contact Sales',
+          href: '/contact',
           comingSoon: true
         }
       ]
@@ -366,7 +372,7 @@ const toggleFaq = (index: number) => {
           backgroundColor: navBackground,
           borderColor: navBorder,
           backdropFilter: isMobile ? 'none' : navBackdrop
-        }" :while-hover="canHover ? { scale: 1.02 } : {}">
+        }">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
           <span class="font-medium text-lg tracking-tight sr-only md:not-sr-only">{{ content.appName }}</span>
@@ -473,15 +479,12 @@ const toggleFaq = (index: number) => {
           </Motion>
         </div>
 
-        <!-- Premium Scroll Indicator -->
         <Motion
           class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 z-20 pointer-events-none"
           :style="{ opacity: headerOpacity }">
           <span class="text-[10px] uppercase tracking-[0.4em] text-white/20 font-medium">{{ content.hero.cta }}</span>
           <div class="w-5 h-9 rounded-full border border-white/10 flex justify-center p-1.5">
-            <Motion :animate="{ y: [0, 12, 0], opacity: [0.2, 1, 0.2] }"
-              :transition="{ duration: 2, repeat: Infinity, ease: 'easeInOut' }"
-              class="w-1 h-1.5 rounded-full bg-white" />
+            <div class="w-1 h-1.5 rounded-full bg-white opacity-20 animate-indicator-pulse" />
           </div>
         </Motion>
       </section>
@@ -496,13 +499,11 @@ const toggleFaq = (index: number) => {
           <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
             class="max-w-6xl">
 
-            <!-- Mobile Optimized: Single Node -->
             <Motion v-if="isMobile" :initial="{ opacity: 0, y: 30 }" :while-in-view="{ opacity: 1, y: 0 }"
               :transition="{ duration: 1, ease: ui.animations.easing.default }" :class="ui.typography.manifesto">
               {{ content.sections.introducing.title }}
             </Motion>
 
-            <!-- Desktop: Cinematic Word Reveal -->
             <h2 v-else :class="[ui.typography.manifesto]">
               <template v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i">
                 <Motion :variants="ui.animations.wordReveal(i)" class="inline-block"
@@ -676,7 +677,7 @@ const toggleFaq = (index: number) => {
             </div>
 
             <div class="relative z-10">
-              <Link v-if="plan.link" :href="plan.link" :class="ui.layout.pricingButton">
+              <Link v-if="plan.href" :href="plan.href" :class="ui.layout.pricingButton">
                 {{ plan.cta }}
               </Link>
               <button v-else disabled :class="ui.layout.pricingButtonDisabled">
@@ -768,9 +769,10 @@ const toggleFaq = (index: number) => {
             <Link href="/register" :class="ui.layout.button">
               <Motion class="absolute inset-0 bg-white" :while-hover="{ scale: 1.05 }" />
               <Motion class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                :initial="{ x: '-100%' }" :while-hover="{ x: '100%', transition: { duration: 0.7 } }" />
-              <Motion class="absolute inset-0 rounded-lg"
-                :while-hover="{ boxShadow: '0 0 40px rgba(255,255,255,0.4)' }" />
+                :initial="{ x: '-100%' }" :while-hover="canHover ? { x: '100%' } : {}"
+                :transition="{ duration: 0.7 }" />
+              <Motion class="absolute inset-0 rounded-lg" :initial="{ boxShadow: '0 0 0px #ffffff00' }"
+                :while-hover="canHover ? { boxShadow: '0 0 40px #ffffff66' } : {}" />
               <span class="relative z-10">{{ content.sections.preFooter.cta }}</span>
               <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300"
                 :class="{ 'group-hover:translate-x-1': canHover }" />
