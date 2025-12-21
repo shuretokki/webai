@@ -373,7 +373,7 @@ const toggleFaq = (index: number) => {
     <nav class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
       :style="{ paddingTop: 'var(--sat, 0px)' }">
       <Motion
-        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
+        class="pointer-events-auto px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
         :style="{ backgroundColor: navBackground, borderColor: navBorder }">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
@@ -407,7 +407,7 @@ const toggleFaq = (index: number) => {
               </span>
             </Link>
             <Link href="/register"
-              class="bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full hover:bg-white/90 transition-colors">
+              class="bg-white text-black text-[13px] font-medium px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors">
               Get Started
             </Link>
           </template>
@@ -441,7 +441,7 @@ const toggleFaq = (index: number) => {
                 Log in
               </Link>
               <Link href="/register"
-                class="block w-full text-center py-4 bg-white text-black font-medium hover:bg-white/90 transition-colors">
+                class="block w-full text-center py-3 bg-white text-black font-medium rounded-lg hover:bg-neutral-200 transition-colors">
                 Get Started
               </Link>
             </template>
@@ -481,17 +481,6 @@ const toggleFaq = (index: number) => {
               </Motion>
             </Motion>
 
-            <Motion class="mt-10 md:mt-14" :initial="ui.animations.pageTransition.initial"
-              :animate="{ ...ui.animations.pageTransition.enter, transition: { ...ui.animations.pageTransition.enter.transition, delay: 0.45 } }">
-              <Link href="/explore">
-                <MagneticButton>
-                  <span :class="ui.layout.button">
-                    Get Started
-                    <ArrowRight class="w-5 h-5" />
-                  </span>
-                </MagneticButton>
-              </Link>
-            </Motion>
           </Motion>
         </div>
 
@@ -586,44 +575,54 @@ const toggleFaq = (index: number) => {
         <div :class="ui.layout.clampWidth" class="relative z-10">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center mb-32">
             <div class="md:col-span-5">
-              <Motion :initial="{ opacity: 0, x: -20 }" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true }" :transition="{ duration: 0.8 }">
-                <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">{{ content.sections.developers.title }}</h2>
-                <p class="text-white/40 mb-10 text-lg leading-relaxed max-w-sm">{{ content.sections.developers.description }}</p>
-                <Link href="/docs" class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 hover:text-white transition-colors group">
+              <Motion :initial="{ opacity: 0, x: -20 }" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true }"
+                :transition="{ duration: 0.8 }">
+                <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">
+                  {{ content.sections.developers.title }}</h2>
+                <p class="text-white/40 mb-10 text-lg leading-relaxed max-w-sm">
+                  {{ content.sections.developers.description }}</p>
+                <Link href="/docs"
+                  class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 hover:text-white transition-colors group">
                   {{ content.sections.developers.cta }}
                   <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Motion>
             </div>
             <div class="md:col-span-7">
-              <Motion :initial="{ opacity: 0, scale: 0.95 }" :while-in-view="{ opacity: 1, scale: 1 }" :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
-                <div class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-raycast">
-                   <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80" />
+              <Motion :initial="{ opacity: 0, scale: 0.95 }" :while-in-view="{ opacity: 1, scale: 1 }"
+                :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
+                <div
+                  class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-raycast">
+                  <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80" />
                 </div>
               </Motion>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-             <Motion v-for="(card, i) in content.sections.developers.cards" :key="card.id"
-               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }" :transition="{ delay: i * 0.1, duration: 0.8 }"
-               :class="[card.span, 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors h-[480px] md:h-[540px] flex flex-col']">
+            <Motion v-for="(card, i) in content.sections.developers.cards" :key="card.id"
+              :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
+              :transition="{ delay: i * 0.1, duration: 0.8 }"
+              :class="[card.span, 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors h-[480px] md:h-[540px] flex flex-col']">
 
-               <div :class="[i % 2 === 0 ? 'flex-col' : 'flex-col-reverse', 'h-full flex']">
-                  <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12">
-                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]"></div>
-                     <img :src="card.image" class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
+              <div :class="[i % 2 === 0 ? 'flex-col' : 'flex-col-reverse', 'h-full flex']">
+                <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12">
+                  <div
+                    class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]">
                   </div>
-                  <div class="p-10 border-t border-white/5 bg-black/40 backdrop-blur-sm relative z-10">
-                     <h3 class="text-xl font-medium text-white mb-3 tracking-tight">{{ card.title }}</h3>
-                     <p class="text-[13px] text-white/30 leading-relaxed max-w-xs">{{ card.description }}</p>
-                  </div>
-               </div>
+                  <img :src="card.image"
+                    class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
+                </div>
+                <div class="p-10 border-t border-white/5 bg-black/40 backdrop-blur-sm relative z-10">
+                  <h3 class="text-xl font-medium text-white mb-3 tracking-tight">{{ card.title }}</h3>
+                  <p class="text-[13px] text-white/30 leading-relaxed max-w-xs">{{ card.description }}</p>
+                </div>
+              </div>
 
-               <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowRight class="w-4 h-4 text-white/40" />
-               </div>
-             </Motion>
+              <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ArrowRight class="w-4 h-4 text-white/40" />
+              </div>
+            </Motion>
           </div>
         </div>
       </section>
@@ -654,7 +653,7 @@ const toggleFaq = (index: number) => {
           </div>
 
           <div
-            class="bg-white/5 border border-white/10 rounded-full p-1 flex items-center relative w-full max-w-[280px] sm:max-w-xs md:mx-0">
+            class="bg-white/5 border border-white/10 rounded-full p-1 flex items-center relative w-full max-w-[280px] sm:max-w-xs mx-auto md:mx-0">
             <div
               class="absolute inset-y-1 w-[calc(50%-4px)] bg-white/10 rounded-full transition-all duration-300 ease-out"
               :class="pricingBillingCycle === 'monthly' ? 'left-1' : 'left-[50%] ml-px'"></div>
@@ -697,11 +696,11 @@ const toggleFaq = (index: number) => {
 
             <div class="relative z-10">
               <Link v-if="plan.link" :href="plan.link"
-                class="w-full h-14 flex items-center justify-center rounded-xl bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors">
+                class="w-full h-10 flex items-center justify-center rounded-lg bg-white text-black font-medium text-[13px] hover:bg-neutral-200 transition-colors">
                 {{ plan.cta }}
               </Link>
               <button v-else disabled
-                class="w-full h-14 flex items-center justify-center rounded-xl border border-white/10 text-white/20 text-sm cursor-not-allowed">
+                class="w-full h-10 flex items-center justify-center rounded-lg border border-white/10 text-white/20 text-[13px] cursor-not-allowed">
                 {{ plan.cta }}
               </button>
             </div>
@@ -737,7 +736,7 @@ const toggleFaq = (index: number) => {
               <div v-for="(item, idx) in content.sections.faq.items" :key="idx"
                 class="border-b border-white/10 overflow-hidden group">
                 <button @click="faqOpen = faqOpen === idx ? null : idx"
-                  class="w-full py-8 flex items-start justify-between text-left focus:outline-none group-hover:bg-white/[0.02] transition-colors relative">
+                  class="w-full py-6 md:py-8 flex items-start justify-between text-left focus:outline-none group-hover:bg-white/[0.02] transition-colors relative">
                   <span
                     class="text-xl md:text-2xl font-light tracking-tight text-white/80 group-hover:text-white transition-colors pr-8">
                     {{ item.question }}
@@ -794,7 +793,7 @@ const toggleFaq = (index: number) => {
               <Motion class="absolute inset-0 bg-white" :while-hover="{ scale: 1.05 }" />
               <Motion class="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
                 :initial="{ x: '-100%' }" :while-hover="{ x: '100%', transition: { duration: 0.7 } }" />
-              <Motion class="absolute inset-0 rounded-full"
+              <Motion class="absolute inset-0 rounded-lg"
                 :while-hover="{ boxShadow: '0 0 40px rgba(255,255,255,0.4)' }" />
               <span class="relative z-10">{{ content.sections.preFooter.cta }}</span>
               <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />

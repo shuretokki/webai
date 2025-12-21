@@ -32,8 +32,8 @@ export const ui = {
     sectionPadding: 'px-6',
     clampWidth: 'mx-auto w-[clamp(320px,70%,1400px)]',
     footerClamp: 'mx-auto w-[clamp(320px,70%,1600px)]',
-    button: 'group relative inline-flex items-center justify-center gap-3 px-6 py-3 md:px-10 md:py-4 bg-white text-black text-sm md:text-base font-medium rounded-full overflow-hidden',
-    buttonOutline: 'group relative inline-flex items-center justify-center gap-3 px-6 py-2.5 border border-white/20 text-white text-xs md:text-sm font-medium rounded-sm overflow-hidden hover:bg-white hover:text-black transition-colors',
+    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-black text-[13px] font-medium rounded-lg overflow-hidden transition-all active:scale-[0.98]',
+    buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-[13px] font-medium rounded-lg overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-[0.98]',
   },
   typography: {
     hero: 'text-hero font-medium tracking-tighter leading-[0.85] text-white',
