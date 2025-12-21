@@ -29,6 +29,7 @@ This project follows strict "Big Tech" production standards for frontend develop
 
 - **Dynamic Viewports**: Use dvh (Dynamic Viewport Height) instead of vh to prevent layout jumping caused by mobile browser UI (chrome/safari address bars).
 - **Safe Areas**: Implement env(safe-area-inset-*) padding for fixed/sticky components to ensure visibility on notched devices.
+- **Fixed Stacking**: Avoid complex reveal effects using `clip-path` and `fixed` positioning on mobile devices due to repaint costs; use simpler stacking contexts (z-index) instead.
 
 ## 4. Global Architecture
 
@@ -39,5 +40,5 @@ This project follows strict "Big Tech" production standards for frontend develop
 ## 5. Engineering Standards
 
 - **Strict Logic**: Use TypeScript as const assertions for fixed configuration objects.
-- **Clean Commits**: Commit individual files with short, descriptive, and non-semantic (no feat/fix prefix) messages. Commit messages should be as nonchalant as possible (avoid excessive punctuation or enthusiasm).
+- **Clean Commits**: Commit individual files with short, descriptive, and non-semantic (no feat/fix prefix) messages. Commit messages should be as nonchalant as possible (avoid excessive punctuation or enthusiasm). Commit should be atmost 5 words.
 - **No Placeholders**: Never use placeholder text or generic colors in production. Use real-world assets or generated demonstrations.
