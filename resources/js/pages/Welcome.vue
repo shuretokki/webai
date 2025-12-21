@@ -697,8 +697,7 @@ const toggleFaq = (index: number) => {
               <Link v-if="plan.link" :href="plan.link" :class="ui.layout.pricingButton">
                 {{ plan.cta }}
               </Link>
-              <button v-else disabled
-                class="w-full h-10 flex items-center justify-center rounded-lg border border-white/10 text-white/20 text-[13px] cursor-not-allowed">
+              <button v-else disabled :class="ui.layout.pricingButtonDisabled">
                 {{ plan.cta }}
               </button>
             </div>
