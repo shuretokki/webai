@@ -38,7 +38,7 @@ export const ui = {
     pricingButton: 'w-full h-8 flex items-center justify-center rounded-sm bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors active:scale-[0.98]',
     pricingButtonDisabled: 'w-full h-8 flex items-center justify-center rounded-sm border border-white/10 text-white/20 text-sm cursor-not-allowed',
     card: {
-      base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors',
+      base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors flex flex-col',
       pricing: 'p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors',
       developer: 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors flex flex-col',
     },

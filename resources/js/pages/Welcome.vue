@@ -521,18 +521,20 @@ const toggleFaq = (index: number) => {
               <div
                 class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               </div>
-              <div class="relative z-10">
-                <div
-                  class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
-                  <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)"
-                    class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+              <div class="h-full flex flex-col relative z-10">
+                <div>
+                  <div
+                    class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                    <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)"
+                      class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+                  </div>
+                  <h3 :class="ui.typography.cardTitle" class="mb-4">{{ feature.label }}</h3>
+                  <p :class="ui.typography.cardBody" class="mb-10">
+                    {{ feature.description }}
+                  </p>
                 </div>
-                <h3 :class="ui.typography.cardTitle" class="mb-4">{{ feature.label }}</h3>
-                <p :class="ui.typography.cardBody" class="mb-10 min-h-[4em]">
-                  {{ feature.description }}
-                </p>
                 <div
-                  class="aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative group-hover:border-white/10 transition-colors">
+                  class="mt-auto aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative group-hover:border-white/10 transition-colors">
                   <div
                     class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-50">
                   </div>
@@ -583,17 +585,17 @@ const toggleFaq = (index: number) => {
               :transition="ui.animations.stagger(i)"
               :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]']">
 
-              <div :class="[i % 2 === 0 ? 'flex-col' : 'flex-col-reverse', 'h-full flex']">
-                <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12">
+              <div class="flex-col h-full flex">
+                <div class="p-10 relative z-10">
+                  <h3 :class="ui.typography.cardTitle" class="mb-3">{{ card.title }}</h3>
+                  <p :class="ui.typography.cardBody" class="max-w-xs">{{ card.description }}</p>
+                </div>
+                <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12 mt-auto">
                   <div
                     class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]">
                   </div>
                   <img :src="card.image"
                     class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
-                </div>
-                <div class="p-10 border-t border-white/5 bg-black/40 backdrop-blur-sm relative z-10">
-                  <h3 :class="ui.typography.cardTitle" class="mb-3">{{ card.title }}</h3>
-                  <p :class="ui.typography.cardBody" class="max-w-xs">{{ card.description }}</p>
                 </div>
               </div>
 
