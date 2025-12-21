@@ -14,9 +14,9 @@
     --font-mono: 'JetBrains Mono', monospace;
     --font-philosopher: 'Philosopher', sans-serif;
 
-    --radius-lg: 0rem;
-    --radius-md: 0rem;
-    --radius-sm: 0rem;
+    --radius-lg: 0.75rem;
+    --radius-md: 0.625rem;
+    --radius-sm: 0.5rem;
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -177,6 +177,16 @@
 @layer base {
     * {
         @apply border-border outline-ring/50;
+    }
+
+    .active-press {
+        @apply active:scale-[0.98] transition-all;
+    }
+
+    @media (hover: hover) {
+        .hover-border {
+            @apply hover:border-white/10 transition-colors;
+        }
     }
 
     :root {
