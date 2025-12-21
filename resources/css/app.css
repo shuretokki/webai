@@ -200,8 +200,8 @@
         @apply bg-background text-foreground;
         min-height: 100dvh;
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
     }
+
 
     h1 {
         @apply font-medium tracking-tighter leading-[0.9];
@@ -294,13 +294,22 @@
         animation: shimmer 3s infinite linear;
     }
 
+    @keyframes indicator-pulse {
+        0% { transform: translateY(0); opacity: 0.2; }
+        50% { transform: translateY(12px); opacity: 1; }
+        100% { transform: translateY(0); opacity: 0.2; }
+    }
+
+    .animate-indicator-pulse {
+        animation: indicator-pulse 2s ease-in-out infinite;
+    }
+
     @keyframes shimmer {
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
     }
 }
 
-/* Lenis Smooth Scroll Stability */
 html.lenis,
 html.lenis body {
   height: auto;
