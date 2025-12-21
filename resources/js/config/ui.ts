@@ -10,12 +10,12 @@ export const ui = {
     maxWidth: 'max-w-[1400px]',
     scrollThreshold: [0, 1000],
     background: {
-      initial: 'rgba(0, 0, 0, 0)',
-      scrolled: 'rgba(0, 0, 0, 1)',
+      initial: '#00000000',
+      scrolled: '#000000ff',
     },
     border: {
-      initial: 'rgba(255, 255, 255, 0)',
-      scrolled: 'rgba(255, 255, 255, 0.05)',
+      initial: '#ffffff00',
+      scrolled: '#ffffff0d',
     },
     backdrop: {
       initial: 'blur(0px)',
@@ -97,7 +97,7 @@ export const ui = {
       },
       card: {
         scale: 1.02,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderColor: '#ffffff33',
         transition: { duration: 0.3 },
       },
       active: {
@@ -143,7 +143,7 @@ export const ui = {
   },
   colors: {
     primary: '#ffffff',
-    muted: 'rgba(255, 255, 255, 0.7)',
-    border: 'rgba(255, 255, 255, 0.1)',
+    muted: '#ffffffb2',
+    border: '#ffffff1a',
   },
 };
