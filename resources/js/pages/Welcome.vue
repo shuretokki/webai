@@ -373,7 +373,7 @@ const toggleFaq = (index: number) => {
     <nav class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
       :style="{ paddingTop: 'var(--sat, 0px)' }">
       <Motion
-        class="pointer-events-auto px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
+        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 backdrop-blur-md shadow-2xl"
         :style="{ backgroundColor: navBackground, borderColor: navBorder }">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
@@ -665,11 +665,11 @@ const toggleFaq = (index: number) => {
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
           <Motion v-for="(plan, idx) in content.sections.pricing.plans" :key="plan.name"
             :initial="{ y: 50 + idx * 20, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
             :transition="{ delay: idx * 0.1, duration: 0.5 + idx * 0.1 }" :viewport="{ once: true }"
-            class="p-8 md:p-10 rounded-2xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors">
+            class="p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors">
 
             <div v-if="plan.name.includes('+')"
               class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none opacity-40">
@@ -681,7 +681,8 @@ const toggleFaq = (index: number) => {
               <div class="flex items-baseline gap-1 mb-8">
                 <span
                   class="text-5xl md:text-6xl font-light tracking-tighter">{{ pricingBillingCycle === 'yearly' && plan.price !== 'Custom' ? '$' + (parseInt(plan.price.replace('$', '')) * 10) : plan.price }}</span>
-                <span v-if="plan.period" class="text-white/20 text-sm">/mo</span>
+                <span v-if="plan.period"
+                  class="text-white/20 text-sm">{{ pricingBillingCycle === 'yearly' ? '/yr' : '/mo' }}</span>
               </div>
               <p class="text-sm text-white/40 leading-relaxed mb-10 min-h-[3em]">{{ plan.description }}</p>
 
@@ -708,7 +709,7 @@ const toggleFaq = (index: number) => {
 
     <section id="faq" class="py-section border-t border-white/5 bg-[#050505]" :class="ui.layout.sectionPadding">
       <div :class="ui.layout.clampWidth">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-12 xl:gap-24">
           <div class="md:col-span-4">
             <Motion :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
               class="sticky top-32">
