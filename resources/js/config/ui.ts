@@ -333,8 +333,8 @@ export const ui = {
        * opacity: [1, 0]
        */
       hero: {
-        range: [0, 1500],
-        imageY: [0, 1000],
+        range: [0, 1000],
+        imageY: [0, 400],
         imageScale: [1, 1.03],
         headerY: [0, -600],
         headerScale: [1, 0.2],
