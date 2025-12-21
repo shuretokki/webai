@@ -1,0 +1,80 @@
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+import { Motion } from 'motion-v';
+import { ui } from '@/config/ui';
+import { ArrowRight, ArrowUpRight } from 'lucide-vue-next';
+
+interface Props {
+  content: any;
+  canHover: boolean;
+}
+
+defineProps<Props>();
+</script>
+
+<template>
+  <section id="developer" class="relative overflow-hidden"
+    :class="[ui.layout.sectionVertical, ui.layout.sectionPadding]">
+    <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" :style="ui.patterns.blueprint">
+    </div>
+
+    <div :class="ui.layout.clampWidth" class="relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center mb-32">
+        <div class="md:col-span-5">
+          <Motion :initial="{ opacity: 0, x: -20 }" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true }"
+            :transition="{ duration: 0.8 }">
+            <h2 class="text-5xl md:text-6xl font-medium text-white mb-8 tracking-tighter">
+              {{ content.title }}</h2>
+            <p :class="ui.typography.body" class="mb-10 text-lg max-w-sm">
+              {{ content.description }}</p>
+            <Link href="/docs"
+              class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 transition-colors group"
+              :class="{ 'hover:text-white': canHover }">
+              {{ content.cta }}
+              <ArrowRight class="w-4 h-4 transition-transform" :class="{ 'group-hover:translate-x-1': canHover }" />
+            </Link>
+          </Motion>
+        </div>
+        <div class="md:col-span-7">
+          <Motion :initial="{ opacity: 0, scale: 0.95 }" :while-in-view="{ opacity: 1, scale: 1 }"
+            :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
+            <div
+              class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-ecnelis">
+              <img src="/images/dev_ui_stack_1766309601070.png" class="w-full h-full object-cover opacity-80"
+                width="800" height="600" loading="lazy" decoding="async" />
+            </div>
+          </Motion>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <Motion v-for="(card, i) in content.cards" :key="card.id" :initial="{ opacity: 0, y: 20 }"
+          :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }" :transition="ui.animations.stagger(i)"
+          :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]', 'hover-border']"
+          :while-hover="canHover ? ui.animations.hover.card : {}" :while-tap="ui.animations.hover.active">
+
+          <div class="flex-col h-full flex">
+            <div class="p-10 relative z-10">
+              <h3 :class="ui.typography.cardTitle" class="mb-3">{{ card.title }}</h3>
+              <p :class="ui.typography.cardBody" class="max-w-xs">{{ card.description }}</p>
+            </div>
+            <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12 mt-auto">
+              <div
+                class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]">
+              </div>
+              <img :src="card.image"
+                class="w-full h-full object-contain filter brightness-75 transition-all duration-1000"
+                :class="{ 'group-hover:brightness-100 group-hover:scale-105': canHover }" width="600" height="400"
+                loading="lazy" decoding="async" />
+            </div>
+          </div>
+
+          <div class="absolute top-6 right-6 opacity-0 transition-opacity"
+            :class="{ 'group-hover:opacity-100': canHover }">
+            <ArrowUpRight class="w-6 h-6 text-white/40" />
+          </div>
+        </Motion>
+      </div>
+    </div>
+  </section>
+</template>

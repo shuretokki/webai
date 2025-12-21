@@ -1,0 +1,54 @@
+<script setup lang="ts">
+import { Motion } from 'motion-v';
+import { ui } from '@/config/ui';
+
+interface Props {
+  content: any;
+  heroImageY: any;
+  heroImageScale: any;
+  headerY: any;
+  headerScale: any;
+  headerBlur: any;
+  headerOpacity: any;
+  headerLineHeight: any;
+}
+
+defineProps<Props>();
+</script>
+
+<template>
+  <section class="min-h-dvh h-hero-reserved flex items-center justify-center relative overflow-hidden group">
+    <Motion class="absolute inset-0 z-0 pointer-events-none will-change-transform"
+      :style="{ y: heroImageY, scale: heroImageScale, transform: 'translateZ(0)' }">
+      <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
+      <img :src="content.image" alt="Hero background" class="w-full h-full object-cover" width="1920" height="1080"
+        decoding="async" />
+      <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
+      </div>
+    </Motion>
+
+    <div :class="ui.layout.hero" class="flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
+      <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
+        <Motion class="mb-8 md:mb-12" :initial="ui.animations.pageTransition.initial"
+          :animate="ui.animations.pageTransition.enter">
+          <Motion is="h1" :class="[ui.typography.hero, 'origin-center will-change-transform']"
+            :style="{ y: headerY, scale: headerScale, filter: headerBlur, opacity: headerOpacity, lineHeight: headerLineHeight }">
+            {{ content.title.line1 }} <span :class="[ui.typography.accentHero, 'mx-2']">{{
+              content.title.line2 }}</span> <br class="md:hidden" />
+            {{ content.title.line3 }} <span :class="[ui.typography.accentHero, 'mx-2']">{{
+              content.title.line4 }}</span>.
+          </Motion>
+        </Motion>
+      </Motion>
+    </div>
+
+    <Motion
+      class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 z-20 pointer-events-none"
+      :style="{ opacity: headerOpacity }">
+      <span class="text-[10px] uppercase tracking-[0.4em] text-white/20 font-medium">{{ content.cta }}</span>
+      <div class="w-5 h-9 rounded-full border border-white/10 flex justify-center p-1.5">
+        <div class="w-1 h-1.5 rounded-full bg-white opacity-20 animate-indicator-pulse" />
+      </div>
+    </Motion>
+  </section>
+</template>
