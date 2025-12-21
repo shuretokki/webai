@@ -42,8 +42,6 @@ const vh = ref(typeof window !== "undefined" ? window.innerHeight : 0);
 const pricingBillingCycle = ref<'monthly' | 'yearly'>('monthly');
 const faqOpen = ref<number | null>(0);
 
-const loading = ref(true);
-const loadingProgress = ref(0);
 
 const smoothScrollY = useSpring(scrollY, {
   damping: 30,
@@ -90,16 +88,6 @@ onMounted(() => {
 
   requestAnimationFrame(raf);
 
-  const interval = setInterval(() => {
-    loadingProgress.value += Math.floor(Math.random() * 10) + 1;
-    if (loadingProgress.value >= 100) {
-      loadingProgress.value = 100;
-      clearInterval(interval);
-      setTimeout(() => {
-        loading.value = false;
-      }, 500);
-    }
-  }, 100);
 });
 
 onBeforeUnmount(() => {
@@ -339,19 +327,6 @@ const toggleFaq = (index: number) => {
   </Head>
 
   <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative z-10">
-    <AnimatePresence>
-      <Motion v-if="loading" initial="initial" animate="animate" exit="exit"
-        :variants="{ initial: { y: 0 }, exit: { y: '-100%', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } } }"
-        class="fixed inset-0 z-[100] bg-black flex items-end justify-between p-8 md:p-12 cursor-wait">
-        <Motion :initial="{ opacity: 0 }" :animate="{ opacity: 1 }"
-          class="text-white text-5xl md:text-8xl font-medium tracking-tighter">
-          {{ loadingProgress }}%
-        </Motion>
-        <div class="text-xs uppercase tracking-widest text-white/40 animate-pulse">
-          Initializing System...
-        </div>
-      </Motion>
-    </AnimatePresence>
 
     <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.35] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
