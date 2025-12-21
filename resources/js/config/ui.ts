@@ -15,9 +15,9 @@ export const ui = {
    * scrollThreshold: [0, 1000]
    */
   navigation: {
-    height: 'h-20',
+    height: 'h-14',
     maxWidth: 'max-w-[1400px]',
-    scrollThreshold: [0, 1000],
+    scrollThreshold: [0, 600],
 
     /**
      * <Background>
@@ -55,7 +55,7 @@ export const ui = {
      */
     backdrop: {
       initial: 'blur(0px)',
-      scrolled: 'blur(12px)',
+      scrolled: 'blur(8px)',
     },
 
     /**
@@ -333,14 +333,14 @@ export const ui = {
        * opacity: [1, 0]
        */
       hero: {
-        range: [0, 1000],
-        imageY: [0, 400],
-        imageScale: [1, 1.1],
-        headerY: [0, 200],
-        headerScale: [1, 1.1],
+        range: [0, 1500],
+        imageY: [0, 1000],
+        imageScale: [1, 1.03],
+        headerY: [0, -600],
+        headerScale: [1, 0.2],
         lineSpacing: ['0.9em', '4em'],
         opacityRange: [0, 600],
-        blur: ['blur(0px)', 'blur(16px)'],
+        blur: ['blur(0px)', 'blur(8px)'],
         opacity: [1, 0],
       },
 
