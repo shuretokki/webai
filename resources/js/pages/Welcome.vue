@@ -406,14 +406,13 @@ const toggleFaq = (index: number) => {
                 Log in
               </span>
             </Link>
-            <Link href="/register"
-              class="bg-white text-black text-[13px] font-medium px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors">
+            <Link href="/register" :class="ui.layout.button">
               Get Started
             </Link>
           </template>
         </div>
 
-        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white ml-2">
+        <button @click=" mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-white ml-2">
           <Menu v-if="!mobileMenuOpen" class="w-5 h-5" />
           <X v-else class="w-5 h-5" />
         </button>
@@ -695,8 +694,7 @@ const toggleFaq = (index: number) => {
             </div>
 
             <div class="relative z-10">
-              <Link v-if="plan.link" :href="plan.link"
-                class="w-full h-10 flex items-center justify-center rounded-lg bg-white text-black font-medium text-[13px] hover:bg-neutral-200 transition-colors">
+              <Link v-if="plan.link" :href="plan.link" :class="ui.layout.pricingButton">
                 {{ plan.cta }}
               </Link>
               <button v-else disabled
