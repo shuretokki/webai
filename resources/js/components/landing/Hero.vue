@@ -28,7 +28,7 @@ defineProps<Props>();
     </Motion>
 
     <div :class="ui.layout.hero" class="flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
-      <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.2 } } }">
+      <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.1 } } }">
         <Motion class="mb-8 md:mb-12" :initial="ui.animations.pageTransition.initial"
           :animate="ui.animations.pageTransition.enter">
           <Motion is="h1" :class="[ui.typography.hero, 'origin-center will-change-transform']"
