@@ -33,14 +33,14 @@ export const ui = {
     sectionVertical: 'py-32 md:py-48',
     clampWidth: 'mx-auto w-[clamp(320px,70%,1400px)]',
     footerClamp: 'mx-auto w-[clamp(320px,70%,1600px)]',
-    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-sm bg-white text-black text-sm font-medium overflow-hidden transition-all active:scale-[0.98]',
-    buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-sm font-medium rounded-lg overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-[0.98]',
-    pricingButton: 'w-full h-8 flex items-center justify-center rounded-sm bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors active:scale-[0.98]',
+    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-sm bg-white text-black text-sm font-medium overflow-hidden active-press',
+    buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-sm font-medium rounded-lg overflow-hidden transition-all active-press',
+    pricingButton: 'w-full h-8 flex items-center justify-center rounded-sm bg-white text-black font-medium text-sm transition-colors active-press',
     pricingButtonDisabled: 'w-full h-8 flex items-center justify-center rounded-sm border border-white/10 text-white/20 text-sm cursor-not-allowed',
     card: {
-      base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors flex flex-col',
-      pricing: 'p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors',
-      developer: 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group hover:border-white/10 transition-colors flex flex-col',
+      base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden transition-colors flex flex-col',
+      pricing: 'p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card transition-colors',
+      developer: 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group transition-colors flex flex-col',
     },
     section: {
       dark: 'bg-[#050505]',
@@ -99,6 +99,10 @@ export const ui = {
         scale: 1.02,
         borderColor: 'rgba(255, 255, 255, 0.2)',
         transition: { duration: 0.3 },
+      },
+      active: {
+        scale: 0.95,
+        transition: { duration: 0.1 },
       },
     },
     easing: {
