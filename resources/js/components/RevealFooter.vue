@@ -58,7 +58,7 @@ defineProps<{
         </div>
 
         <div :class="ui.layout.footerClamp"
-          class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 mt-auto">
+          class="pt-20 md:pt-32 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 mt-12 md:mt-24">
           <p class="text-white/20 text-xs text-center md:text-left">© 2024 {{ content.appName }} AI Inc. All rights
             reserved.</p>
           <div class="flex items-center gap-6">

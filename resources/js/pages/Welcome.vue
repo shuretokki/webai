@@ -494,22 +494,11 @@ const toggleFaq = (index: number) => {
       </section>
       <section class="pt-section" :class="ui.layout.sectionPadding">
         <div :class="ui.layout.sectionContainer">
-          <Motion :initial="false" :while-in-view="{ opacity: 1, x: 0 }" :viewport="{ once: true, margin: '-100px' }"
-            :class="ui.layout.section.header">
-            <div class="w-12 h-[1px] relative">
-              <Motion is="svg" viewBox="0 0 48 1" class="absolute inset-0 w-full h-full text-white/40">
-                <Motion is="line" x1="0" y1="0.5" x2="48" y2="0.5" stroke="currentColor" stroke-width="1"
-                  :initial="{ pathLength: 0, opacity: 0 }"
-                  :while-in-view="{ pathLength: 1, opacity: 1, transition: { duration: 1.5, ease: 'easeInOut' } }"
-                  :viewport="{ once: true }" />
-              </Motion>
-            </div>
-            <span :class="ui.typography.label">{{ content.sections.introducing.label }}</span>
-          </Motion>
 
           <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-10%' }"
-            class="max-w-4xl mb-12 md:mb-24">
-            <h2 :class="[ui.typography.display, 'overflow-hidden flex flex-wrap gap-x-[0.3em] gap-y-[0.1em]']">
+            class="max-w-4xl mb-16 md:mb-32">
+            <h2
+              :class="[ui.typography.display, 'text-white overflow-hidden flex flex-wrap gap-x-[0.3em] gap-y-[0.1em]']">
               <div v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i" class="overflow-hidden">
                 <Motion :variants="ui.animations.wordReveal(i)" class="inline-block origin-top-left">
                   {{ word }}
@@ -627,11 +616,6 @@ const toggleFaq = (index: number) => {
       <div :class="ui.layout.clampWidth" class="relative z-20">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8">
           <div class="max-w-xl">
-            <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
-              :class="ui.layout.section.header">
-              <div class="w-1 h-4 bg-white/20"></div>
-              <span :class="ui.typography.label">{{ content.sections.pricing.label }}</span>
-            </Motion>
             <h2 :class="[ui.typography.display, 'text-white mb-6 leading-none']">{{ content.sections.pricing.title }}
             </h2>
             <p :class="ui.typography.body">{{ content.sections.pricing.description }}</p>
@@ -697,10 +681,6 @@ const toggleFaq = (index: number) => {
           <div class="md:col-span-4">
             <Motion :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
               class="sticky top-32">
-              <span :class="ui.typography.label">
-                <span class="w-1 h-1 bg-white/40 rounded-full"></span>
-                {{ content.sections.faq.label }}
-              </span>
               <h2 :class="[ui.typography.display, 'text-white mb-6 leading-[0.9]']">
                 {{ content.sections.faq.title.split(' ')[0] }}<br />
                 <span class="text-white/40">{{ content.sections.faq.title.split(' ').slice(1).join(' ') }}</span>
