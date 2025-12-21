@@ -37,7 +37,7 @@ const updateFeaturesRange = () => {
     featuresScrollRange.value = [start, start + featuresSection.value.offsetHeight];
   }
 };
-const { isMobile } = useDevice();
+const { isMobile, canHover } = useDevice();
 const vh = ref(typeof window !== "undefined" ? window.innerHeight : 0);
 const pricingBillingCycle = ref<'monthly' | 'yearly'>('monthly');
 const faqOpen = ref<number | null>(null);
@@ -361,27 +361,24 @@ const toggleFaq = (index: number) => {
     <nav class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
       :style="{ paddingTop: 'var(--sat, 0px)' }">
       <Motion
-        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 shadow-2xl"
+        class="pointer-events-auto px-6 py-3 rounded-full border border-white/10 flex items-center gap-8 shadow-2xl active-press"
         :style="{
           backgroundColor: navBackground,
           borderColor: navBorder,
           backdropFilter: isMobile ? 'none' : navBackdrop
-        }">
+        }" :while-hover="canHover ? { scale: 1.02 } : {}">
         <Link href="/" class="flex items-center gap-2 group">
           <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
           <span class="font-medium text-lg tracking-tight sr-only md:not-sr-only">{{ content.appName }}</span>
         </Link>
 
         <div class="hidden md:flex items-center gap-6">
-          <template v-for="item in content.navigation" :key="item.label">
-            <Link v-if="item.href.startsWith('/')" :href="item.href"
-              class="text-sm font-medium cursor-pointer relative px-2 py-1">
-              <span class="relative z-10 text-white/60 hover:text-white transition-colors">{{ item.label }}</span>
-            </Link>
-            <a v-else :href="item.href" class="text-sm font-medium cursor-pointer relative px-2 py-1">
-              <span class="relative z-10 text-white/60 hover:text-white transition-colors">{{ item.label }}</span>
-            </a>
-          </template>
+          <Link v-for="item in content.navigation" :key="item.label" :href="item.href" class="relative px-4 py-2 group">
+            <span class="relative z-10 text-white/60 transition-colors"
+              :class="{ 'hover:text-white': canHover }">{{ item.label }}</span>
+            <Motion v-if="$page.url === item.href" layout-id="nav-active"
+              class="absolute inset-0 bg-white/5 rounded-full z-0" />
+          </Link>
         </div>
 
         <div class="flex items-center gap-4 pl-4 border-l border-white/10">
@@ -428,11 +425,13 @@ const toggleFaq = (index: number) => {
             </template>
             <template v-else>
               <Link href="/login"
-                class="block w-full text-center py-4 border border-white/20 text-white/90 hover:bg-white/5 transition-colors">
+                class="block w-full text-center py-4 border border-white/20 text-white/90 transition-colors"
+                :class="{ 'hover:bg-white/5': canHover }">
                 Log in
               </Link>
               <Link href="/register"
-                class="block w-full text-center py-3 bg-white text-black font-medium rounded-lg hover:bg-neutral-200 transition-colors">
+                class="block w-full text-center py-3 bg-white text-black font-medium rounded-lg transition-colors"
+                :class="{ 'hover:bg-neutral-200': canHover }">
                 Get Started
               </Link>
             </template>
@@ -521,14 +520,16 @@ const toggleFaq = (index: number) => {
               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }"
               :transition="ui.animations.stagger(idx)" :viewport="{ once: true }" :class="[ui.layout.card.base, 'p-8']">
               <div
-                class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-opacity"
+                :class="{ 'group-hover:opacity-100': canHover }">
               </div>
               <div class="h-full flex flex-col relative z-10">
                 <div>
                   <div
-                    class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500">
+                    class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-10 transition-transform duration-500"
+                    :class="{ 'group-hover:scale-110': canHover }">
                     <component :is="idx === 0 ? Sparkles : (idx === 1 ? Apple : Monitor)"
-                      class="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+                      class="w-6 h-6 text-white/40 transition-colors" :class="{ 'group-hover:text-white': canHover }" />
                   </div>
                   <h3 :class="ui.typography.cardTitle" class="mb-4">{{ feature.label }}</h3>
                   <p :class="ui.typography.cardBody" class="mb-10">
@@ -536,12 +537,14 @@ const toggleFaq = (index: number) => {
                   </p>
                 </div>
                 <div
-                  class="mt-auto aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative group-hover:border-white/10 transition-colors">
+                  class="mt-auto aspect-video bg-black/40 rounded-lg border border-white/5 overflow-hidden relative transition-colors"
+                  :class="{ 'group-hover:border-white/10': canHover }">
                   <div
                     class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-50">
                   </div>
                   <img :src="feature.image"
-                    class="w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000" />
+                    class="w-full h-full object-cover grayscale opacity-30 transition-all duration-1000"
+                    :class="{ 'group-hover:grayscale-0 group-hover:opacity-80': canHover }" />
                 </div>
               </div>
             </Motion>
@@ -564,9 +567,10 @@ const toggleFaq = (index: number) => {
                 <p :class="ui.typography.body" class="mb-10 text-lg max-w-sm">
                   {{ content.sections.developers.description }}</p>
                 <Link href="/docs"
-                  class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 hover:text-white transition-colors group">
+                  class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/60 transition-colors group"
+                  :class="{ 'hover:text-white': canHover }">
                   {{ content.sections.developers.cta }}
-                  <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight class="w-4 h-4 transition-transform" :class="{ 'group-hover:translate-x-1': canHover }" />
                 </Link>
               </Motion>
             </div>
@@ -585,7 +589,8 @@ const toggleFaq = (index: number) => {
             <Motion v-for="(card, i) in content.sections.developers.cards" :key="card.id"
               :initial="{ opacity: 0, y: 20 }" :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }"
               :transition="ui.animations.stagger(i)"
-              :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]']">
+              :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]', 'hover-border']"
+              :while-hover="canHover ? ui.animations.hover.card : {}" :while-tap="ui.animations.hover.active">
 
               <div class="flex-col h-full flex">
                 <div class="p-10 relative z-10">
@@ -597,12 +602,14 @@ const toggleFaq = (index: number) => {
                     class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]">
                   </div>
                   <img :src="card.image"
-                    class="w-full h-full object-contain filter brightness-75 group-hover:brightness-100 transition-all duration-1000 group-hover:scale-105" />
+                    class="w-full h-full object-contain filter brightness-75 transition-all duration-1000"
+                    :class="{ 'group-hover:brightness-100 group-hover:scale-105': canHover }" />
                 </div>
               </div>
 
-              <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <ArrowRight class="w-4 h-4 text-white/40" />
+              <div class="absolute top-6 right-6 opacity-0 transition-opacity"
+                :class="{ 'group-hover:opacity-100': canHover }">
+                <ArrowUpRight class="w-6 h-6 text-white/40" />
               </div>
             </Motion>
           </div>
@@ -637,7 +644,9 @@ const toggleFaq = (index: number) => {
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
           <Motion v-for="(plan, idx) in content.sections.pricing.plans" :key="plan.name"
             :initial="{ y: 50 + idx * 20, opacity: 0 }" :while-in-view="{ y: 0, opacity: 1 }"
-            :transition="ui.animations.stagger(idx)" :viewport="{ once: true }" :class="ui.layout.card.pricing">
+            :transition="ui.animations.stagger(idx)" :viewport="{ once: true }"
+            :class="[ui.layout.card.pricing, 'hover-border']" :while-hover="canHover ? ui.animations.hover.card : {}"
+            :while-tap="ui.animations.hover.active">
 
             <div v-if="plan.name.includes('+')"
               class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none opacity-40">
@@ -697,9 +706,10 @@ const toggleFaq = (index: number) => {
               <div v-for="(item, idx) in content.sections.faq.items" :key="idx"
                 class="border-b border-white/10 overflow-hidden group">
                 <button @click="faqOpen = faqOpen === idx ? null : idx"
-                  class="w-full py-6 md:py-8 flex items-start justify-between text-left focus:outline-none group-hover:bg-white/[0.02] transition-colors relative">
-                  <span
-                    class="text-xl md:text-2xl font-light tracking-tight text-white/80 group-hover:text-white transition-colors pr-8">
+                  class="w-full py-6 md:py-8 flex items-start justify-between text-left focus:outline-none transition-colors relative active-press"
+                  :class="{ 'hover:bg-white/[0.02]': canHover }">
+                  <span class="text-xl md:text-2xl font-light tracking-tight text-white/80 transition-colors pr-8"
+                    :class="{ 'group-hover:text-white': canHover }">
                     {{ item.question }}
                   </span>
                   <span class="relative flex-shrink-0 w-6 h-6 flex items-center justify-center mt-1">
@@ -757,7 +767,8 @@ const toggleFaq = (index: number) => {
               <Motion class="absolute inset-0 rounded-lg"
                 :while-hover="{ boxShadow: '0 0 40px rgba(255,255,255,0.4)' }" />
               <span class="relative z-10">{{ content.sections.preFooter.cta }}</span>
-              <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight class="w-5 h-5 relative z-10 transition-transform duration-300"
+                :class="{ 'group-hover:translate-x-1': canHover }" />
             </Link>
             <p class="text-white/40 text-xs md:text-sm">{{ content.sections.preFooter.subtext }}</p>
           </Motion>
