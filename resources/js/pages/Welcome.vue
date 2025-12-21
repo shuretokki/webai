@@ -190,25 +190,25 @@ const content = {
   sections: {
     introducing: {
       label: 'Introducing Message',
-      title: 'Harness invisible power to write faster, focus deeper, and save hours.'
+      title: 'A sentient canvas for your digital neural network to explore and expand.'
     },
     features: [
       {
-        id: 'time',
-        label: 'Smart Focus',
-        description: 'Raycast is a blazingly fast, totally extendable launcher. It lets you complete tasks, calculate, share common links and much more.',
+        id: 'context',
+        label: 'Dynamic Context',
+        description: 'Ecnelis understands the subtle nuances of your conversation history, maintaining infinite context without losing the thread.',
         image: '/images/featureTime.png'
       },
       {
-        id: 'words',
-        label: 'Write Better',
-        description: 'Write smarter, not harder. Use AI to improve your writing, summarize text, or generate ideas in any app.',
+        id: 'models',
+        label: 'Model Agnostic',
+        description: 'Switch between foundation models instantly. Access GPT-4, Claude 3, and Llama 3 from a single, unified interface.',
         image: '/images/featureWords.png'
       },
       {
-        id: 'guide',
-        label: 'Your Guide',
-        description: 'Stay on top of your schedule, manage windows, and control your system with simple commands.',
+        id: 'reasoning',
+        label: 'Deep Reasoning',
+        description: 'Go beyond simple completion. Our models are fine-tuned for logical deduction, complex coding, and creative synthesis.',
         image: '/images/featureGuide.png'
       }
     ],
@@ -248,35 +248,35 @@ const content = {
       ]
     },
     developers: {
-      title: 'Build the perfect tools.',
-      description: 'Our extension API is designed to allow anyone with web development skills to unleash the power of Raycast.',
-      cta: 'Read the docs',
+      title: 'The Neural Pipeline.',
+      description: 'Our API-first architecture allows developers to build, deploy, and scale autonomous AI agents in seconds.',
+      cta: 'Explore the API',
       cards: [
         {
-          id: 'macos',
-          title: 'React to macOS',
-          description: 'Build rich, native extensions with the technologies you already know: React, TypeScript and Node.',
+          id: 'inference',
+          title: 'High-Speed Inference',
+          description: 'Optimized kernels and worldwide edge nodes ensure that your AI responses are generated with sub-millisecond latency.',
           image: '/images/dev_macintosh_1766309616558.png',
           span: 'col-span-1 md:col-span-7'
         },
         {
-          id: 'ui',
-          title: 'Built-in UI',
-          description: 'Our UI component library allows you to create beautiful tools in minutes while we push the pixels.',
+          id: 'tools',
+          title: 'Advanced Tooling',
+          description: 'Equip your agents with the ability to execute code, browse the web, and interact with external APIs natively.',
           image: '/images/dev_ui_components_blueprint_1766309631142.png',
           span: 'col-span-1 md:col-span-5'
         },
         {
-          id: 'batteries',
-          title: 'Batteries included',
-          description: 'A strongly typed API, hot reloading and secure tooling that make it a blast to work with.',
+          id: 'security',
+          title: 'Private Compute',
+          description: 'Enterprise-grade encryption and isolated environments ensure your data never leaves your secure architectural boundary.',
           image: '/images/dev_battery_charger_1766309647277.png',
           span: 'col-span-1 md:col-span-5'
         },
         {
-          id: 'store',
-          title: 'Publish to the Store',
-          description: 'Submit your extension to the Raycast Store and share it with thousands of users.',
+          id: 'scaling',
+          title: 'Elastic Scaling',
+          description: 'From a single prototype to millions of users, our infrastructure scales with you without manual configuration.',
           image: '/images/dev_floppy_disk_1766309662097.png',
           span: 'col-span-1 md:col-span-7'
         }
