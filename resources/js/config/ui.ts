@@ -11,7 +11,7 @@ export const ui = {
     scrollThreshold: [0, 1000],
     background: {
       initial: 'rgba(0, 0, 0, 0)',
-      scrolled: 'rgba(0, 0, 0, 0.8)',
+      scrolled: 'rgba(0, 0, 0, 1)',
     },
     border: {
       initial: 'rgba(255, 255, 255, 0)',
@@ -33,10 +33,10 @@ export const ui = {
     sectionVertical: 'py-32 md:py-48',
     clampWidth: 'mx-auto w-[clamp(320px,70%,1400px)]',
     footerClamp: 'mx-auto w-[clamp(320px,70%,1600px)]',
-    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-full bg-white text-black text-sm font-medium overflow-hidden transition-all active:scale-[0.98]',
+    button: 'group relative inline-flex items-center justify-center gap-2 px-4 py-1 rounded-sm bg-white text-black text-sm font-medium overflow-hidden transition-all active:scale-[0.98]',
     buttonOutline: 'group relative inline-flex items-center justify-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white/90 text-sm font-medium rounded-lg overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-[0.98]',
-    pricingButton: 'w-full h-8 flex items-center justify-center rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors active:scale-[0.98]',
-    pricingButtonDisabled: 'w-full h-8 flex items-center justify-center rounded-full border border-white/10 text-white/20 text-sm cursor-not-allowed',
+    pricingButton: 'w-full h-8 flex items-center justify-center rounded-sm bg-white text-black font-medium text-sm hover:bg-neutral-200 transition-colors active:scale-[0.98]',
+    pricingButtonDisabled: 'w-full h-8 flex items-center justify-center rounded-sm border border-white/10 text-white/20 text-sm cursor-not-allowed',
     card: {
       base: 'group relative bg-[#080808] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors',
       pricing: 'p-8 md:p-10 rounded-xl border border-white/5 bg-[#050505] flex flex-col relative overflow-hidden group/card hover:border-white/10 transition-colors',
@@ -50,6 +50,7 @@ export const ui = {
   },
   typography: {
     hero: 'text-hero font-medium tracking-tighter leading-[0.85] text-white',
+    manifesto: 'text-[clamp(2.5rem,8vw,7rem)] font-light tracking-tighter leading-[1] text-white text-center',
     display: 'text-display font-light tracking-tight leading-[1.1] text-white/90',
     title: 'text-title font-light tracking-tight text-white',
     body: 'text-base font-light text-white/60 leading-relaxed',

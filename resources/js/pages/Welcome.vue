@@ -492,18 +492,21 @@ const toggleFaq = (index: number) => {
           </Motion>
         </Motion>
       </section>
-      <section class="pt-section" :class="ui.layout.sectionPadding">
-        <div :class="ui.layout.sectionContainer">
+      <section class="py-48 md:py-64 relative overflow-hidden" :class="ui.layout.sectionPadding">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] animate-pulse"></div>
+        </div>
 
-          <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-10%' }"
-            class="max-w-4xl mb-16 md:mb-32">
-            <h2
-              :class="[ui.typography.display, 'text-white overflow-hidden flex flex-wrap gap-x-[0.3em] gap-y-[0.1em]']">
-              <div v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i" class="overflow-hidden">
-                <Motion :variants="ui.animations.wordReveal(i)" class="inline-block origin-top-left">
-                  {{ word }}
+        <div :class="ui.layout.sectionContainer" class="relative z-10 flex justify-center">
+          <Motion initial="initial" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
+            class="max-w-6xl">
+            <h2 :class="[ui.typography.manifesto]">
+              <template v-for="(word, i) in content.sections.introducing.title.split(' ')" :key="i">
+                <Motion :variants="ui.animations.wordReveal(i)" class="inline-block"
+                  :class="{ 'opacity-30': ['invisible', 'power'].includes(word.toLowerCase().replace(/[.,]/g, '')) }">
+                  {{ word }}&nbsp;
                 </Motion>
-              </div>
+              </template>
             </h2>
           </Motion>
         </div>
