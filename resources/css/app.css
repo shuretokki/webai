@@ -133,6 +133,9 @@
 
     --space-section: clamp(5rem, 3rem + 8.5vw, 12rem);
     --space-component: clamp(2.5rem, 1.5rem + 4.2vw, 6rem);
+
+    --raycast-border: rgba(255, 255, 255, 0.08);
+    --raycast-glow: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
 }
 
 .dark {
@@ -265,6 +268,25 @@
 
     .bg-noise {
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    }
+
+    .border-raycast {
+        border-color: var(--raycast-border);
+    }
+
+    .glow-raycast {
+        background: var(--raycast-glow);
+    }
+
+    .shimmer-raycast {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite linear;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
     }
 }
 
