@@ -180,7 +180,7 @@ const handleSendMessage = async (text: string, files?: File[]) => {
             });
         }
 
-        const response = await fetch('/chat/stream', {
+        const response = await fetch('/c/stream', {
             method: 'POST',
             headers: {
                 'X-XSRF-TOKEN': decodeURIComponent(
