@@ -3,9 +3,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { Motion } from 'motion-v';
-import { Mail, MapPin, MessageSquare } from 'lucide-vue-next';
+import { Mail, MapPin } from 'lucide-vue-next';
+
+interface Props {
+  success?: string;
+}
+
+defineProps<Props>();
+
+const form = useForm({
+  name: '',
+  email: '',
+  company: '',
+  message: '',
+});
+
+const submit = () => {
+  form.post('/contact', {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+    },
+  });
+};
 
 const container: any = {
   hidden: { opacity: 0 },
@@ -36,7 +58,7 @@ const item: any = {
     <Head title="Contact Us" />
 
     <div
-      class="min-h-screen bg-white dark:bg-black text-black dark:text-white font-sans relative overflow-hidden pt-32 pb-24">
+      class="min-h-screen bg-white dark:bg-black text-black dark:text-white font-space relative overflow-hidden pt-32 pb-24">
 
       <div class="absolute inset-0 z-0 pointer-events-none">
         <div
@@ -83,35 +105,60 @@ const item: any = {
 
           <Motion :variants="item">
             <div class="bg-zinc-50 dark:bg-zinc-900/50 p-8 md:p-12 border border-black/5 dark:border-white/5">
-              <form class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="space-y-2">
-                    <label class="text-sm font-medium">First Name</label>
-                    <Input placeholder="Ryan"
-                      class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white" />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-sm font-medium">Last Name</label>
-                    <Input placeholder="Gosling"
-                      class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white" />
-                  </div>
+
+              <div v-if="success" class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200">
+                {{ success }}
+              </div>
+
+              <form @submit.prevent="submit" class="space-y-6">
+                <div class="space-y-2">
+                  <label class="text-sm font-medium">Full Name</label>
+                  <Input
+                    v-model="form.name"
+                    placeholder="Name"
+                    :class="{ 'border-red-500': form.errors.name }"
+                    class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white"
+                  />
+                  <p v-if="form.errors.name" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.name }}</p>
                 </div>
 
                 <div class="space-y-2">
                   <label class="text-sm font-medium">Email</label>
-                  <Input type="email" placeholder="gosling@studio.com"
-                    class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white" />
+                  <Input
+                    v-model="form.email"
+                    type="email"
+                    placeholder="name@example.com"
+                    :class="{ 'border-red-500': form.errors.email }"
+                    class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white"
+                  />
+                  <p v-if="form.errors.email" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.email }}</p>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-sm font-medium">Company (Optional)</label>
+                  <Input
+                    v-model="form.company"
+                    placeholder="Company"
+                    class="h-12 bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white"
+                  />
                 </div>
 
                 <div class="space-y-2">
                   <label class="text-sm font-medium">Message</label>
-                  <Textarea placeholder="Tell us about your project..."
-                    class="min-h-[150px] bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white resize-none" />
+                  <Textarea
+                    v-model="form.message"
+                    placeholder="Tell us about your project..."
+                    :class="{ 'border-red-500': form.errors.message }"
+                    class="min-h-[150px] bg-white dark:bg-black rounded-none border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white resize-none"
+                  />
+                  <p v-if="form.errors.message" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.message }}</p>
                 </div>
 
                 <Button
-                  class="w-full h-12 text-lg font-bold rounded-none bg-black hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-200 dark:text-black transition-colors">
-                  Send Message
+                  type="submit"
+                  :disabled="form.processing"
+                  class="w-full h-12 text-lg font-bold rounded-none bg-black hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-200 dark:text-black transition-colors disabled:opacity-50">
+                  {{ form.processing ? 'Sending...' : 'Send Message' }}
                 </Button>
               </form>
             </div>
