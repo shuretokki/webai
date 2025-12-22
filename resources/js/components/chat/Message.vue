@@ -4,6 +4,8 @@ import { Motion } from 'motion-v';
 import { ui } from '@/config/ui';
 import { useMarkdown } from '@/lib/markdown';
 import { useClipboard } from '@vueuse/core';
+import { Sparkles, ChevronDown, Download, FileText, Check, Copy, RotateCw, Loader2 } from 'lucide-vue-next';
+import { AnimatePresence } from 'motion-v';
 
 interface Props {
     variant?: 'User/Text' | 'Responder/Text' | 'Responder/Image';
@@ -51,8 +53,6 @@ const isThinking = computed(() => {
 const cleanContent = computed(() => {
     if (!props.content) return '';
 
-    if (isThinking.value) return '';
-
     const startTag = '<think>';
     const endTag = '</think>';
 
@@ -63,10 +63,14 @@ const cleanContent = computed(() => {
         if (endIndex !== -1) {
             const pre = props.content.slice(0, startIndex);
             const post = props.content.slice(endIndex + endTag.length);
-            return (pre + post).trim();
+            const result = (pre + post).trim();
+            console.log('[Message] cleanContent (complete):', { pre, post, result, contentLength: props.content.length });
+            return result;
+        } else {
+            const result = props.content.slice(0, startIndex).trim();
+            console.log('[Message] cleanContent (thinking):', { startIndex, result, contentLength: props.content.length });
+            return result;
         }
-
-        return '';
     }
 
     return props.content.trim();
@@ -75,7 +79,7 @@ const cleanContent = computed(() => {
 </script>
 
 <template>
-    <Motion :initial="{ opacity: 0, y: 20 }" :animate="{ opacity: 1, y: 0 }" :transition="{ duration: 0.4 }"
+    <Motion :initial="{ opacity: 0, y: 10 }" :animate="{ opacity: 1, y: 0 }" :transition="{ duration: 0.3 }"
         class="w-full shrink-0 relative flex flex-col" :class="[
             isUser ? ui.chat.message.user : '',
             isResponder ? ui.chat.message.responder : ''
@@ -88,44 +92,31 @@ const cleanContent = computed(() => {
                 <div v-else class="h-[2px] w-12 bg-primary rounded-full"></div>
 
                 <p v-if="timestamp"
-                    class="font-philosopher font-bold text-sm text-foreground tracking-wide shadow-black drop-shadow-md">
+                    class="font-space font-bold text-sm text-foreground tracking-wide shadow-black drop-shadow-md">
                     {{ timestamp }}
                 </p>
             </div>
         </div>
 
-        <div class="relative shrink-0 max-w-full md:max-w-[80%] overflow-hidden transition-all">
-            <div v-if="isResponder && isThinking" class="mb-4 w-full">
-                <div class="flex items-center gap-2 mb-2">
-                    <Sparkles class="text-primary size-4 animate-pulse" />
-                    <span class="text-sm font-space text-primary/80 animate-pulse">Thinking Process...</span>
-                </div>
-                <div
-                    class="pl-4 border-l-2 border-primary/20 text-sm text-muted-foreground/80 font-mono whitespace-pre-wrap leading-relaxed">
-                    {{ reasoning }}
-                    <span class="inline-block w-2 h-4 bg-primary/50 ml-1 animate-pulse align-middle"></span>
-                </div>
-            </div>
-
-            <div v-else-if="isResponder && reasoning" class="mb-2">
-                <details class="group">
+        <div class="relative shrink-0 max-w-full md:max-w-[85%] transition-all">
+            <div v-if="isResponder && reasoning" class="mb-4">
+                <details class="group/details" :open="isThinking">
                     <summary
-                        class="cursor-pointer list-none flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-white/5 transition-colors w-fit">
-                        <Sparkles class="text-muted-foreground size-3.5" />
-                        <span class="text-xs text-muted-foreground font-space select-none">Thinking Process</span>
-                        <ChevronDown
-                            class="text-xs text-muted-foreground group-open:rotate-180 transition-transform size-3" />
+                        class="cursor-pointer list-none flex items-center gap-2 py-1.5 text-xs text-muted-foreground/60 hover:text-foreground transition-colors w-fit font-space font-medium uppercase tracking-wider">
+                        <span>{{ isThinking ? 'Thinking...' : 'Thought Process' }}</span>
+                        <ChevronDown class="size-3 group-open/details:rotate-180 transition-transform" />
                     </summary>
                     <div
-                        class="mt-2 ml-1 pl-4 border-l-2 border-border/50 text-xs text-muted-foreground/80 font-mono whitespace-pre-wrap leading-relaxed">
+                        class="mt-2 ml-1 pl-4 border-l border-white/5 text-sm text-muted-foreground/50 font-space leading-relaxed italic whitespace-pre-wrap">
                         {{ reasoning }}
+                        <span v-if="isThinking" class="inline-block w-1 h-3 bg-primary/40 animate-pulse ml-1"></span>
                     </div>
                 </details>
             </div>
 
             <div v-if="variant === 'User/Text' || variant === 'Responder/Text'"
-                :class="[ui.chat.message.content, isResponder ? 'text-foreground' : 'text-muted-foreground']"
-                v-html="md.render(cleanContent)" />
+                :class="[ui.chat.message.content, isResponder ? 'text-foreground' : 'text-muted-foreground/80']"
+                v-html="md.render(cleanContent || '')" />
 
             <div v-if="variant === 'Responder/Image'"
                 class="relative rounded-lg overflow-hidden border border-border group cursor-pointer">
@@ -207,8 +198,9 @@ const cleanContent = computed(() => {
 
 :deep(.prose pre) {
     padding: 1em;
-    border: 4px solid #1e1e1e;
-    border-radius: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
     overflow-x: auto;
 }
 </style>
