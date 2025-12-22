@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\UsageController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,6 +38,9 @@ Route::inertia('/changelog', 'Changelog')
 
 Route::inertia('/contact', 'Contact')
     ->name('contact');
+
+Route::post('/contact', [ContactController::class, 'submit'])
+    ->name('contact.submit');
 
 Route::inertia('/community', 'Community')
     ->name('community');
@@ -77,11 +81,15 @@ Route::middleware(['auth', 'verified'])
         Route::get('/usage/current', [UsageController::class, 'current']);
     });
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth'])
     ->group(function () {
         Route::delete('/c/{chat}', [ChatController::class, 'destroy'])
             ->name('chat.destroy')
             ->can('delete', 'chat');
+
+        Route::delete('/c', [ChatController::class, 'destroyAll'])
+            ->name('chat.destroyAll')
+            ->middleware('throttle:6,1');
 
         Route::patch('/c/{chat}', [ChatController::class, 'update'])
             ->name('chat.update')
@@ -103,7 +111,6 @@ Route::middleware(['auth', 'verified'])
         Route::get('/c/{chat?}', [ChatController::class, 'index'])
             ->name('chat');
     });
-
 
 Route::redirect('/chat/search', '/s');
 Route::get('/chat/{path?}', function ($path = null) {
