@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('attachments:cleanup')->daily();
+Schedule::command('users:cleanup-unverified')->daily();
