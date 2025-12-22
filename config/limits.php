@@ -14,7 +14,7 @@ return [
     */
 
     'rate_limits' => [
-        'chat_messages' => env('RATE_LIMIT_CHAT_MESSAGES', 2),
+        'chat_messages' => env('RATE_LIMIT_CHAT_MESSAGES', 60),
         'api' => env('RATE_LIMIT_API', 60),
         'global' => env('RATE_LIMIT_GLOBAL', 100),
     ],
