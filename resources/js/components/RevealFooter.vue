@@ -68,7 +68,7 @@ const { isMobile } = useDevice();
         </div>
 
         <div :class="ui.layout.footerClamp"
-          class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          class="pt-12 mt-4 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <p class="text-white/20 text-xs text-center md:text-left">© 2025 {{ content.appName }} Studio All rights
             reserved.</p>
           <div class="flex items-center gap-6">
