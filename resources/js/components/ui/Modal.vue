@@ -14,6 +14,7 @@ const props = defineProps<{
     type?: 'modal' | 'drawer';
     rounded?: string;
     bg?: string;
+    height?: string;
 }>();
 
 const emit = defineEmits(['close']);
@@ -88,9 +89,8 @@ const handleDragEnd = (_: any, info: any) => {
                     :exit="ui.modal.drawer.exit" :transition="ui.modal.drawer.transition"
                     :drag="ui.modal.drawer.drag.y ? 'y' : false" :drag-constraints="{ top: 0, bottom: 500 }"
                     :drag-elastic="{ top: 0.05, bottom: 0.5 }" @drag="handleDrag" @drag-end="handleDragEnd"
-                    class="relative w-full bg-popover border-t border-x border-border rounded-t-[28px] shadow-[0_-12px_40px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[94vh]"
-                    :class="[maxWidthClass]">
-                    <!-- Grab Handle -->
+                    class="relative w-full border-t border-x border-border rounded-t-[28px] shadow-[0_-12px_40px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col"
+                    :class="[maxWidthClass, height || 'max-h-[94vh]', bg || 'bg-popover']">
                     <div class="shrink-0 pt-3 pb-1 touch-none group">
                         <div
                             class="w-12 h-1.5 bg-border/40 group-active:bg-primary/40 rounded-full mx-auto my-3 cursor-grab active:cursor-grabbing transition-colors" />
@@ -98,7 +98,7 @@ const handleDragEnd = (_: any, info: any) => {
 
                     <div v-if="!hideHeader"
                         class="flex items-center justify-between px-6 py-2 border-b border-border/10">
-                        <h3 class="text-xl font-space font-medium text-foreground tracking-tight">{{ title }}</h3>
+                        <h3 class="text-xl font-inter font-medium text-foreground tracking-tight">{{ title }}</h3>
                         <button @click="close"
                             class="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors">
                             <X class="size-6" />
