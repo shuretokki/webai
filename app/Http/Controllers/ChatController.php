@@ -18,6 +18,7 @@ use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 
+
 class ChatController extends Controller
 {
     public function index(Request $request, ?Chat $chat = null)
@@ -62,7 +63,7 @@ class ChatController extends Controller
             );
         }
 
-        if ($user->hasExceededQuota('messages', 100)) {
+        if ($user->hasExceededQuota('messages', config('limits.usage.daily_token_limit'))) {
             return response()->json([
                 'error' => 'You have reached your monthly message limit. Upgrade your plan to increase limit.',
             ], 403);
@@ -185,6 +186,9 @@ class ChatController extends Controller
 
                     $stream = Prism::text()
                         ->using($provider, $modelId)
+                        ->withSystemPrompt(
+                            'You are a helpful AI assistant. You can reason about the user request. If you do reason, you MUST wrap your thinking process in <think> tags like this: <think>my thought process</think>. Then provide your final answer.'
+                        )
                         ->withMessages($history)
                         ->asStream();
 

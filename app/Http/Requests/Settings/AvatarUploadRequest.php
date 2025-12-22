@@ -17,19 +17,22 @@ class AvatarUploadRequest extends FormRequest
             'avatar' => [
                 'required',
                 'image',
-                'mimes:jpg,jpeg,png,gif',
-                'max:800',
+                'mimes:' . implode(',', config('limits.file_uploads.allowed_mimes.images')),
+                'max:' . config('limits.file_uploads.avatar_max_size'),
             ],
         ];
     }
 
     public function messages(): array
     {
+        $maxSize = config('limits.file_uploads.avatar_max_size');
+        $allowedFormats = implode(', ', config('limits.file_uploads.allowed_mimes.images'));
+        
         return [
-            'avatar.required' => 'Please select an image to upload.',
+            'avatar.required' => 'Please select an avatar image.',
             'avatar.image' => 'The file must be an image.',
-            'avatar.mimes' => 'The image must be a JPG, PNG, or GIF file.',
-            'avatar.max' => 'The image must not exceed 800KB.',
+            'avatar.mimes' => "The avatar must be a file of type: {$allowedFormats}.",
+            'avatar.max' => "The image must not exceed {$maxSize}KB.",
         ];
     }
 }

@@ -18,11 +18,11 @@ class UsageController extends Controller
         $user = $request->user();
         $stats = $user->currentMonthUsage();
 
-        $limit = match ($user->subscription_tier ?? 'free') {
-            'free' => 100,
+                $limit = match ($user->subscription_tier) {
+            'free' => config('limits.usage.daily_token_limit'),
             'plus' => 1000,
-            'enterprise' => PHP_INT_MAX,
-            default => 100,
+            'premium' => 5000,
+            default => config('limits.usage.daily_token_limit'),
         };
 
         $percentage = $stats['messages'] > 0

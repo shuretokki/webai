@@ -24,18 +24,21 @@ class ChatRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Validation Rules
+    |--------------------------------------------------------------------------
+    |
+    | Define validation rules using configuration values for consistency.
+    |
+    */
     public function rules(): array
     {
         return [
-            'prompt' => 'required|string|max:10000',
+            'prompt' => 'required|string|max:' . config('limits.validation.prompt_max_length'),
             'chat_id' => 'nullable|exists:chats,id',
-            'model' => 'nullable|string|max:100',
-            'files.*' => 'nullable|file|max:10240|mimes:jpeg,jpg,png,gif,pdf,txt,doc,docx',
+            'model' => 'nullable|string|max:' . config('limits.validation.model_max_length'),
+            'files.*' => 'nullable|file|max:' . config('limits.file_uploads.max_size') . '|mimes:' . implode(',', config('limits.file_uploads.allowed_mimes.all')),
         ];
     }
 }

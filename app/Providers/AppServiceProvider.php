@@ -41,13 +41,19 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Summary of configureRateLimiting
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure rate limiting for various application endpoints. All limits are
+    | read from config/limits.php to ensure consistency across the application.
+    |
+    */
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('chat-messages',
-            fn (Request $request) => Limit::perMinute(2)
+            fn (Request $request) => Limit::perMinute(config('limits.rate_limits.chat_messages'))
                 ->by($request->user()->id)
                 ->response(fn () => response()
                     ->json([
@@ -55,11 +61,11 @@ class AppServiceProvider extends ServiceProvider
                     ], 429)));
 
         RateLimiter::for('api',
-            fn (Request $request) => Limit::perMinute(60)
+            fn (Request $request) => Limit::perMinute(config('limits.rate_limits.api'))
                 ->by($request->ip()));
 
         RateLimiter::for('global',
-            fn ($request) => Limit::perMinute(100)
+            fn ($request) => Limit::perMinute(config('limits.rate_limits.global'))
                 ->by($request->ip()));
     }
 }

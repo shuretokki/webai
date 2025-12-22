@@ -95,8 +95,9 @@ class User extends Authenticatable
 
     public function hasExceededQuota(
         string $type = 'messages',
-        int $limit = 100
+        ?int $limit = null
     ): bool {
+        $limit = $limit ?? config('limits.usage.daily_token_limit');
         $usage = $this->currentMonthUsage();
 
         return match ($type) {
