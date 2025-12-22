@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Motion } from 'motion-v';
+import { ui } from '@/config/ui';
 import { useMarkdown } from '@/lib/markdown';
 import { useClipboard } from '@vueuse/core';
 
@@ -11,6 +12,7 @@ interface Props {
     language?: string;
     attachments?: Array<{ type: 'image' | 'file', url: string, name?: string }>;
     timestamp?: string;
+    isStreaming?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,41 +28,45 @@ const { copy, copied } = useClipboard({ source: props.content });
 
 const reasoning = computed(() => {
     if (!props.content) return null;
-    const hasStart = props.content.includes('<think>');
-    if (!hasStart) return null;
 
-    // Extract everything after <think>
-    const start = props.content.indexOf('<think>') + 7;
-    const end = props.content.indexOf('</think>');
+    const startTag = '<think>';
+    const endTag = '</think>';
 
-    if (end !== -1) {
-        // Complete tag match
-        return props.content.slice(start, end).trim();
-    } else {
-        // Incomplete/Streaming: return everything after <think>
-        return props.content.slice(start).trim();
+    if (!props.content.includes(startTag)) return null;
+
+    const startIndex = props.content.indexOf(startTag) + startTag.length;
+    const endIndex = props.content.indexOf(endTag);
+
+    if (endIndex === -1) {
+        return props.content.slice(startIndex).trim();
     }
+
+    return props.content.slice(startIndex, endIndex).trim();
+});
+
+const isThinking = computed(() => {
+    return props.content.includes('<think>') && !props.content.includes('</think>');
 });
 
 const cleanContent = computed(() => {
     if (!props.content) return '';
 
-    // Remove <think> and everything after it if no closing tag (streaming reasoning)
-    // Or remove the full block if closing tag exists
+    if (isThinking.value) return '';
 
-    if (props.content.includes('<think>')) {
-        const startIdx = props.content.indexOf('<think>');
-        const endIdx = props.content.indexOf('</think>');
+    const startTag = '<think>';
+    const endTag = '</think>';
 
-        if (endIdx !== -1) {
-            // Block exists, remove it
-            const pre = props.content.slice(0, startIdx);
-            const post = props.content.slice(endIdx + 8);
+    if (props.content.includes(startTag)) {
+        const startIndex = props.content.indexOf(startTag);
+        const endIndex = props.content.indexOf(endTag);
+
+        if (endIndex !== -1) {
+            const pre = props.content.slice(0, startIndex);
+            const post = props.content.slice(endIndex + endTag.length);
             return (pre + post).trim();
-        } else {
-            // Streaming reasoning, hide it all from main content
-            return props.content.slice(0, startIdx).trim();
         }
+
+        return '';
     }
 
     return props.content.trim();
@@ -71,26 +77,42 @@ const cleanContent = computed(() => {
 <template>
     <Motion :initial="{ opacity: 0, y: 20 }" :animate="{ opacity: 1, y: 0 }" :transition="{ duration: 0.4 }"
         class="w-full shrink-0 relative flex flex-col" :class="[
-            isUser ? 'items-end py-2 pl-16 pr-4' : '',
-            isResponder ? 'items-start py-2 pl-4 pr-16' : ''
+            isUser ? ui.chat.message.user : '',
+            isResponder ? ui.chat.message.responder : ''
         ]">
 
         <div v-if="isResponder" class="relative shrink-0 flex flex-col items-start justify-center pb-2 pl-1">
             <div class="flex items-center gap-2">
-                <div class="h-[2px] w-12 bg-primary"></div>
-                <p class="font-philosopher font-bold text-sm text-foreground tracking-wide shadow-black drop-shadow-md">
+                <Motion v-if="isStreaming || isThinking" v-bind="ui.animations.loadingLine"
+                    class="h-[2px] bg-primary rounded-full" />
+                <div v-else class="h-[2px] w-12 bg-primary rounded-full"></div>
+
+                <p v-if="timestamp"
+                    class="font-philosopher font-bold text-sm text-foreground tracking-wide shadow-black drop-shadow-md">
                     {{ timestamp }}
                 </p>
             </div>
         </div>
 
         <div class="relative shrink-0 max-w-full md:max-w-[80%] overflow-hidden transition-all">
-            <div v-if="isResponder && reasoning" class="mb-2">
+            <div v-if="isResponder && isThinking" class="mb-4 w-full">
+                <div class="flex items-center gap-2 mb-2">
+                    <Sparkles class="text-primary size-4 animate-pulse" />
+                    <span class="text-sm font-space text-primary/80 animate-pulse">Thinking Process...</span>
+                </div>
+                <div
+                    class="pl-4 border-l-2 border-primary/20 text-sm text-muted-foreground/80 font-mono whitespace-pre-wrap leading-relaxed">
+                    {{ reasoning }}
+                    <span class="inline-block w-2 h-4 bg-primary/50 ml-1 animate-pulse align-middle"></span>
+                </div>
+            </div>
+
+            <div v-else-if="isResponder && reasoning" class="mb-2">
                 <details class="group">
                     <summary
                         class="cursor-pointer list-none flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-white/5 transition-colors w-fit">
                         <Sparkles class="text-muted-foreground size-3.5" />
-                        <span class="text-xs text-muted-foreground font-space select-none">Thinking</span>
+                        <span class="text-xs text-muted-foreground font-space select-none">Thinking Process</span>
                         <ChevronDown
                             class="text-xs text-muted-foreground group-open:rotate-180 transition-transform size-3" />
                     </summary>
@@ -102,8 +124,8 @@ const cleanContent = computed(() => {
             </div>
 
             <div v-if="variant === 'User/Text' || variant === 'Responder/Text'"
-                class="prose prose-invert font-space font-normal text-[16px] leading-relaxed break-words"
-                :class="isResponder ? 'text-foreground' : 'text-muted-foreground'" v-html="md.render(cleanContent)" />
+                :class="[ui.chat.message.content, isResponder ? 'text-foreground' : 'text-muted-foreground']"
+                v-html="md.render(cleanContent)" />
 
             <div v-if="variant === 'Responder/Image'"
                 class="relative rounded-lg overflow-hidden border border-border group cursor-pointer">

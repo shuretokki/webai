@@ -2,6 +2,7 @@
 import { useTextareaAutosize, onClickOutside } from '@vueuse/core';
 import { ref, computed } from 'vue';
 import { Paperclip, FileText, X, Sparkles, ChevronDown, Check, ArrowRight } from 'lucide-vue-next';
+import { ui } from '@/config/ui';
 import UpgradeModal from '@/components/chat/UpgradeModal.vue';
 import UnderProgressModal from '@/components/chat/UnderProgressModal.vue';
 
@@ -119,9 +120,8 @@ defineExpose({ setText });
 </script>
 
 <template>
-    <div v-bind="$attrs" class="w-full max-w-[600px] flex flex-col gap-2">
-        <form @submit.prevent="submit"
-            class="w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50">
+    <div v-bind="$attrs" :class="ui.chat.input.classes.wrapper">
+        <form @submit.prevent="submit" :class="ui.chat.input.classes.container">
             <button type="button" @click="triggerFileInput"
                 class="shrink-0 p-3 text-muted-foreground hover:text-primary cursor-pointer transition-colors rounded-none h-[48px] w-[48px] flex items-center justify-center">
                 <Paperclip class="size-5" />

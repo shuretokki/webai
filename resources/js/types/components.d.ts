@@ -42,5 +42,6 @@ declare module 'vue' {
     ISolarTrashBinTrashLinear: typeof import('~icons/solar/trash-bin-trash-linear')['default']
     ISolarTuning2Linear: typeof import('~icons/solar/tuning2-linear')['default']
     ISolarUserCircleLinear: typeof import('~icons/solar/user-circle-linear')['default']
+    Motion: typeof import('motion-v')['Motion']
   }
 }

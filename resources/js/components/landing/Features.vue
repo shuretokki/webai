@@ -24,7 +24,6 @@ defineProps<Props>();
     </div>
 
     <div class="space-y-8 md:space-y-12">
-      <!-- Row 1 -->
       <div class="relative flex overflow-hidden">
         <Motion :class="ui.features.track" :animate="{ x: ['0%', '-100%'] }"
           :transition="{ duration: 40, ease: 'linear', repeat: Infinity }">
@@ -47,7 +46,6 @@ defineProps<Props>();
         </Motion>
       </div>
 
-      <!-- Row 2 -->
       <div class="relative flex overflow-hidden">
         <Motion :class="ui.features.track" :animate="{ x: ['-100%', '0%'] }"
           :transition="{ duration: 50, ease: 'linear', repeat: Infinity }">
@@ -72,7 +70,6 @@ defineProps<Props>();
         </Motion>
       </div>
 
-      <!-- Row 3 -->
       <div class="relative flex overflow-hidden">
         <Motion :class="ui.features.track" :animate="{ x: ['0%', '-100%'] }"
           :transition="{ duration: 35, ease: 'linear', repeat: Infinity }">

@@ -11,6 +11,7 @@ import SettingsModal from '@/components/settings/SettingsModal.vue';
 import { edit as profileEdit } from '@/routes/profile';
 import { useWindowSize } from '@vueuse/core';
 import { SquarePen, MessageSquare, ChevronRight, ChevronLeft } from 'lucide-vue-next';
+import { ui } from '@/config/ui';
 
 const props = defineProps<{
     isOpen?: boolean;
@@ -121,9 +122,11 @@ defineOptions({
 <template>
     <SettingsModal :show="showSettingsModal" @close="showSettingsModal = false" />
 
-    <Motion v-bind="$attrs"
-        class="shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20"
-        :class="[isCollapsed ? 'items-start w-[60px]' : 'items-start w-[300px]']">
+    <Motion v-bind="$attrs" :class="[
+        ui.chat.sidebar.classes.wrapper,
+        isCollapsed ? ui.chat.sidebar.collapsedWidth : ui.chat.sidebar.width,
+        isCollapsed ? 'items-center' : 'items-start'
+    ]">
         <div class="w-full shrink-0 relative h-[60px] flex items-center"
             :class="[isCollapsed ? 'pl-4 pr-4 justify-center' : 'pl-4 pr-4 justify-between']">
             <div class="h-8 flex items-center justify-center text-sidebar-foreground">
@@ -135,11 +138,11 @@ defineOptions({
             <Link :href="Chat().url"
                 class="w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group"
                 :class="[isCollapsed ? 'justify-center' : '']">
-            <SquarePen
-                class="size-5 text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
-            <p v-if="!isCollapsed"
-                class="font-space font-normal text-base text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
-                New Chat</p>
+                <SquarePen
+                    class="size-5 text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
+                <p v-if="!isCollapsed"
+                    class="font-space font-normal text-base text-sidebar-foreground/80 group-hover:text-sidebar-foreground transition-colors whitespace-nowrap">
+                    New Chat</p>
             </Link>
         </div>
 
@@ -173,15 +176,15 @@ defineOptions({
                 class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
                 :class="[isCollapsed ? 'justify-center' : '']">
 
-            <MessageSquare v-if="isCollapsed"
-                class="size-5 text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
+                <MessageSquare v-if="isCollapsed"
+                    class="size-5 text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
 
-            <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
-                <p
-                    class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap block w-full">
-                    {{ chat.title || 'Untitled' }}
-                </p>
-            </div>
+                <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
+                    <p
+                        class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap block w-full">
+                        {{ chat.title || 'Untitled' }}
+                    </p>
+                </div>
             </Link>
 
             <Modal :show="showEditModal" title="Edit Chat Title" @close="showEditModal = false">

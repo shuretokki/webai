@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed } from 'vue';
 import { Motion, AnimatePresence } from 'motion-v';
+import { X } from 'lucide-vue-next';
 const props = defineProps<{
     show: boolean;
     title?: string;

@@ -14,6 +14,7 @@ import {
     Menu, MoreVertical, Pen, Trash2, FileText, Code, Search,
     SquarePen, Sparkles, Palette
 } from 'lucide-vue-next';
+import { ui } from '@/config/ui';
 
 const props = defineProps<{
     chats: Array<{ id: number, title: string, created_at: string }>,
@@ -300,7 +301,7 @@ onUnmounted(() => {
 
 </script>
 <template>
-    <div class="w-full h-screen relative flex flex-col items-center content-stretch overflow-hidden bg-background">
+    <div :class="ui.chat.layout">
         <div class="absolute inset-0 pointer-events-none"></div>
 
         <div class=" w-full h-full shrink-0 relative flex items-start justify-center content-stretch overflow-hidden">
@@ -370,7 +371,7 @@ onUnmounted(() => {
                         </button>
                         <Link :href="Chat().url"
                             class="text-white/60 hover:text-white hover:bg-transparent p-2 rounded-none cursor-pointer transition-colors">
-                        <SquarePen class="size-5" />
+                            <SquarePen class="size-5" />
                         </Link>
                     </div>
                 </div>
@@ -413,14 +414,16 @@ onUnmounted(() => {
                         <Message v-for="(msg, index) in uiMessages" :key="index" :variant="msg.variant as any"
                             :content="msg.content" :attachments="msg.attachments" />
 
-                        <Message v-if="isStreaming || streaming" variant="Responder/Text" :content="streaming" />
+                        <Message v-if="isStreaming || streaming" variant="Responder/Text" :content="streaming"
+                            :is-streaming="true" />
                     </div>
                 </div>
 
                 <div class="w-full absolute bottom-0 left-0 right-0 p-4 flex justify-center pt-12">
 
-                    <ChatInput ref="chatInputRef" @submit="handleSendMessage" class="w-full max-w-3xl shadow-2xl"
-                        v-model:modelValue="model" :models="models" :userTier="userTier" :is-streaming="isStreaming" />
+                    <ChatInput ref="chatInputRef" @submit="handleSendMessage"
+                        :class="['w-full shadow-2xl', ui.chat.input.maxWidth]" v-model:modelValue="model"
+                        :models="models" :userTier="userTier" :is-streaming="isStreaming" />
                 </div>
             </div>
         </div>

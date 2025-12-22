@@ -189,14 +189,18 @@ export const ui = {
    * Animation constants and motion presets.
    */
   animations: {
-    /** Staggered entrance animations. */
+    /**
+     * Staggered entrance animations.
+     */
     stagger: (idx: number) => ({
       delay: idx * 0.1,
       duration: 0.8,
       ease: [0.16, 1, 0.3, 1] as const,
     }),
 
-    /** Function to generate word reveal variants. */
+    /**
+     * Function to generate word reveal variants.
+     */
     wordReveal: (i: number) => ({
       initial: { y: '100%', opacity: 0, rotateZ: 5 },
       enter: {
@@ -210,6 +214,21 @@ export const ui = {
         },
       },
     }),
+
+    /**
+     * Loading line animation for streaming messages
+     */
+    loadingLine: {
+      initial: { opacity: 0.5 },
+      animate: {
+        opacity: [0.5, 1, 0.5],
+        transition: {
+          duration: 2,
+          repeat: Infinity,
+          ease: [0.4, 0, 0.2, 1] as const
+        }
+      }
+    },
 
     /**
      * <Hover>
@@ -394,6 +413,35 @@ export const ui = {
   },
 
   /**
+   * <Auth>
+   * Authentication pages configuration.
+   */
+  auth: {
+    layout: 'min-h-screen w-full lg:grid lg:grid-cols-2',
+    panel: {
+      wrapper: 'hidden lg:flex flex-col relative bg-black text-white p-12 overflow-hidden border-r border-white/5',
+      overlay: 'absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay',
+      image: 'absolute inset-0 w-full h-full object-cover opacity-60',
+      content: 'relative z-20 mt-auto',
+      quote: 'text-2xl font-light leading-relaxed mb-4 text-white/90',
+      author: 'text-sm font-mono uppercase tracking-widest text-white/40',
+    },
+    form: {
+      container: 'flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden',
+      wrapper: 'w-full max-w-sm space-y-10 relative z-10',
+      header: 'text-center space-y-2',
+      title: 'text-2xl font-light tracking-tight text-white',
+      description: 'text-sm text-white/40',
+      divider: 'relative flex justify-center text-xs uppercase',
+      dividerText: 'bg-black px-2 text-white/20',
+    },
+    input: {
+      base: 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/20 focus:ring-white/10 rounded-lg h-11',
+      label: 'text-xs font-mono uppercase tracking-widest text-white/40 mb-2 block',
+    },
+  },
+
+  /**
    * <Patterns>
    * Graphic patterns and utility styles.
    *
@@ -403,6 +451,42 @@ export const ui = {
   patterns: {
     blueprint:
       'background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 4rem 4rem;',
+  },
+
+  /**
+   * <Chat>
+   * Chat application specific configuration.
+   */
+  chat: {
+    layout: 'w-full h-dvh relative flex flex-col items-center content-stretch overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]',
+    sidebar: {
+      width: 'w-[300px]',
+      collapsedWidth: 'w-[60px]',
+      headerHeight: 'h-[60px]',
+      colors: {
+        bg: '#000000',
+        border: '#ffffff1a'
+      },
+      classes: {
+        wrapper: 'shrink-0 relative h-full flex flex-col items-start content-stretch bg-sidebar border-r border-sidebar-border overflow-hidden z-20',
+        header: 'w-full shrink-0 relative h-[60px] flex items-center',
+        link: 'w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group',
+        linkActive: 'bg-sidebar-accent text-sidebar-accent-foreground',
+      }
+    },
+    input: {
+      maxWidth: 'max-w-[600px]',
+      classes: {
+        wrapper: 'w-full max-w-[600px] flex flex-col gap-2',
+        container: 'w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50'
+      }
+    },
+    message: {
+      user: 'items-end py-2 pl-16 pr-4',
+      responder: 'items-start py-2 pl-4 pr-16',
+      typing: 'font-philosopher font-bold text-sm text-foreground tracking-wide shadow-black drop-shadow-md',
+      content: 'prose prose-invert font-space font-normal text-[16px] leading-relaxed break-words'
+    }
   },
 
   /**
