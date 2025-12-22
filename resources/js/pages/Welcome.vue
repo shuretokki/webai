@@ -316,7 +316,7 @@ const content = {
     <link rel="preload" href="/images/heroSection.jpg" as="image" />
   </Head>
 
-  <div class="min-h-dvh bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden relative z-10">
+  <div class="min-h-dvh bg-black text-white font-space selection:bg-white/20 overflow-x-hidden relative z-10">
 
     <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.1] mix-blend-overlay"
       style="background-image: url('/images/noise.jpg');">
@@ -331,9 +331,11 @@ const content = {
           borderColor: navBorder,
           backdropFilter: isMobile ? 'none' : navBackdrop
         }">
-        <Link id="nav-logo" href="/" class="flex items-center gap-2 group">
-          <AppLogoIcon class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" />
-          <span class="font-medium text-lg tracking-tight sr-only md:not-sr-only">{{ content.appName }}</span>
+        <Link id="nav-logo" href="/" class="flex items-center group">
+          <img src="/assets/LOGO.svg" alt="Ecnelis"
+            class="h-6 w-auto md:hidden group-hover:opacity-80 transition-opacity" />
+          <img src="/assets/LOGOTYPE.svg" alt="Ecnelis"
+            class="hidden md:block h-6 w-auto group-hover:opacity-80 transition-opacity" />
         </Link>
         <nav class="hidden md:flex items-center gap-2">
           <Link v-for="item in content.navigation" :key="item.label"
