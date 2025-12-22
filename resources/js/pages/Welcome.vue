@@ -9,13 +9,15 @@ import RevealFooter from '@/components/RevealFooter.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Hero from '@/components/landing/Hero.vue';
 import Manifesto from '@/components/landing/Manifesto.vue';
+import Features from '@/components/landing/Features.vue';
 import Developer from '@/components/landing/Developer.vue';
 import Pricing from '@/components/landing/Pricing.vue';
 import Faq from '@/components/landing/Faq.vue';
 import PreFooter from '@/components/landing/PreFooter.vue';
 
 import { ui } from '@/config/ui';
-import { useDevice } from '@/composables/useDevice';
+import { useDevice }
+  from '@/composables/useDevice';
 
 defineProps<{
   canRegister?: boolean;
@@ -69,11 +71,6 @@ onBeforeUnmount(() => {
   lenis?.destroy();
 });
 
-const heroImageY = useTransform(
-  scrollY,
-  ui.animations.scrollEffects.hero.range,
-  ui.animations.scrollEffects.hero.imageY);
-
 const heroImageScale = useTransform(
   scrollY,
   ui.animations.scrollEffects.hero.range,
@@ -94,7 +91,7 @@ const headerScale = useTransform(
 const headerLineHeight = useTransform(
   smoothScrollY,
   ui.animations.scrollEffects.hero.range,
-  [0.9, 4],
+  ui.animations.scrollEffects.hero.lineSpacing,
   { clamp: true }
 );
 
@@ -180,6 +177,21 @@ const content = {
     introducing: {
       label: 'About Ecnelis',
       title: 'Chat with AI using text, images, voice, and video all in one place.'
+    },
+    features: {
+      label: 'Trusted Brands',
+      brands: [
+        { id: '1', name: 'Nvidia', icon: '/images/brands/nvidia.svg' },
+        { id: '2', name: 'OpenAI', icon: '/images/brands/openai.svg' },
+        { id: '3', name: 'Anthropic', icon: '/images/brands/anthropic.svg' },
+        { id: '4', name: 'Meta', icon: '/images/brands/meta.svg' },
+        { id: '5', name: 'Mistral', icon: '/images/brands/mistral.svg' },
+        { id: '6', name: 'CoreWeave', icon: '/images/brands/coreweave.svg' },
+        { id: '7', name: 'HuggingFace', icon: '/images/brands/huggingface.svg' },
+        { id: '8', name: 'Groq', icon: '/images/brands/groq.svg' },
+        { id: '9', name: 'Perplexity', icon: '/images/brands/perplexity.svg' },
+        { id: '10', name: 'DeepMind', icon: '/images/brands/deepmind.svg' }
+      ]
     },
     pricing: {
       label: 'Plans',
@@ -393,18 +405,18 @@ const content = {
 
     <main id="main-content">
       <div class="relative">
-        <Hero id="hero-section" :content="content.hero" :hero-image-y="heroImageY" :hero-image-scale="heroImageScale"
-          :header-y="headerY" :header-scale="headerScale" :header-blur="headerBlur" :header-opacity="headerOpacity"
+        <Hero id="hero-section" :content="content.hero" :hero-image-scale="heroImageScale" :header-y="headerY"
+          :header-scale="headerScale" :header-blur="headerBlur" :header-opacity="headerOpacity"
           :header-line-height="headerLineHeight" />
 
         <div class="relative z-10 bg-black">
           <Manifesto id="manifesto-section" :content="content.sections.introducing" :is-mobile="isMobile" />
           <Developer id="developer-section" :content="content.sections.developers" :can-hover="canHover" />
+          <Features id="features-section" :content="content.sections.features" :can-hover="canHover" />
         </div>
       </div>
 
-      <Pricing id="pricing-section" v-model:billing-cycle="pricingBillingCycle" :content="content.sections.pricing"
-        :can-hover="canHover" />
+      <Pricing id="pricing-section" v-model:billing-cycle="pricingBillingCycle" :content="content.sections.pricing" />
 
       <Faq id="faq-section" v-model:faq-open="faqOpen" :content="content.sections.faq" :can-hover="canHover" />
 
