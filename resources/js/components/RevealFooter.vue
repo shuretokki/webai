@@ -28,10 +28,10 @@ const { isMobile } = useDevice();
         <div :class="ui.layout.footerClamp"
           class="flex flex-col md:flex-row justify-between items-start gap-12 md:gap-20">
           <div class="space-y-6 md:w-1/3">
-            <div class="flex items-center gap-2">
-              <AppLogoIcon class="w-8 h-8 text-white" />
-              <span class="text-2xl font-medium tracking-tight">{{ content.appName }}</span>
-            </div>
+            <Link href="/explore" class="flex items-center gap-2 group/logo hover:opacity-80 transition-opacity">
+            <AppLogoIcon class="w-8 h-8 text-white" />
+            <span class="text-2xl font-medium tracking-tight">{{ content.appName }}</span>
+            </Link>
             <p class="text-white/30 text-sm leading-relaxed max-w-[260px]">
               Crafting clarity from the noise. Your AI companion for the next generation of work.
             </p>
