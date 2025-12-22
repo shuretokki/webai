@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasHashedRouteKey;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, HasHashedRouteKey, Notifiable, TwoFactorAuthenticatable;
 
@@ -25,6 +28,9 @@ class User extends Authenticatable
         'avatar',
         'subscription_tier',
         'is_admin',
+        'pending_email',
+        'pending_email_token',
+        'pending_email_token_expires_at',
     ];
 
     /**
@@ -50,7 +56,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'pending_email_token_expires_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the user's avatar URL.
+     */
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value && ! str_starts_with($value, 'http')
+                ? Storage::disk('public')->url($value)
+                : $value,
+        );
     }
 
     /**
