@@ -31,7 +31,7 @@ class GenerateChatTitle implements ShouldQueue
         $conversation = $messages->map(fn ($m) => "{$m->role}: {$m->content}")->join("\n");
 
         $response = Prism::text()
-            ->using(Provider::Gemini, 'gemini-2.5-flash-lite')
+            ->using(Provider::Groq, 'llama-3.1-8b-instant')
             ->withPrompt("Generate a short, concise title (max 4 words) for this chat conversation. Do not use quotes.\n\nConversation:\n$conversation")
             ->generate();
 
