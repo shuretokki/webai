@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import { Motion } from 'motion-v';
 import { ui } from '@/config/ui';
-import { ArrowRight, ArrowUpRight } from 'lucide-vue-next';
+import { ArrowRight } from 'lucide-vue-next';
 
 interface Props {
   content: any;
@@ -40,38 +40,48 @@ defineProps<Props>();
             :viewport="{ once: true }" :transition="{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }">
             <div
               class="aspect-[4/3] relative rounded-2xl overflow-hidden border border-white/10 bg-black shadow-2xl shimmer-ecnelis">
-              <img src="/images/landing/chat.webp" class="w-full h-full object-cover opacity-80"
-                width="800" height="600" loading="lazy" decoding="async" />
+              <img src="/images/landing/chat.webp" class="w-full h-full object-cover opacity-80" width="800"
+                height="600" loading="lazy" decoding="async" />
             </div>
           </Motion>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div :class="ui.developer.grid">
         <Motion v-for="(card, i) in content.cards" :key="card.id" :initial="{ opacity: 0, y: 20 }"
           :while-in-view="{ opacity: 1, y: 0 }" :viewport="{ once: true }" :transition="ui.animations.stagger(i)"
-          :class="[card.span, ui.layout.card.developer, 'h-[480px] md:h-[540px]', 'hover-border']"
-          :while-hover="canHover ? ui.animations.hover.card : {}" :while-tap="ui.animations.hover.active">
+          :class="[card.span, ui.developer.card, 'h-[480px] md:h-[540px]']">
 
-          <div class="flex-col h-full flex">
+          <div class="flex-col h-full flex relative overflow-hidden">
+            <Motion :class="ui.developer.glow" :animate="{
+              x: [0, 40, 0],
+              y: [0, 60, 0],
+              scale: [1, 1.2, 1]
+            }" :transition="{ duration: 8, repeat: Infinity, ease: 'easeInOut' }" />
+
             <div class="p-10 relative z-10">
               <h3 :class="ui.typography.cardTitle" class="mb-3">{{ card.title }}</h3>
               <p :class="ui.typography.cardBody" class="max-w-xs">{{ card.description }}</p>
             </div>
-            <div class="flex-1 relative overflow-hidden flex items-center justify-center p-12 mt-auto">
-              <div
-                class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)]">
-              </div>
-              <img :src="card.image"
-                class="w-full h-full object-contain filter brightness-75 transition-all duration-1000"
-                :class="{ 'group-hover:brightness-100 group-hover:scale-105': canHover }" width="600" height="400"
-                loading="lazy" decoding="async" />
-            </div>
-          </div>
 
-          <div class="absolute top-6 right-6 opacity-0 transition-opacity"
-            :class="{ 'group-hover:opacity-100': canHover }">
-            <ArrowUpRight class="w-6 h-6 text-white/40" />
+            <div :class="ui.developer.imageWrapper">
+              <div
+                class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)]">
+              </div>
+
+              <Motion :animate="{
+                y: [0, -15, 0],
+                rotateZ: [0, 1, 0]
+              }" :transition="{
+                duration: 6,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.5
+              }" class="w-full h-full max-w-[400px] max-h-[300px]">
+                <img :src="card.image" class="w-full h-full object-contain filter brightness-90 shadow-2xl" width="600"
+                  height="400" loading="lazy" decoding="async" />
+              </Motion>
+            </div>
           </div>
         </Motion>
       </div>
