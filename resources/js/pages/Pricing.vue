@@ -83,7 +83,7 @@ const item: any = {
 
 <template>
   <AppLayout>
-    <div class="min-h-screen bg-white dark:bg-black font-sans py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="min-h-screen bg-white dark:bg-black font-space py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
 
       <!-- Background Noise -->
       <div class="absolute inset-0 z-0 pointer-events-none">
@@ -133,6 +133,7 @@ const item: any = {
 
             <div class="mb-8 relative z-10">
               <h3 class="text-lg font-bold uppercase tracking-widest text-zinc-500 mb-4">{{ plan.name }}</h3>
+
               <div class="flex items-baseline gap-1">
                 <span class="text-5xl font-bold text-black dark:text-white">{{ plan.price }}</span>
                 <span v-if="plan.period" class="text-zinc-500">{{ plan.period }}</span>
@@ -152,12 +153,12 @@ const item: any = {
 
             <div class="relative z-10 mt-auto">
               <Link :href="plan.href || '#'" :class="{ 'pointer-events-none': plan.comingSoon }">
-              <Button class="w-full h-12 rounded-none font-bold text-sm tracking-wide transition-all"
-                :variant="plan.highlight ? 'default' : 'outline'" :class="[
-                  plan.highlight ? 'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200' : 'border-black/20 dark:border-white/20 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
-                ]" :disabled="plan.comingSoon">
-                {{ plan.cta }}
-              </Button>
+                <Button class="w-full h-12 rounded-none font-bold text-sm tracking-wide transition-all"
+                  :variant="plan.highlight ? 'default' : 'outline'" :class="[
+                    plan.highlight ? 'bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200' : 'border-black/20 dark:border-white/20 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                  ]" :disabled="plan.comingSoon">
+                  {{ plan.cta }}
+                </Button>
               </Link>
             </div>
           </Motion>
