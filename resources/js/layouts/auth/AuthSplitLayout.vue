@@ -22,7 +22,7 @@ const bgImage = '/images/auth.webp';
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
             </div>
 
-            <Link :href="home()" class="relative z-20 flex items-center gap-2 group">
+            <Link href="/explore" class="relative z-20 flex items-center gap-2 group">
                 <AppLogoIcon class="w-8 h-8 text-white transition-opacity group-hover:opacity-80" />
                 <span class="text-sm font-medium tracking-tight text-white/90">{{ name }}</span>
             </Link>
