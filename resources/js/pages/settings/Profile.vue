@@ -58,38 +58,17 @@ const handleAvatarChange = async (event: Event) => {
 
         uploading.value = true;
 
-        try {
-            const formData = new FormData();
-            formData.append('avatar', file);
-
-            const response = await fetch('/api/user/avatar', {
-                method: 'POST',
-                headers: {
-                    'X-XSRF-TOKEN': decodeURIComponent(
-                        document.cookie.split('; ')
-                            .find(row => row.startsWith('XSRF-TOKEN='))
-                            ?.split('=')[1] || ''
-                    ),
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Upload failed');
+        router.post('/api/user/avatar', {
+            avatar: file
+        }, {
+            onFinish: () => {
+                uploading.value = false;
+                if (input) input.value = '';
+            },
+            onError: (errors) => {
+                alert(Object.values(errors)[0] || 'Upload failed');
             }
-
-            const data = await response.json();
-
-            router.reload({ only: ['auth'] });
-
-            alert('Profile picture updated successfully!');
-        } catch (error: any) {
-            alert(error.message || 'Failed to upload image. Please try again.');
-        } finally {
-            uploading.value = false;
-            if (input) input.value = '';
-        }
+        });
     }
 };
 </script>
@@ -106,7 +85,7 @@ const handleAvatarChange = async (event: Event) => {
                     <p class="text-muted-foreground mb-6">Update your profile picture.</p>
 
                     <div class="flex items-center gap-6">
-                        <Avatar class="h-24 w-24 border border-border">
+                        <Avatar :key="user.avatar" class="h-24 w-24 border border-border">
                             <AvatarImage v-if="user.avatar" :src="user.avatar" :alt="user.name" />
                             <AvatarFallback class="text-lg">{{ user.name.charAt(0) }}</AvatarFallback>
                         </Avatar>

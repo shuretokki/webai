@@ -126,21 +126,26 @@ class ProfileController extends Controller
         return redirect('/');
     }
 
-    public function uploadAvatar(AvatarUploadRequest $request): JsonResponse
+    public function uploadAvatar(AvatarUploadRequest $request)
     {
         $user = $request->user();
+        $oldAvatar = $user->getRawOriginal('avatar');
 
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($oldAvatar && Storage::disk('public')->exists($oldAvatar)) {
+            Storage::disk('public')->delete($oldAvatar);
         }
 
         $path = $request->file('avatar')->store('avatars', 'public');
 
         $user->update(['avatar' => $path]);
 
-        return response()->json([
-            'url' => Storage::disk('public')->url($path),
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'url' => Storage::disk('public')->url($path),
+            ]);
+        }
+
+        return back();
     }
 
     public function changePassword(Request $request): RedirectResponse
