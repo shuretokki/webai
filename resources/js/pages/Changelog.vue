@@ -56,6 +56,69 @@ const changes = [
     ]
   },
   {
+    version: 'v1.0.4',
+    date: 'December 22, 2025',
+    title: 'Search & Organization',
+    categories: [
+      {
+        name: 'Interface',
+        items: [
+          'Introduced a new global search bar to quickly find past conversations.',
+          'Added the ability to archive chats to keep your sidebar clean.',
+        ]
+      },
+      {
+        name: 'Experience',
+        items: [
+          'Improved chat categorization and tagging for better organization.',
+          'Enhanced keyboard shortcuts for faster navigation between chats.',
+        ]
+      }
+    ]
+  },
+  {
+    version: 'v1.0.3',
+    date: 'December 21, 2025',
+    title: 'File Support & Media',
+    categories: [
+      {
+        name: 'Interface',
+        items: [
+          'Added support for file attachments including PDFs, documents, and images.',
+          'New drag-and-drop interface for seamless file uploads into chats.',
+        ]
+      },
+      {
+        name: 'Experience',
+        items: [
+          'Integrated image analysis capabilities for visual-based AI reasoning.',
+          'Improved file previewing within the chat window for a smoother workflow.',
+        ]
+      }
+    ]
+  },
+  {
+    version: 'v1.0.2',
+    date: 'December 20, 2025',
+    title: 'Mobile & Performance',
+    categories: [
+      {
+        name: 'Interface',
+        items: [
+          'Optimized the mobile sidebar for smoother transitions on iOS and Android.',
+          'Refined the mobile chat input for better ergonomics.',
+        ]
+      },
+      {
+        name: 'Experience',
+        items: [
+          'Reduced initial load times by 30% through aggressive caching.',
+          'Improved battery efficiency when using the platform on mobile browsers.',
+        ]
+      }
+    ]
+  },
+  {
     version: 'v1.0.1',
     date: 'December 19, 2025',
     title: 'Stability & Performance',
