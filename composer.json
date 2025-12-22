@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "prism-php/prism": "^0.98.5",
+        "sentry/sentry-laravel": "^4.20",
         "vinkla/hashids": "^13.0"
     },
     "require-dev": {
