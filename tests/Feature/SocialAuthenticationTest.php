@@ -2,7 +2,6 @@
 
 use App\Models\SocialIdentity;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
@@ -208,7 +207,7 @@ it('disconnects social account successfully', function () {
     $socialIdentity = SocialIdentity::factory()->github()->create(['user_id' => $user->id]);
 
     $response = actingAs($user)
-        ->delete("/auth/github/disconnect");
+        ->delete('/auth/github/disconnect');
 
     $response->assertRedirect();
     $response->assertSessionHas('status', 'Github account disconnected.');
@@ -220,7 +219,7 @@ it('handles disconnect when no social account exists', function () {
     $user = User::factory()->create();
 
     $response = actingAs($user)
-        ->delete("/auth/google/disconnect");
+        ->delete('/auth/google/disconnect');
 
     $response->assertRedirect();
     $response->assertSessionHas('status', 'Google account disconnected.');

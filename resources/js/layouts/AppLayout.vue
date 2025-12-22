@@ -35,7 +35,7 @@ const logout = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-black text-white font-space selection:bg-white/20">
+    <div class="min-h-screen bg-black text-white font-space selection:bg-white/20 overflow-x-hidden">
         <header class="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur">
             <div class="flex h-20 items-center px-6 md:px-8 justify-between max-w-[1400px] mx-auto">
 

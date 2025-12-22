@@ -18,7 +18,7 @@ class UsageController extends Controller
         $user = $request->user();
         $stats = $user->currentMonthUsage();
 
-                $limit = match ($user->subscription_tier) {
+        $limit = match ($user->subscription_tier) {
             'free' => config('limits.usage.daily_token_limit'),
             'plus' => 1000,
             'premium' => 5000,

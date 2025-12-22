@@ -32,7 +32,7 @@ class VerifyCurrentEmailForChange extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject('Verify Email Change Request')
-            ->line('We received a request to change your email address to: **' . $this->newEmail . '**')
+            ->line('We received a request to change your email address to: **'.$this->newEmail.'**')
             ->line('If you made this request, please click the button below to verify this change.')
             ->action('Verify Email Change', $verificationUrl)
             ->line('If you did not request this change, please ignore this email and your email will remain unchanged.')

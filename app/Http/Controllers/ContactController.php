@@ -11,7 +11,7 @@ class ContactController extends Controller
 {
     public function submit(Request $request)
     {
-        $key = 'contact-form:' . $request->ip();
+        $key = 'contact-form:'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
             $seconds = RateLimiter::availableIn($key);

@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
-use Prism\Exceptions\PrismException;
 use Prism\Prism;
 
 uses(RefreshDatabase::class);
@@ -413,6 +412,7 @@ test('handles slow network connection', function () {
     Http::fake([
         '*' => function () {
             sleep(1); // Simulate delay
+
             return Http::response(['data' => 'slow'], 200);
         },
     ]);

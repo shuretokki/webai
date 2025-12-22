@@ -42,10 +42,10 @@ class ChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prompt' => 'required|string|max:' . config('limits.validation.prompt_max_length'),
+            'prompt' => 'required|string|max:'.config('limits.validation.prompt_max_length'),
             'chat_id' => 'nullable|string',
-            'model' => 'nullable|string|max:' . config('limits.validation.model_max_length'),
-            'files.*' => 'nullable|file|max:' . config('limits.file_uploads.max_size') . '|mimes:' . implode(',', config('limits.file_uploads.allowed_mimes.all')),
+            'model' => 'nullable|string|max:'.config('limits.validation.model_max_length'),
+            'files.*' => 'nullable|file|max:'.config('limits.file_uploads.max_size').'|mimes:'.implode(',', config('limits.file_uploads.allowed_mimes.all')),
         ];
     }
 }

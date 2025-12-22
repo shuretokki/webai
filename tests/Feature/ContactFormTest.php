@@ -77,7 +77,7 @@ test('contact form rate limits submissions', function () {
         $response = $this->post('/contact', [
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'message' => 'This is test message number ' . ($i + 1),
+            'message' => 'This is test message number '.($i + 1),
         ]);
 
         $response->assertSessionHas('success');
@@ -103,7 +103,7 @@ test('contact form validates maximum field lengths', function () {
 
     $response = $this->post('/contact', [
         'name' => 'John Doe',
-        'email' => str_repeat('a', 245) . '@example.com', // 257+ chars
+        'email' => str_repeat('a', 245).'@example.com', // 257+ chars
         'message' => 'Test message',
     ]);
 
@@ -117,4 +117,3 @@ test('contact form validates maximum field lengths', function () {
 
     $response->assertSessionHasErrors(['message']);
 });
-

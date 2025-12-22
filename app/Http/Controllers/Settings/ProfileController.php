@@ -18,7 +18,6 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-
     public function edit(Request $request): Response
     {
         return Inertia::render('settings/Profile', [
@@ -77,7 +76,7 @@ class ProfileController extends Controller
             ! hash_equals($user->pending_email_token, hash('sha256', $token))) {
 
             return redirect()->route('profile.edit')->withErrors([
-                'email' => 'This email verification link is invalid or has expired.'
+                'email' => 'This email verification link is invalid or has expired.',
             ]);
         }
 

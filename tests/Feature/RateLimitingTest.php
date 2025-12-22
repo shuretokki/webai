@@ -29,13 +29,13 @@ test('chat stream enforces configured rate limit dynamically', function () {
          */
         expect($response->headers->has('X-RateLimit-Limit'))->toBeTrue();
         $headerLimit = (int) $response->headers->get('X-RateLimit-Limit');
-        expect($headerLimit)->toBe($limit, "Rate limit header should match configured limit");
+        expect($headerLimit)->toBe($limit, 'Rate limit header should match configured limit');
 
         /**
          * Verify remaining count decreases correctly
          */
         $remaining = (int) $response->headers->get('X-RateLimit-Remaining');
-        expect($remaining)->toBe($limit - $i, "Request {$i}: remaining should be " . ($limit - $i));
+        expect($remaining)->toBe($limit - $i, "Request {$i}: remaining should be ".($limit - $i));
     }
 
     /**

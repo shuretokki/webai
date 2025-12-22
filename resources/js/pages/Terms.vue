@@ -1,6 +1,24 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
+import RevealFooter from '@/components/RevealFooter.vue';
+
+const content = {
+  footer: {
+    links: {
+      index: [
+        { label: 'Works', href: '/works' },
+        { label: 'Enterprise', href: '/enterprise' },
+        { label: 'Docs', href: '/docs' },
+      ],
+      social: [
+        { label: 'Twitter', href: '#' },
+        { label: 'GitHub', href: '#' },
+        { label: 'Discord', href: '#' },
+      ]
+    }
+  }
+};
 </script>
 
 <template>
@@ -40,6 +58,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
           </section>
         </div>
       </div>
+      <div class="h-[10dvh] bg-black relative z-20"></div>
+      <RevealFooter :content="content" />
     </div>
   </AppLayout>
 </template>

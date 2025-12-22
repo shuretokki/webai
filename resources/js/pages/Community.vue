@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Motion } from 'motion-v';
 import { Github, Twitter, Youtube, MessageCircle, ArrowUpRight } from 'lucide-vue-next';
+import RevealFooter from '@/components/RevealFooter.vue';
 
 const container: any = {
   hidden: { opacity: 0 },
@@ -61,6 +62,23 @@ const socials = [
     stat: '25k Subs'
   }
 ];
+
+const content = {
+  footer: {
+    links: {
+      index: [
+        { label: 'Works', href: '/works' },
+        { label: 'Enterprise', href: '/enterprise' },
+        { label: 'Docs', href: '/docs' },
+      ],
+      social: [
+        { label: 'Twitter', href: '#' },
+        { label: 'GitHub', href: '#' },
+        { label: 'Discord', href: '#' },
+      ]
+    }
+  }
+};
 </script>
 
 <template>
@@ -129,6 +147,8 @@ const socials = [
         </Motion>
 
       </div>
+      <div class="h-[10dvh] bg-black relative z-20"></div>
+      <RevealFooter :content="content" />
     </div>
   </AppLayout>
 </template>

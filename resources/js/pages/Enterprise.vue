@@ -22,6 +22,7 @@ import {
   ChevronDown
 } from 'lucide-vue-next';
 import { ref } from 'vue';
+import RevealFooter from '@/components/RevealFooter.vue';
 
 const features = [
   {
@@ -63,6 +64,23 @@ const faqs = ref([
     isOpen: false
   }
 ]);
+
+const content = {
+  footer: {
+    links: {
+      index: [
+        { label: 'Works', href: '/works' },
+        { label: 'Enterprise', href: '/enterprise' },
+        { label: 'Docs', href: '/docs' },
+      ],
+      social: [
+        { label: 'Twitter', href: '#' },
+        { label: 'GitHub', href: '#' },
+        { label: 'Discord', href: '#' },
+      ]
+    }
+  }
+};
 
 const container = {
   hidden: { opacity: 0 },
@@ -397,6 +415,7 @@ const item: any = {
         <p>&copy; 2025 Ecnelis Inc. All rights reserved.</p>
       </div>
     </div>
+    <RevealFooter :content="content" />
   </AppLayout>
 </template>
 

@@ -45,7 +45,7 @@ test('users can view their own chats', function () {
         ->get("/c/{$chat->id}");
 
     $response->assertOk();
-    
+
     /**
      * Verify user can access their own chat
      */
@@ -64,7 +64,7 @@ test('users can view their own chats with messages', function () {
         ->get("/c/{$chat->id}");
 
     $response->assertOk();
-    
+
     /**
      * Verify messages exist in database
      */

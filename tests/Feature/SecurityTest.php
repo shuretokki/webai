@@ -107,7 +107,7 @@ test('search prevents sql injection in query parameter', function () {
 
     $maliciousSql = "'; DROP TABLE chats; --";
 
-    $response = $this->actingAs($user)->get('/s?q=' . urlencode($maliciousSql));
+    $response = $this->actingAs($user)->get('/s?q='.urlencode($maliciousSql));
 
     $response->assertOk();
 

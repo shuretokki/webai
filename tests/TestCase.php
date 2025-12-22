@@ -3,11 +3,11 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Prism\Prism\Enums\FinishReason;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Text\Response as TextResponse;
-use Prism\Prism\ValueObjects\Usage;
 use Prism\Prism\ValueObjects\Meta;
-use Prism\Prism\Enums\FinishReason;
+use Prism\Prism\ValueObjects\Usage;
 
 abstract class TestCase extends BaseTestCase
 {

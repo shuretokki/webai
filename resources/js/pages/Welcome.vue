@@ -308,7 +308,7 @@ const content = {
 
 <template>
 
-  <Head title="Welcome - Sentient Canvas for Neural Networks">
+  <Head title="ECNELIS">
     <meta name="description"
       content="Ecnelis is a sentient canvas for your digital neural network. Explore foundation models, build autonomous agents, and expand your thoughts into actions." />
     <link rel="preconnect" href="https://rsms.me/" />
@@ -414,7 +414,7 @@ const content = {
         <div class="relative z-10 bg-black">
           <Manifesto id="manifesto-section" :content="content.sections.introducing" :is-mobile="isMobile" />
           <Developer id="developer-section" :content="content.sections.developers" :can-hover="canHover" />
-          <Features id="features-section" :content="content.sections.features" :can-hover="canHover" />
+          <!-- <Features id="features-section" :content="content.sections.features" :can-hover="canHover" /> -->
         </div>
       </div>
 

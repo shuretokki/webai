@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\delete;
-use function Pest\Laravel\post;
 
 beforeEach(function () {
     Storage::fake('public');
@@ -25,9 +23,8 @@ it('can upload avatar successfully', function () {
 
     $response->assertSuccessful();
     $response->assertJsonStructure(['url']);
-    $response->assertJson(fn ($json) =>
-        $json->has('url')
-             ->etc()
+    $response->assertJson(fn ($json) => $json->has('url')
+        ->etc()
     );
 
     $freshUser = $user->fresh();

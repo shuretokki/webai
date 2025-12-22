@@ -25,7 +25,7 @@ class UpdateChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:' . config('limits.validation.chat_title_max_length'),
+            'title' => 'required|string|max:'.config('limits.validation.chat_title_max_length'),
         ];
     }
 }
