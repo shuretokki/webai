@@ -454,6 +454,47 @@ export const ui = {
   },
 
   /**
+   * <Modal>
+   * Global configuration for modals and drawers.
+   */
+  modal: {
+    overlay: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+    drawer: {
+      initial: { y: '100%' },
+      animate: { y: 0 },
+      exit: { y: '100%' },
+      transition: {
+        type: 'spring' as const,
+        damping: 30,
+        stiffness: 300,
+        mass: 0.8
+      },
+      drag: {
+        y: true,
+        constraints: { top: 0 },
+        elastic: { top: 0, bottom: 0.5 },
+      },
+      classes: {
+        handle: 'w-12 h-1.5 bg-border/50 rounded-full mx-auto my-3 cursor-grab active:cursor-grabbing'
+      }
+    },
+    settings: {
+      maxWidth: '5xl',
+      height: 'h-[600px]',
+      bg: 'bg-black',
+      rounded: 'rounded-none shadow-none',
+      sidebarBg: 'bg-black border-r border-white/5',
+      contentBg: 'bg-black',
+      tabActive: 'bg-white/5 text-foreground font-medium',
+      tabInactive: 'text-muted-foreground hover:text-foreground hover:bg-white/5',
+    }
+  },
+
+  /**
    * <Chat>
    * Chat application specific configuration.
    */
@@ -472,13 +513,28 @@ export const ui = {
         header: 'w-full shrink-0 relative h-[60px] flex items-center',
         link: 'w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group',
         linkActive: 'bg-sidebar-accent text-sidebar-accent-foreground',
+        label: 'font-space font-normal text-sm text-sidebar-foreground/40 uppercase tracking-wider',
+        chatTitle: 'font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap block w-full',
+      }
+    },
+    search: {
+      maxWidth: 'max-w-2xl',
+      classes: {
+        container: 'flex flex-col overflow-hidden bg-[#0a0a0a] border border-white/5 shadow-2xl rounded-none',
+        inputWrapper: 'flex items-center gap-3 px-4 py-4 border-b border-white/5',
+        input: 'flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none font-space text-lg',
+        resultItem: 'w-full px-4 py-4 text-left hover:bg-white/5 transition-all flex items-start gap-4 group border-b border-transparent hover:border-white/5',
+        resultActive: 'bg-white/5 border-white/10',
+        footer: 'px-6 py-3 border-t border-white/5 bg-white/[0.02] flex items-center justify-between text-[11px] text-muted-foreground uppercase tracking-widest font-space',
       }
     },
     input: {
-      maxWidth: 'max-w-[600px]',
+      maxWidth: 'max-w-3xl',
       classes: {
-        wrapper: 'w-full max-w-[600px] flex flex-col gap-2',
-        container: 'w-full shrink-0 relative flex items-end gap-2 bg-card border-l-4 border-primary rounded-none shadow-sm transition-all focus-within:ring-1 focus-within:ring-primary/50'
+        wrapper: 'w-full max-w-3xl flex flex-col gap-2',
+        container: 'w-full shrink-0 relative flex items-end gap-2 bg-[#0a0a0a] border border-white/10 rounded-none shadow-2xl transition-all focus-within:border-white/20 px-1',
+        textarea: 'w-full bg-transparent border-none outline-none font-space font-normal text-base text-foreground placeholder:text-muted-foreground focus:ring-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar',
+        footer: 'flex items-center justify-between px-3 py-2 bg-white/[0.02] border-t border-white/5',
       }
     },
     message: {
