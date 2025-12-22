@@ -81,7 +81,6 @@ const handleAvatarChange = async (event: Event) => {
 
             const data = await response.json();
 
-            // Force a reload of the page data to sync the user object
             router.reload({ only: ['auth'] });
 
             alert('Profile picture updated successfully!');
