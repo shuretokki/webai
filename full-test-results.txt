@@ -1,0 +1,76 @@
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
+
+   PASS  Tests\Feature\AttachmentObserverTest
+  ✓ file is deleted from disk when attachment is force deleted           0.27s  
+  ✓ file persists when attachment is soft deleted                        0.02s  
+  ✓ files are deleted when chat is deleted via cascade                   0.03s  
+
+   FAIL  Tests\Feature\Auth\AuthenticationTest
+  ✓ login screen can be rendered                                         0.05s  
+  ⨯ users can authenticate using the login screen                        0.04s  
+  ✓ users with two factor enabled are redirected to two factor challeng… 0.04s  
+  ✓ users can not authenticate with invalid password                     0.04s  
+  ✓ users can logout                                                     0.03s  
+  ✓ users are rate limited                                               0.04s  
+
+   FAIL  Tests\Feature\Auth\EmailVerificationTest
+  ✓ email verification screen can be rendered                            0.04s  
+  ⨯ email can be verified                                                0.04s  
+  ✓ email is not verified with invalid hash                              0.04s  
+  ✓ email is not verified with invalid user id                           0.04s  
+  ⨯ verified user is redirected to dashboard from verification prompt    0.03s  
+  ⨯ already verified user visiting verification link is redirected with… 0.04s  
+
+   PASS  Tests\Feature\Auth\PasswordConfirmationTest
+  ✓ confirm password screen can be rendered                              0.05s  
+  ✓ password confirmation requires authentication                        0.03s  
+
+   PASS  Tests\Feature\Auth\PasswordResetTest
+  ✓ reset password link screen can be rendered                           0.04s  
+  ✓ reset password link can be requested                                 0.24s  
+  ✓ reset password screen can be rendered                                0.24s  
+  ✓ password can be reset with valid token                               0.24s  
+  ✓ password cannot be reset with invalid token                          0.24s  
+
+   FAIL  Tests\Feature\Auth\RegistrationTest
+  ✓ registration screen can be rendered                                  0.04s  
+  ⨯ new users can register                                               0.04s  
+
+   PASS  Tests\Feature\Auth\TwoFactorChallengeTest
+  ✓ two factor challenge redirects to login when not authenticated       0.04s  
+  ✓ two factor challenge can be rendered                                 0.04s  
+
+   FAIL  Tests\Feature\Auth\VerificationNotificationTest
+  ✓ sends verification notification                                      0.04s  
+  ⨯ does not send verification notification if email is verified         0.04s  
+
+   FAIL  Tests\Feature\AvatarUploadTest
+  ✓ it can upload avatar successfully                                    0.05s  
+  ✓ it validates avatar is required                                      0.04s  
+  ✓ it validates avatar must be an image                                 0.04s  
+  ✓ it validates avatar must not exceed 800kb                            0.04s  
+  ✓ it accepts avatar at exactly 800kb                                   0.04s  
+  ✓ it validates avatar must be jpg, png, or gif                         0.04s  
+  ✓ it deletes old avatar when uploading new one                         0.05s  
+  ⨯ it can disconnect social account                                     0.02s  
+
+   FAIL  Tests\Feature\ChatAuthorizationTest
+  ✓ users cannot view other users chats                                  0.05s  
+  ✓ guest cannot view any chats                                          0.04s  
+  ✓ users can view their own chats                                       0.04s  
+  ✓ users can view their own chats with messages                         0.04s  
+  ✓ users cannot delete other users chats                                0.04s  
+  ✓ guest cannot delete any chats                                        0.04s  
+  ✓ users can delete their own chats                                     0.04s  
+  ⨯ deleting non-existent chat returns 404                               0.04s  
+
+   PASS  Tests\Feature\ChatModelSelectionTest
+  ✓ free user can use free models                                        0.06s  
+  ✓ free user cannot use paid models                                     0.04s  
+  ✓ plus user can use paid models (demo mode)                            0.45s  
+
+Fatal error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 20480 bytes) in /home/shure/Documents/cassette/web/webai/vendor/laravel/framework/src/Illuminate/Http/Testing/FileFactory.php on line 87
+
+Fatal error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 65536 bytes) in /home/shure/Documents/cassette/web/webai/vendor/filp/whoops/src/Whoops/Inspector/InspectorFactory.php on line 11
