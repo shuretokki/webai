@@ -17,17 +17,21 @@ defineProps<Props>();
 </script>
 
 <template>
-  <section class="min-h-dvh h-hero-reserved flex items-center justify-center relative overflow-hidden group">
-    <Motion class="absolute inset-0 z-0 pointer-events-none will-change-transform"
-      :style="{ y: heroImageY, scale: heroImageScale, transform: 'translateZ(0)' }">
-      <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
-      <img :src="content.image" alt="Hero background" class="w-full h-full object-cover" width="1920" height="1080"
-        decoding="async" />
-      <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
-      </div>
-    </Motion>
+  <section class="relative min-h-dvh group">
+    <!-- Fixed Background Layer -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <Motion class="absolute inset-0 will-change-transform"
+        :style="{ scale: heroImageScale, filter: headerBlur, opacity: headerOpacity }">
+        <div class="absolute inset-0 bg-black/40 z-10 bg-noise mix-blend-overlay"></div>
+        <img :src="content.image" alt="Hero background" class="w-full h-full object-cover" width="1920" height="1080"
+          decoding="async" />
+        <div class="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
+        </div>
+      </Motion>
+    </div>
 
-    <div :class="ui.layout.hero" class="flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
+    <!-- Content Layer -->
+    <div :class="ui.layout.hero" class="relative z-10 flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
       <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.1 } } }">
         <Motion class="mb-8 md:mb-12" :initial="ui.animations.pageTransition.initial"
           :animate="ui.animations.pageTransition.enter">

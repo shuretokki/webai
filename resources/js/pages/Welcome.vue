@@ -392,14 +392,15 @@ const content = {
     </AnimatePresence>
 
     <main id="main-content">
-      <div class="bg-black relative">
+      <div class="relative">
         <Hero id="hero-section" :content="content.hero" :hero-image-y="heroImageY" :hero-image-scale="heroImageScale"
           :header-y="headerY" :header-scale="headerScale" :header-blur="headerBlur" :header-opacity="headerOpacity"
           :header-line-height="headerLineHeight" />
 
-        <Manifesto id="manifesto-section" :content="content.sections.introducing" :is-mobile="isMobile" />
-
-        <Developer id="developer-section" :content="content.sections.developers" :can-hover="canHover" />
+        <div class="relative z-10 bg-black">
+          <Manifesto id="manifesto-section" :content="content.sections.introducing" :is-mobile="isMobile" />
+          <Developer id="developer-section" :content="content.sections.developers" :can-hover="canHover" />
+        </div>
       </div>
 
       <Pricing id="pricing-section" v-model:billing-cycle="pricingBillingCycle" :content="content.sections.pricing"

@@ -334,13 +334,13 @@ export const ui = {
        */
       hero: {
         range: [0, 1000],
-        imageY: [0, 400],
-        imageScale: [1, 1.03],
-        headerY: [0, -600],
-        headerScale: [1, 0.2],
+        imageY: [0, 0],
+        imageScale: [1, 1.15],
+        headerY: [0, -400],
+        headerScale: [1, 0.5],
         lineSpacing: ['0.9em', '4em'],
-        opacityRange: [0, 600],
-        blur: ['blur(0px)', 'blur(8px)'],
+        opacityRange: [0, 500],
+        blur: ['blur(0px)', 'blur(20px)'],
         opacity: [1, 0],
       },
 
