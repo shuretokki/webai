@@ -54,13 +54,13 @@ const mobileTitle = computed(() => {
 <template>
     <Modal :show="show" :type="isMobile ? 'drawer' : 'modal'" :title="isMobile ? mobileTitle : 'Settings'"
         :maxWidth="ui.modal.settings.maxWidth" :rounded="ui.modal.settings.rounded" :bg="ui.modal.settings.bg"
-        contentClass="p-0" @close="closeModal">
-        <!-- Desktop Layout -->
+        :height="isMobile ? 'h-[90vh]' : ''"
+        contentClass="p-0 font-inter" @close="closeModal">
         <div v-if="!isMobile" class="flex" :class="[ui.modal.settings.height]">
             <div class="w-1/3 flex flex-col justify-between py-6" :class="[ui.modal.settings.sidebarBg]">
                 <div class="flex flex-col gap-1 px-3">
                     <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
-                        class="px-3 py-2 text-sm font-space flex items-center gap-3 rounded-none transition-all duration-200 group relative"
+                        class="px-3 py-2.5 text-[16px] font-inter flex items-center gap-3 rounded-none transition-all duration-200 group relative"
                         :class="[
                             activeTab === tab.id
                                 ? ui.modal.settings.tabActive
@@ -84,7 +84,7 @@ const mobileTitle = computed(() => {
                                 class="size-8 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
                                 <div class="size-5 rounded-full border border-primary bg-primary/20"></div>
                             </div>
-                            <span class="font-space font-medium text-sm text-foreground">Get ECNELIS+</span>
+                            <span class="font-inter font-medium text-sm text-foreground">Get ECNELIS+</span>
                         </div>
 
                         <button @click="handleUpgrade"
@@ -100,7 +100,6 @@ const mobileTitle = computed(() => {
             </div>
         </div>
 
-        <!-- Mobile Layout -->
         <div v-else class="flex flex-col h-full overflow-hidden">
             <div class="px-4 pb-4 flex items-center gap-3 shrink-0" v-if="mobileView === 'detail'">
                 <button @click="mobileView = 'list'"
@@ -118,14 +117,14 @@ const mobileTitle = computed(() => {
                         <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-space font-medium text-foreground truncate text-lg flex items-center gap-2">
+                        <h4 class="font-inter font-medium text-foreground truncate text-xl flex items-center gap-2">
                             {{ user?.name }}
                             <span v-if="['plus', 'enterprise'].includes((user as any)?.subscription_tier)"
                                 class="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase border border-primary/20 tracking-wider">
                                 {{ (user as any)?.subscription_tier === 'enterprise' ? 'PRO' : 'PLUS' }}
                             </span>
                         </h4>
-                        <p class="text-base text-muted-foreground font-space truncate">{{ user?.email }}</p>
+                        <p class="text-lg text-muted-foreground font-inter truncate">{{ user?.email }}</p>
                     </div>
                     <button
                         class="px-5 py-2.5 text-base border border-border rounded-full hover:bg-white/5 transition-colors text-muted-foreground font-medium">Manage</button>
@@ -139,7 +138,7 @@ const mobileTitle = computed(() => {
                             class="size-10 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10">
                             <div class="size-6 rounded-full border border-primary bg-primary/20"></div>
                         </div>
-                        <span class="font-space font-medium text-foreground! text-lg">Get ECNELIS+</span>
+                        <span class="font-inter font-medium text-foreground! text-lg">Get ECNELIS+</span>
                     </div>
                     <button
                         class="px-5 py-2.5 rounded-full border border-border text-base text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors font-medium">Upgrade</button>
@@ -152,14 +151,14 @@ const mobileTitle = computed(() => {
                         <div class="flex items-center gap-3">
                             <component :is="tab.icon"
                                 class="text-2xl text-muted-foreground group-active:text-foreground transition-colors" />
-                            <span class="font-space text-lg text-foreground">{{ tab.label }}</span>
+                            <span class="font-inter text-lg text-foreground">{{ tab.label }}</span>
                         </div>
                         <ChevronRight class="size-5 text-muted-foreground" />
                     </button>
                 </div>
             </div>
 
-            <div v-if="mobileView === 'detail'" class="flex-1 overflow-y-auto p-4 bg-background/50 text-lg">
+            <div v-if="mobileView === 'detail'" class="flex-1 overflow-y-auto p-4 text-lg">
                 <SettingsContent :active-tab="activeTab" />
             </div>
         </div>
