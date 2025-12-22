@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\UsageController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -76,25 +75,6 @@ Route::middleware(['auth', 'verified'])
     ->prefix('api')
     ->group(function () {
         Route::get('/usage/current', [UsageController::class, 'current']);
-    });
-
-Route::middleware(['auth', 'verified'])
-    ->prefix('profile')
-    ->group(function () {
-        Route::post('/avatar', [ProfileController::class, 'uploadAvatar'])
-            ->name('profile.avatar');
-
-        Route::patch('/', [ProfileController::class, 'update'])
-            ->name('profile.update');
-
-        Route::put('/password', [ProfileController::class, 'changePassword'])
-            ->name('profile.password');
-
-        Route::post('/export', [ProfileController::class, 'exportData'])
-            ->name('profile.export');
-
-        Route::delete('/', [ProfileController::class, 'destroy'])
-            ->name('profile.destroy');
     });
 
 Route::middleware(['auth', 'verified'])
