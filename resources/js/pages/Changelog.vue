@@ -5,6 +5,26 @@ import RevealFooter from '@/components/RevealFooter.vue';
 
 const changes = [
   {
+    version: 'v1.1.2',
+    date: 'December 23, 2025',
+    title: 'New Free Tier Models',
+    categories: [
+      {
+        name: 'Intelligence',
+        items: [
+          'Introduced new high-speed Groq models to the free tier for near-instant responses.',
+          'Expanded model selection to provide more versatile AI options for all users.',
+        ]
+      },
+      {
+        name: 'Experience',
+        items: [
+          'Significantly reduced latency for basic chat interactions using optimized inference.',
+        ]
+      }
+    ]
+  },
+  {
     version: 'v1.1.1',
     date: 'December 23, 2025',
     title: 'Legal & Layout Refinement',
