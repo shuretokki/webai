@@ -15,7 +15,7 @@ import { ui } from '@/config/ui';
 
 const props = defineProps<{
     isOpen?: boolean;
-    chats: Array<{ id: number, title: string, created_at: string }>;
+    chats: Array<{ id: string, title: string, created_at: string }>;
 }>();
 
 const { width } = useWindowSize();
@@ -36,21 +36,21 @@ const filteredChats = computed(() => {
 });
 
 const showEditModal = ref(false);
-const editingChat = ref<{ id: number, title: string } | null>(null);
+const editingChat = ref<{ id: string, title: string } | null>(null);
 
-const openEditModal = (chat: { id: number, title: string }) => {
+const openEditModal = (chat: { id: string, title: string }) => {
     editingChat.value = chat;
     editForm.title = chat.title;
     showEditModal.value = true;
 };
 
 
-const editingChatId = ref<number | null>(null);
+const editingChatId = ref<string | null>(null);
 const editForm = useForm({
     title: ''
 });
 
-const startEditing = (chat: { id: number, title: string }) => {
+const startEditing = (chat: { id: string, title: string }) => {
     editingChatId.value = chat.id;
     editForm.title = chat.title;
 };
@@ -63,7 +63,7 @@ const cancelEditing = () => {
 const saveTitle = () => {
     if (!editingChat.value) return;
 
-    editForm.patch(`/chat/${editingChat.value.id}`, {
+    editForm.patch(`/c/${editingChat.value.id}`, {
         onSuccess: () => {
             showEditModal.value = false;
             editingChat.value = null;
@@ -72,10 +72,10 @@ const saveTitle = () => {
 };
 
 const showDeleteModal = ref(false);
-const deletingChatId = ref<number | null>(null);
+const deletingChatId = ref<string | null>(null);
 const isDeleting = ref(false);
 
-const openDeleteModal = (id: number) => {
+const openDeleteModal = (id: string) => {
     deletingChatId.value = id;
     showDeleteModal.value = true;
 };
@@ -84,7 +84,7 @@ const confirmDelete = () => {
     if (!deletingChatId.value) return;
 
     isDeleting.value = true;
-    router.delete(`/chat/${deletingChatId.value}`, {
+    router.delete(`/c/${deletingChatId.value}`, {
         preserveState: true,
         onFinish: () => {
             isDeleting.value = false;
@@ -94,7 +94,7 @@ const confirmDelete = () => {
     });
 };
 
-const deleteChat = (id: number) => {
+const deleteChat = (id: string) => {
     openDeleteModal(id);
 }
 
@@ -127,17 +127,15 @@ defineOptions({
         isCollapsed ? ui.chat.sidebar.collapsedWidth : ui.chat.sidebar.width,
         isCollapsed ? 'items-center' : 'items-start'
     ]">
-        <div class="w-full shrink-0 relative h-[60px] flex items-center"
-            :class="[isCollapsed ? 'pl-4 pr-4 justify-center' : 'pl-4 pr-4 justify-between']">
-            <div class="h-8 flex items-center justify-center text-sidebar-foreground">
-                <AppLogoIcon class="size-8 text-sidebar-primary" />
-            </div>
+        <div
+            :class="[ui.chat.sidebar.classes.header, isCollapsed ? 'pl-4 pr-4 justify-center' : 'pl-4 pr-4 justify-between']">
+            <Link href="/explore" class="h-8 flex items-center justify-center text-sidebar-foreground group/logo">
+                <AppLogoIcon class="size-8 text-sidebar-primary group-hover/logo:opacity-80 transition-opacity" />
+            </Link>
         </div>
 
         <div class="w-full shrink-0 flex flex-col gap-2 px-3 mt-2">
-            <Link :href="Chat().url"
-                class="w-full relative flex items-center gap-3 p-2 rounded-none cursor-pointer transition-colors group"
-                :class="[isCollapsed ? 'justify-center' : '']">
+            <Link :href="Chat().url" :class="[ui.chat.sidebar.classes.link, isCollapsed ? 'justify-center' : '']">
                 <SquarePen
                     class="size-5 text-sidebar-foreground/60 group-hover:text-sidebar-foreground transition-colors" />
                 <p v-if="!isCollapsed"
@@ -147,7 +145,7 @@ defineOptions({
         </div>
 
         <div v-if="!isCollapsed" class="w-full shrink-0 relative flex items-center px-6 py-2 mt-4">
-            <p class="font-space font-normal text-sm text-sidebar-foreground/40 uppercase tracking-wider">Recent Chats
+            <p :class="ui.chat.sidebar.classes.label">Recent Chats
             </p>
         </div>
         <div v-else class="w-full h-px bg-sidebar-border my-4 mx-0"></div>
@@ -172,7 +170,7 @@ defineOptions({
                 </div>
             </Modal>
 
-            <Link v-for="chat in filteredChats" :key="chat.id" :href="Chat(chat.id).url" :preserve-state="false"
+            <Link v-for="chat in filteredChats" :key="chat.id" :href="`/c/${chat.id}`" :preserve-state="false"
                 class="w-full flex items-center p-2 gap-3 cursor-pointer transition-colors group relative"
                 :class="[isCollapsed ? 'justify-center' : '']">
 
@@ -180,8 +178,7 @@ defineOptions({
                     class="size-5 text-sidebar-foreground/40 group-hover:text-sidebar-primary transition-colors shrink-0" />
 
                 <div v-if="!isCollapsed" class="flex-1 min-w-0 flex items-center justify-between">
-                    <p
-                        class="font-space text-sm text-sidebar-foreground/70 truncate group-hover:text-sidebar-foreground transition-colors flex-1 overflow-hidden whitespace-nowrap block w-full">
+                    <p :class="ui.chat.sidebar.classes.chatTitle">
                         {{ chat.title || 'Untitled' }}
                     </p>
                 </div>
@@ -239,7 +236,6 @@ defineOptions({
                     </div>
                 </button>
 
-                <!-- Modified logic: On mobile, arrow key ALWAYS closes the sidebar (emits close) -->
                 <button @click.stop="handleSidebarToggle"
                     class="p-2 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors shrink-0"
                     :class="[isCollapsed ? 'w-full flex justify-center' : '']">
