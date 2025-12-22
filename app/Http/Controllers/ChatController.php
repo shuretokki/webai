@@ -18,7 +18,6 @@ use Prism\Prism\ValueObjects\Media\Image;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 
-
 class ChatController extends Controller
 {
     public function index(Request $request, ?Chat $chat = null)
@@ -26,7 +25,13 @@ class ChatController extends Controller
         $chats = Chat::where(
             'user_id', auth()->user()->id)
             ->latest()
-            ->get();
+            ->get()
+            ->map(fn ($c) => [
+                'id' => $c->getRouteKey(),
+                'title' => $c->title,
+                'created_at' => $c->created_at,
+                'updated_at' => $c->updated_at,
+            ]);
 
         if ($chat) {
             $this->authorize('view', $chat);
@@ -40,7 +45,7 @@ class ChatController extends Controller
                         ->with('attachments')
                         ->get())
                 : [],
-            'chatId' => $chat?->id,
+            'chatId' => $chat?->getRouteKey(),
         ]);
     }
 
@@ -70,6 +75,11 @@ class ChatController extends Controller
         }
 
         $chatId = $request->input('chat_id');
+
+        if ($chatId) {
+            $decodedId = \Vinkla\Hashids\Facades\Hashids::decode($chatId);
+            $chatId = ! empty($decodedId) ? $decodedId[0] : $chatId;
+        }
 
         $chat = $chatId
             ? Chat::where('user_id', $user->id)
@@ -143,14 +153,14 @@ class ChatController extends Controller
             type: 'message_sent',
             messages: 1,
             metadata: [
-                'chat_id' => $chat->id,
+                'chat_id' => $chat->getRouteKey(),
                 'model' => $modelId,
                 'has_attachments' => ! empty($attachmentsData),
             ]
         );
 
         return response()->stream(function () use ($chat, $history, $modelId, $user, $modelConfig) {
-            echo 'data: '.json_encode(['chat_id' => $chat->id])."\n\n";
+            echo 'data: '.json_encode(['chat_id' => $chat->getRouteKey()])."\n\n";
 
             $fullResponse = '';
             $inputTokens = 0;
@@ -181,6 +191,7 @@ class ChatController extends Controller
                         'anthropic' => Provider::Anthropic,
                         'xai' => Provider::XAI,
                         'deepseek' => Provider::DeepSeek,
+                        'groq' => Provider::Groq,
                         default => Provider::Gemini,
                     };
 
@@ -195,7 +206,7 @@ class ChatController extends Controller
                     $lastChunk = null;
 
                     foreach ($stream as $chunk) {
-                        $lastChunk = $chunk; // Keep track of last chunk for usage data
+                        $lastChunk = $chunk;
 
                         $text = $chunk->delta ?? '';
 
@@ -224,11 +235,18 @@ class ChatController extends Controller
                         $totalTokens = $inputTokens + $outputTokens;
                     }
                 } catch (\Exception $e) {
-                    \Log::error($e);
-                    echo 'data: '.json_encode([
-                        'error' => $e->getMessage()])."\n\n";
+                    \Log::error('AI Model Error', [
+                        'message' => $e->getMessage(),
+                        'model' => $modelId,
+                        'provider' => $modelConfig['provider'],
+                        'user_id' => $user->id,
+                    ]);
 
-                    // Set fallback token counts on error
+                    $errorMessage = $this->getReadableErrorMessage($e, $modelConfig);
+
+                    echo 'data: '.json_encode([
+                        'error' => $errorMessage])."\n\n";
+
                     $inputTokens = (int) (array_sum(array_map(fn ($msg) => strlen($msg->content ?? ''), $history)) / 4);
                     $outputTokens = (int) (strlen($fullResponse) / 4);
                     $totalTokens = $inputTokens + $outputTokens;
@@ -276,7 +294,7 @@ class ChatController extends Controller
     public function update(UpdateChatRequest $request, Chat $chat)
     {
         $chat->update([
-            'title' => $request->validated()['title']
+            'title' => $request->validated()['title'],
         ]);
 
         return back();
@@ -287,11 +305,22 @@ class ChatController extends Controller
         $chat->delete();
 
         $atDeleted = str_contains(
-            url()->previous(), "/chat/{$chat->id}");
+            url()->previous(), "/c/{$chat->getRouteKey()}");
 
         return $atDeleted
             ? to_route('chat')
             : back();
+    }
+
+    public function destroyAll(Request $request)
+    {
+        $user = auth()->user();
+
+        Chat::where('user_id', $user->id)->delete();
+
+        return response()->json([
+            'message' => 'All chats deleted successfully',
+        ]);
     }
 
     public function search(Request $request)
@@ -325,9 +354,9 @@ class ChatController extends Controller
             ->get()
             ->map(fn ($chat) => [
                 'type' => 'chat',
-                'id' => $chat->id,
+                'id' => $chat->getRouteKey(),
                 'title' => $chat->title,
-                'url' => "/c/{$chat->id}",
+                'url' => "/c/{$chat->getRouteKey()}",
                 'subtitle' => $chat->updated_at->diffForHumans(),
             ]);
 
@@ -351,14 +380,18 @@ class ChatController extends Controller
                 'chats.id as chat_id')
             ->limit(10)
             ->get()
-            ->map(fn ($msg) => [
-                'type' => 'message',
-                'id' => $msg->id,
-                'title' => Str::limit(
-                    $msg->content, 60),
-                'url' => "/c/{$msg->chat_id}",
-                'subtitle' => "in {$msg->chat_title}",
-            ]);
+            ->map(function ($msg) {
+                $hashedChatId = \Vinkla\Hashids\Facades\Hashids::encode($msg->chat_id);
+
+                return [
+                    'type' => 'message',
+                    'id' => $msg->id,
+                    'title' => Str::limit(
+                        $msg->content, 60),
+                    'url' => "/c/{$hashedChatId}",
+                    'subtitle' => "in {$msg->chat_title}",
+                ];
+            });
 
         $results = $chats
             ->concat($messages)
@@ -384,10 +417,66 @@ class ChatController extends Controller
             foreach ($chat->messages as $message) {
                 $role = ucfirst($message->role);
                 $time = $message->created_at->format('Y-m-d H:i');
-                echo "### {$role} ({$time})\n\n";
-                echo "{$message->content}\n\n";
-                echo "---\n\n";
+                echo "## {$role} - {$time}\n\n";
+                echo $message->content."\n\n---\n\n";
             }
         }, "chat-{$chat->id}.md");
+    }
+
+    private function getReadableErrorMessage(\Exception $e, array $modelConfig): string
+    {
+        $message = $e->getMessage();
+        $provider = $modelConfig['name'] ?? 'AI model';
+
+        if (str_contains($message, '429') ||
+            str_contains($message, 'rate limit') ||
+            str_contains($message, 'quota') ||
+            str_contains($message, 'Resource has been exhausted')) {
+            return "The {$provider} is currently at capacity or rate limited. Please try again in a few moments or switch to a different model.";
+        }
+
+        if (str_contains($message, '401') ||
+            str_contains($message, '403') ||
+            str_contains($message, 'API key') ||
+            str_contains($message, 'Unauthorized') ||
+            str_contains($message, 'authentication') ||
+            str_contains($message, 'invalid_api_key')) {
+            return "Invalid or missing API key for {$provider}. Please contact support or try a different model.";
+        }
+
+        if (str_contains($message, '404') ||
+            str_contains($message, 'not found') ||
+            str_contains($message, 'does not exist')) {
+            return 'The selected model is not available. Please try a different model.';
+        }
+
+        if (str_contains($message, 'content_policy') ||
+            str_contains($message, 'safety') ||
+            str_contains($message, 'inappropriate')) {
+            return 'Your request was blocked by content safety filters. Please rephrase your message.';
+        }
+
+        if (str_contains($message, 'context_length') ||
+            str_contains($message, 'token limit') ||
+            str_contains($message, 'maximum context')) {
+            return 'Your conversation is too long for this model. Please start a new chat or use a model with larger context.';
+        }
+
+        if (str_contains($message, '500') ||
+            str_contains($message, '502') ||
+            str_contains($message, '503') ||
+            str_contains($message, 'server error') ||
+            str_contains($message, 'Internal server error')) {
+            return "The {$provider} is experiencing technical difficulties. Please try again later or switch to a different model.";
+        }
+
+        if (str_contains($message, 'timeout') ||
+            str_contains($message, 'timed out') ||
+            str_contains($message, 'network') ||
+            str_contains($message, 'connection')) {
+            return "Network timeout connecting to {$provider}. Please check your connection and try again.";
+        }
+
+        return "An error occurred with {$provider}: ".(strlen($message) > 100 ? substr($message, 0, 100).'...' : $message);
     }
 }
