@@ -453,42 +453,54 @@ onUnmounted(() => {
 
         <SearchModal v-model:open="isSearchOpen" />
 
-        <Modal :show="showEditModal" title="Edit Chat Title" @close="showEditModal = false">
-            <div class="flex flex-col gap-4">
-                <div>
+        <Modal :show="showEditModal" title="Edit Chat Title" @close="showEditModal = false"
+            :rounded="ui.modal.settings.rounded" :bg="ui.modal.settings.bg">
+            <div class="flex flex-col gap-6 p-1">
+                <div class="space-y-2">
                     <label
-                        class="block text-xs font-space text-muted-foreground uppercase tracking-wider mb-2">Title</label>
+                        class="block text-xs font-space text-muted-foreground uppercase tracking-widest mb-2">Chat
+                        Title</label>
                     <input v-model="editForm.title" type="text"
-                        class="w-full bg-muted border border-border rounded-none px-4 py-2 text-foreground focus:border-primary focus:outline-none transition-colors"
+                        class="w-full bg-white/5 border border-white/10 rounded-none px-4 py-3 text-foreground focus:border-primary/50 focus:outline-none transition-all font-space"
                         placeholder="Enter chat title..." @keydown.enter="saveTitle" autoFocus />
                 </div>
 
-                <div class="flex justify-end gap-2 mt-2">
+                <div class="flex justify-end gap-3">
                     <button @click="showEditModal = false"
-                        class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                        class="px-6 py-2.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all font-space text-sm border border-transparent hover:border-white/10">
                         Cancel
                     </button>
                     <button @click="saveTitle" :disabled="editForm.processing"
-                        class="px-4 py-2 rounded-none bg-primary text-primary-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
+                        class="px-6 py-2.5 rounded-none bg-foreground text-background font-space text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50 active-press">
                         Save Changes
                     </button>
                 </div>
             </div>
         </Modal>
 
-        <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm">
-            <div class="flex flex-col gap-4">
-                <p class="text-sm font-space text-muted-foreground">
-                    Are you sure you want to delete this chat? This action cannot be undone.
-                </p>
-                <div class="flex justify-end gap-2">
+        <Modal :show="showDeleteModal" title="Delete Chat" @close="showDeleteModal = false" max-width="sm"
+            :rounded="ui.modal.settings.rounded" :bg="ui.modal.settings.bg">
+            <div class="flex flex-col gap-6 p-1">
+                <div class="flex items-start gap-4">
+                    <div class="size-10 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center shrink-0">
+                        <Trash2 class="size-5 text-destructive" />
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-foreground font-space font-medium">Confirm Deletion</h4>
+                        <p class="text-sm font-space text-muted-foreground leading-relaxed">
+                            Are you sure you want to delete this chat? This action cannot be undone and all messages will be lost.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
                     <button @click="showDeleteModal = false"
-                        class="px-4 py-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-space text-sm">
+                        class="px-6 py-2.5 rounded-none text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all font-space text-sm border border-transparent hover:border-white/10">
                         Cancel
                     </button>
                     <button @click="confirmDelete" :disabled="isDeleting"
-                        class="px-4 py-2 rounded-none bg-destructive text-destructive-foreground font-space text-sm font-medium hover:opacity-90 transition-colors disabled:opacity-50">
-                        Delete
+                        class="px-6 py-2.5 rounded-none bg-destructive text-destructive-foreground font-space text-sm font-bold hover:bg-destructive/90 transition-all disabled:opacity-50 active-press">
+                        Delete Chat
                     </button>
                 </div>
             </div>
