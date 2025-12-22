@@ -1,0 +1,35 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "app"
+        ],
+        "excludes": [
+            "Providers",
+            "Console/Kernel.php"
+        ]
+    },
+    "logs": {
+        "text": "infection.log",
+        "summary": "infection-summary.log"
+    },
+    "mutators": {
+        "@default": true,
+        "@function_signature": false,
+        "global-ignoreSourceCodeByRegex": [
+            ".*Log::.*",
+            ".*logger\\(.*"
+        ]
+    },
+    "minMsi": 70,
+    "minCoveredMsi": 80,
+    "testFramework": "phpunit",
+    "bootstrap": "./vendor/autoload.php",
+    "phpUnit": {
+        "configDir": ".",
+        "customPath": "./vendor/bin/pest"
+    },
+    "tmpDir": "build/infection",
+    "initialTestsPhpOptions": "-d zend_extension=xdebug.so",
+    "testFrameworkOptions": "--testsuite=Feature"
+}
