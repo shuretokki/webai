@@ -32,8 +32,7 @@ const content = {
     <div class="min-h-screen bg-black text-white/90 selection:bg-white/10 pt-32 pb-24">
       <div class="max-w-[1200px] mx-auto px-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-24">
-          
-          <!-- Sidebar / Title -->
+
           <div class="lg:col-span-1">
             <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-light tracking-tighter leading-[0.95] mb-8">
               Terms of <br />
@@ -44,7 +43,6 @@ const content = {
             </p>
           </div>
 
-          <!-- Content -->
           <div class="lg:col-span-2 space-y-24">
             <section class="space-y-6">
               <h2 class="text-xl font-light tracking-tight text-white">01. Acceptance</h2>
@@ -145,7 +143,7 @@ const content = {
         </div>
       </div>
       <div class="h-[10dvh] bg-black relative z-20"></div>
-      <RevealFooter :content="content" />
     </div>
+    <RevealFooter :content="content" />
   </AppLayout>
 </template>
