@@ -5,6 +5,19 @@ import RevealFooter from '@/components/RevealFooter.vue';
 
 const changes = [
   {
+    version: 'v1.1.0',
+    date: 'December 23, 2025',
+    title: 'UI Refinement & UX Polish',
+    items: [
+      'Redesigned Settings modal with a minimalist dark aesthetic and Inter typography.',
+      'Fixed mobile horizontal scrolling issues on the Explore page hero section.',
+      'Implemented scrollbar-gutter to prevent layout shifting during modal transitions.',
+      'Synchronized standalone Pricing page with the landing page design system.',
+      'Integrated the RevealFooter across all marketing, legal, and documentation pages.',
+      'Optimized mobile navigation and touch targets for better accessibility.',
+    ]
+  },
+  {
     version: 'v1.0.0',
     date: 'December 16, 2025',
     title: 'Initial Release',
