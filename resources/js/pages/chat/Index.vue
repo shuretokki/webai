@@ -17,7 +17,7 @@ import {
 import { ui } from '@/config/ui';
 
 const props = defineProps<{
-    chats: Array<{ id: number, title: string, created_at: string }>,
+    chats: Array<{ id: string, title: string, created_at: string }>,
     messages: Array<{
         role: string, content: string, attachments?: Array<{
             type: string,
@@ -27,7 +27,7 @@ const props = defineProps<{
             path?: string
         }>
     }>,
-    chatId: number | null
+    chatId: string | null
 }>();
 
 const page = usePage<any>();
@@ -44,7 +44,7 @@ onClickOutside(menuRef, () => isMenuOpen.value = false);
 
 const exportChat = (format: 'pdf' | 'md') => {
     if (!props.chatId) return;
-    window.location.href = `/chat/${props.chatId}/export/${format}`;
+    window.location.href = `/c/${props.chatId}/export/${format}`;
     isMenuOpen.value = false;
 };
 
@@ -65,7 +65,7 @@ const openEditModal = () => {
 
 const saveTitle = () => {
     if (!props.chatId) return;
-    editForm.patch(`/chat/${props.chatId}`, {
+    editForm.patch(`/c/${props.chatId}`, {
         onSuccess: () => {
             showEditModal.value = false;
         }
@@ -79,7 +79,7 @@ const confirmDelete = () => {
     if (!props.chatId) return;
 
     isDeleting.value = true;
-    router.delete(`/chat/${props.chatId}`, {
+    router.delete(`/c/${props.chatId}`, {
         preserveState: true,
         onSuccess: () => {
             isMenuOpen.value = false;
@@ -171,7 +171,10 @@ const handleSendMessage = async (text: string, files?: File[]) => {
     try {
         const formData = new FormData();
         formData.append('prompt', text);
-        formData.append('chat_id', props.chatId?.toString() || '');
+        const currentChatId = form.chat_id || props.chatId;
+        if (currentChatId) {
+            formData.append('chat_id', currentChatId.toString());
+        }
         formData.append('model', model.value);
 
         if (files) {
@@ -194,28 +197,42 @@ const handleSendMessage = async (text: string, files?: File[]) => {
             body: formData as any
         });
 
+        if (!response.ok) {
+            if (response.status === 403) {
+                const errorData = await response.json().catch(() => ({ error: 'Access denied' }));
+                throw new Error(errorData.error || 'Access denied. Please verify your email address.');
+            }
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
         if (!response.body)
             throw new Error('No response body');
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
+        let buffer = '';
 
         while (true) {
             const { done, value } = await reader.read();
 
-            if (done)
-                break;
+            if (done) break;
 
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
 
             for (const line of lines) {
                 const trimmed = line.trim()
                 if (!trimmed || !trimmed.startsWith('data: '))
                     continue
 
-                const data = line.slice(6).trim();
+                const data = trimmed.slice(6);
                 if (data === '[Done]' || data === '[DONE]')
+                    continue;
+
+
+                if (!data || data.length < 2)
                     continue;
 
                 try {
@@ -227,15 +244,21 @@ const handleSendMessage = async (text: string, files?: File[]) => {
                         continue;
                     }
 
-                    if (!json.chat_id) {
-                        streaming.value += json.text;
-                    } else {
-                        window.history.replaceState(
-                            {}, '', `/chat/${json.chat_id}`);
+                    if (json.chat_id) {
+                        if (!props.chatId) {
+                            window.history.replaceState(
+                                {}, '', `/c/${json.chat_id}`);
+                        }
                         form.chat_id = json.chat_id;
                     }
+
+                    if (json.text) {
+                        streaming.value += json.text;
+                    }
                 } catch (e) {
-                    console.error('Error parsing JSON', e);
+                    if (data.startsWith('{') && data.endsWith('}')) {
+                        console.error('Error parsing JSON', e, 'Data:', data);
+                    }
                 }
             }
         }
