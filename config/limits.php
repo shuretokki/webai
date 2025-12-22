@@ -83,4 +83,38 @@ return [
         'max_tokens_per_request' => env('MAX_TOKENS_PER_REQUEST', 50000),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Subscription Tiers
+    |--------------------------------------------------------------------------
+    |
+    | Configure limits and features for each subscription tier. This enables
+    | tier-based rate limiting and feature access control.
+    |
+    */
+
+    'subscription_tiers' => [
+        'free' => [
+            'daily_token_limit' => env('FREE_TIER_TOKENS', 100),
+            'max_file_size' => env('FREE_TIER_FILE_SIZE', 2048), // 2MB
+            'chat_rate_limit' => env('FREE_TIER_CHAT_RATE', 2), // per minute
+            'api_rate_limit' => env('FREE_TIER_API_RATE', 10), // per minute
+            'price' => 0,
+        ],
+        'pro' => [
+            'daily_token_limit' => env('PRO_TIER_TOKENS', 10000),
+            'max_file_size' => env('PRO_TIER_FILE_SIZE', 10240), // 10MB
+            'chat_rate_limit' => env('PRO_TIER_CHAT_RATE', 10), // per minute
+            'api_rate_limit' => env('PRO_TIER_API_RATE', 100), // per minute
+            'price' => 2900, // $29.00/month in cents
+        ],
+        'enterprise' => [
+            'daily_token_limit' => env('ENTERPRISE_TIER_TOKENS', 100000),
+            'max_file_size' => env('ENTERPRISE_TIER_FILE_SIZE', 51200), // 50MB
+            'chat_rate_limit' => env('ENTERPRISE_TIER_CHAT_RATE', 50), // per minute
+            'api_rate_limit' => env('ENTERPRISE_TIER_API_RATE', 1000), // per minute
+            'price' => 9900, // $99.00/month in cents
+        ],
+    ],
+
 ];
