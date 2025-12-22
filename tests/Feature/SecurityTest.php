@@ -172,7 +172,7 @@ test('cannot update other user chat via parameter tampering', function () {
     $user2Chat = Chat::factory()->for($user2)->create(['title' => 'Original']);
 
     $response = $this->actingAs($user1)
-        ->patchJson("/c/{$user2Chat->id}", [
+        ->patchJson("/c/{$user2Chat->getRouteKey()}", [
             'title' => 'Hacked Title',
         ]);
 
@@ -190,7 +190,7 @@ test('cannot delete other user chat via parameter tampering', function () {
 
     $user2Chat = Chat::factory()->for($user2)->create();
 
-    $response = $this->actingAs($user1)->deleteJson("/c/{$user2Chat->id}");
+    $response = $this->actingAs($user1)->deleteJson("/c/{$user2Chat->getRouteKey()}");
 
     $response->assertForbidden();
 
