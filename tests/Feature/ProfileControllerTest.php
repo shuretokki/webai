@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Notifications\VerifyCurrentEmailForChange;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -38,21 +40,87 @@ it('updates profile name', function () {
     expect($user->fresh()->name)->toBe('New Name');
 });
 
-it('updates email and clears verification', function () {
+it('initiates email change with two-step verification', function () {
+    Notification::fake();
+
     $user = User::factory()->create([
         'email' => 'old@example.com',
         'email_verified_at' => now(),
+        'password' => bcrypt('password123'),
     ]);
 
-    actingAs($user)
+    $response = actingAs($user)
+        ->from(route('profile.edit'))
         ->patch(route('profile.update'), [
             'name' => $user->name,
             'email' => 'new@example.com',
+            'current_password' => 'password123',
         ]);
 
+    $response->assertRedirect(route('profile.edit'));
+    $response->assertSessionHas('status', 'verification-link-sent');
+
+    // Email should NOT be changed yet
     $user->refresh();
-    expect($user->email)->toBe('new@example.com');
-    expect($user->email_verified_at)->toBeNull();
+    expect($user->email)->toBe('old@example.com');
+
+    // But pending email should be stored
+    expect($user->pending_email)->toBe('new@example.com');
+    expect($user->pending_email_token)->not->toBeNull();
+    expect($user->pending_email_token_expires_at)->not->toBeNull();
+
+    // Notification should be sent to CURRENT email
+    Notification::assertSentTo($user, VerifyCurrentEmailForChange::class);
+});
+
+it('requires current password to change email', function () {
+    $user = User::factory()->create([
+        'email' => 'old@example.com',
+        'password' => bcrypt('password123'),
+    ]);
+
+    $response = actingAs($user)
+        ->patch(route('profile.update'), [
+            'name' => $user->name,
+            'email' => 'new@example.com',
+            // Missing current_password
+        ]);
+
+    $response->assertSessionHasErrors('current_password');
+    expect($user->fresh()->email)->toBe('old@example.com');
+});
+
+it('validates current password is correct when changing email', function () {
+    $user = User::factory()->create([
+        'email' => 'old@example.com',
+        'password' => bcrypt('password123'),
+    ]);
+
+    $response = actingAs($user)
+        ->patch(route('profile.update'), [
+            'name' => $user->name,
+            'email' => 'new@example.com',
+            'current_password' => 'wrongpassword',
+        ]);
+
+    $response->assertSessionHasErrors('current_password');
+    expect($user->fresh()->email)->toBe('old@example.com');
+});
+
+it('does not require password when only changing name', function () {
+    $user = User::factory()->create([
+        'name' => 'Old Name',
+        'email' => 'user@example.com',
+    ]);
+
+    $response = actingAs($user)
+        ->patch(route('profile.update'), [
+            'name' => 'New Name',
+            'email' => $user->email, // Email unchanged
+        ]);
+
+    $response->assertRedirect(route('profile.edit'));
+    expect($user->fresh()->name)->toBe('New Name');
 });
 
 it('keeps verification when email unchanged', function () {
@@ -71,12 +139,13 @@ it('keeps verification when email unchanged', function () {
     expect($user->fresh()->email_verified_at->timestamp)->toBe($verifiedAt->timestamp);
 });
 
-it('validates profile update requires name', function () {
+it('validates profile update requires name when provided', function () {
     $user = User::factory()->create();
 
     $response = actingAs($user)
         ->patch(route('profile.update'), [
-            'email' => 'test@example.com',
+            'name' => '', // Empty name when provided
+            'email' => $user->email,
         ]);
 
     $response->assertSessionHasErrors('name');
