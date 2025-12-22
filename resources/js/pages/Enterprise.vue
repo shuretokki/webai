@@ -92,7 +92,7 @@ const item: any = {
 
     <Head title="Enterprise" />
 
-    <div class="min-h-screen bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden">
+    <div class="min-h-screen bg-black text-white font-space selection:bg-white/20 overflow-x-hidden">
 
       <div class="fixed inset-0 z-0">
         <div class="absolute inset-0 bg-black z-10 w-full h-full"></div>
