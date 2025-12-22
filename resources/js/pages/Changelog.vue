@@ -5,6 +5,26 @@ import RevealFooter from '@/components/RevealFooter.vue';
 
 const changes = [
   {
+    version: 'v1.1.3',
+    date: 'December 23, 2025',
+    title: 'Security & URL Refinement',
+    categories: [
+      {
+        name: 'Interface',
+        items: [
+          'Standardized chat URLs with a consistent 8-character unique identifier.',
+          'Improved URL aesthetics for a more professional production feel.',
+        ]
+      },
+      {
+        name: 'Stability',
+        items: [
+          'Enhanced route obfuscation to prevent ID enumeration and improve privacy.',
+        ]
+      }
+    ]
+  },
+  {
     version: 'v1.1.2',
     date: 'December 23, 2025',
     title: 'New Free Tier Models',
