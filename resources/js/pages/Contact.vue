@@ -82,7 +82,7 @@ const content = {
               Let's <br />
               <span class="text-white/30 italic">connect.</span>
             </h1>
-            
+
             <div class="space-y-12 mt-auto pb-12">
               <div class="group">
                 <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-white/20 block mb-4">Email</span>
@@ -94,7 +94,7 @@ const content = {
               <div class="group">
                 <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-white/20 block mb-4">Location</span>
                 <p class="text-2xl font-light text-white/60">
-                  Seoul, South Korea
+                  Surabaya, Indonesia
                 </p>
               </div>
             </div>
@@ -102,7 +102,7 @@ const content = {
 
           <Motion :variants="item">
             <div class="relative">
-              <div v-if="success" 
+              <div v-if="success"
                 class="mb-12 p-6 border border-white/10 bg-white/5 text-white font-light tracking-tight">
                 {{ success }}
               </div>
@@ -158,7 +158,7 @@ const content = {
         </Motion>
       </div>
       <div class="h-[10dvh] bg-black relative z-20"></div>
-      <RevealFooter :content="content" />
     </div>
+    <RevealFooter :content="content" />
   </AppLayout>
 </template>
