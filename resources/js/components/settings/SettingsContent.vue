@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { usePage, Link } from '@inertiajs/vue3';
+import { usePage, Link, router } from '@inertiajs/vue3';
 import { useStorage } from '@vueuse/core';
-import { User, Palette, BarChart2, Trash2 } from 'lucide-vue-next';
+import { User, Palette, BarChart2, Trash2, AlertCircle } from 'lucide-vue-next';
 
 const props = defineProps<{
   activeTab: string;
@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const mustVerifyEmail = computed(() => page.props.mustVerifyEmail || false);
 
 const autoScroll = useStorage('settings_auto_scroll', true);
 
@@ -18,15 +19,40 @@ const handleUpgrade = () => {
 
 const handleDeleteAllChats = () => {
   if (confirm('Are you sure you want to delete all chats? This action cannot be undone.')) {
-    console.log('Delete all chats requested');
+    router.delete('/c', {
+      preserveState: false,
+      onSuccess: () => {
+        router.visit('/c');
+      },
+    });
   }
 };
 </script>
 
 <template>
   <div class="h-full">
+    <!-- Unverified Email Banner (shown globally in settings) -->
+    <div v-if="mustVerifyEmail && user && !user.email_verified_at"
+      class="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-none flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+      <AlertCircle class="size-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
+      <div class="flex-1">
+        <p class="text-sm text-yellow-600 dark:text-yellow-500">
+          <span class="font-medium">Email verification required.</span>
+          Your email <span class="font-medium">{{ user.email }}</span> is not verified.
+          <Link href="/settings/profile" class="underline hover:no-underline ml-1">
+            Update email settings
+          </Link>
+          or
+          <Link href="/email/verification-notification" method="post" as="button"
+            class="underline hover:no-underline ml-1">
+            resend verification email
+          </Link>.
+        </p>
+      </div>
+    </div>
+
     <div v-if="activeTab === 'account'" class="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-      <div class="flex items-center p-4 border border-border bg-card/20 rounded-none gap-4">
+      <div class="flex items-center p-4 border border-border bg-muted/20 rounded-none gap-4">
         <div
           class="size-12 rounded-full bg-muted flex items-center justify-center text-xl font-bold text-muted-foreground overflow-hidden border border-border">
           <User class="size-6 object-cover" />
@@ -37,12 +63,12 @@ const handleDeleteAllChats = () => {
         </div>
         <Link href="/settings/profile"
           class="px-3 py-1.5 text-base md:text-xs border border-border rounded-full hover:bg-white/5 hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground">
-        Manage
+          Manage
         </Link>
       </div>
 
       <div
-        class="bg-card/10 border border-border p-6 flex flex-col items-center justify-center gap-3 text-center rounded-none">
+        class="bg-muted/10 border border-border p-6 flex flex-col items-center justify-center gap-3 text-center rounded-none">
         <div class="size-12 rounded-full border border-primary/30 flex items-center justify-center bg-primary/10 mb-2">
           <div class="size-8 rounded-full border border-primary bg-primary/20"></div>
         </div>
@@ -86,7 +112,7 @@ const handleDeleteAllChats = () => {
           </div>
           <Link href="/settings/usage"
             class="px-4 py-1.5 rounded-full border border-border text-base md:text-xs hover:bg-white/5 transition-colors font-medium">
-          View
+            View
           </Link>
         </div>
 
