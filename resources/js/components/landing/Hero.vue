@@ -4,7 +4,6 @@ import { ui } from '@/config/ui';
 
 interface Props {
   content: any;
-  heroImageY: any;
   heroImageScale: any;
   headerY: any;
   headerScale: any;
@@ -17,8 +16,7 @@ defineProps<Props>();
 </script>
 
 <template>
-  <section class="relative min-h-dvh group">
-    <!-- Fixed Background Layer -->
+  <section class="relative h-dvh flex items-center justify-center group overflow-hidden">
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <Motion class="absolute inset-0 will-change-transform"
         :style="{ scale: heroImageScale, filter: headerBlur, opacity: headerOpacity }">
@@ -30,8 +28,7 @@ defineProps<Props>();
       </Motion>
     </div>
 
-    <!-- Content Layer -->
-    <div :class="ui.layout.hero" class="relative z-10 flex flex-col items-center justify-center min-h-dvh pt-32 pb-48">
+    <div :class="ui.layout.hero" class="relative z-10 flex flex-col items-center justify-center pt-0 pb-0">
       <Motion initial="initial" animate="enter" :variants="{ enter: { transition: { staggerChildren: 0.1 } } }">
         <Motion class="mb-8 md:mb-12" :initial="ui.animations.pageTransition.initial"
           :animate="ui.animations.pageTransition.enter">
