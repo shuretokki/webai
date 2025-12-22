@@ -37,7 +37,15 @@ const groupedModels = computed(() => {
 });
 
 const selectModel = (model: any) => {
-    if (!['gemini-2.5-flash', 'gemini-2.5-flash-lite'].includes(model.id)) {
+    const allowedModels = [
+        'gemini-2.5-flash',
+        'gemini-2.5-flash-lite',
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+        'mixtral-8x7b-32768'
+    ];
+
+    if (!allowedModels.includes(model.id)) {
         showUnderProgressModal.value = true;
         isModelMenuOpen.value = false;
         return;
@@ -154,8 +162,7 @@ defineExpose({ setText });
                 </div>
 
                 <textarea ref="textarea" v-model="input" rows="1" placeholder="Type a message..."
-                    @keydown="handleKeydown"
-                    class="w-full bg-transparent border-none outline-none font-space font-normal text-[16px] text-foreground placeholder-muted-foreground focus:ring-0 p-0 resize-none max-h-[200px] overflow-y-auto custom-scrollbar"></textarea>
+                    @keydown="handleKeydown" :class="ui.chat.input.classes.textarea"></textarea>
             </div>
 
             <div class="relative shrink-0 mb-2.5" ref="modelMenuRef" v-if="models && models.length > 0">
