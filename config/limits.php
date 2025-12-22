@@ -96,24 +96,21 @@ return [
     'subscription_tiers' => [
         'free' => [
             'daily_token_limit' => env('FREE_TIER_TOKENS', 100),
-            'max_file_size' => env('FREE_TIER_FILE_SIZE', 2048), // 2MB
-            'chat_rate_limit' => env('FREE_TIER_CHAT_RATE', 2), // per minute
-            'api_rate_limit' => env('FREE_TIER_API_RATE', 10), // per minute
-            'price' => 0,
+            'max_file_size' => env('FREE_TIER_FILE_SIZE', 2048),
+            'chat_rate_limit' => env('FREE_TIER_CHAT_RATE', 2), // /minute
+            'api_rate_limit' => env('FREE_TIER_API_RATE', 10), // /minute
         ],
         'pro' => [
             'daily_token_limit' => env('PRO_TIER_TOKENS', 10000),
-            'max_file_size' => env('PRO_TIER_FILE_SIZE', 10240), // 10MB
-            'chat_rate_limit' => env('PRO_TIER_CHAT_RATE', 10), // per minute
-            'api_rate_limit' => env('PRO_TIER_API_RATE', 100), // per minute
-            'price' => 2900, // $29.00/month in cents
+            'max_file_size' => env('PRO_TIER_FILE_SIZE', 10240),
+            'chat_rate_limit' => env('PRO_TIER_CHAT_RATE', 10), // /minute
+            'api_rate_limit' => env('PRO_TIER_API_RATE', 100), // /minute
         ],
         'enterprise' => [
             'daily_token_limit' => env('ENTERPRISE_TIER_TOKENS', 100000),
-            'max_file_size' => env('ENTERPRISE_TIER_FILE_SIZE', 51200), // 50MB
-            'chat_rate_limit' => env('ENTERPRISE_TIER_CHAT_RATE', 50), // per minute
-            'api_rate_limit' => env('ENTERPRISE_TIER_API_RATE', 1000), // per minute
-            'price' => 9900, // $99.00/month in cents
+            'max_file_size' => env('ENTERPRISE_TIER_FILE_SIZE', 51200),
+            'chat_rate_limit' => env('ENTERPRISE_TIER_CHAT_RATE', 50), // /minute
+            'api_rate_limit' => env('ENTERPRISE_TIER_API_RATE', 1000), // /minute
         ],
     ],
 
