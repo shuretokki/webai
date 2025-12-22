@@ -102,9 +102,13 @@ Route::middleware(['auth', 'verified'])
 
         Route::get('/c/{chat?}', [ChatController::class, 'index'])
             ->name('chat');
-        Route::redirect('/chat/{chat?}', '/c/{chat?}')->where('chat', '[0-9]+');
-        Route::redirect('/chat/search', '/s');
     });
+
+
+Route::redirect('/chat/search', '/s');
+Route::get('/chat/{path?}', function ($path = null) {
+    return redirect($path ? "/c/{$path}" : '/c');
+})->where('path', '.*');
 
 require __DIR__.'/settings.php';
 
