@@ -485,10 +485,10 @@ export const ui = {
     settings: {
       maxWidth: '5xl',
       height: 'h-[600px]',
-      bg: 'bg-black',
+      bg: 'bg-[#111]',
       rounded: 'rounded-none shadow-none',
-      sidebarBg: 'bg-black border-r border-white/5',
-      contentBg: 'bg-black',
+      sidebarBg: 'bg-[#111] border-r border-white/5',
+      contentBg: 'bg-[#111]',
       tabActive: 'bg-white/5 text-foreground font-medium',
       tabInactive: 'text-muted-foreground hover:text-foreground hover:bg-white/5',
     }
