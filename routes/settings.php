@@ -12,6 +12,11 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('settings/profile/verify-current-email', [ProfileController::class, 'verifyCurrentEmail'])
+        ->middleware('signed')
+        ->name('profile.email.verify-current');
+    Route::post('settings/profile/cancel-email-change', [ProfileController::class, 'cancelEmailChange'])
+        ->name('profile.email.cancel');
     Route::post('api/user/avatar', [ProfileController::class, 'uploadAvatar'])->name('avatar.upload');
     Route::put('settings/password', [PasswordController::class, 'update'])
         ->middleware('throttle:6,1')
