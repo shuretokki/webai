@@ -13,12 +13,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('api/user/avatar', [ProfileController::class, 'uploadAvatar'])->name('avatar.upload');
-
-    Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
-
     Route::put('settings/password', [PasswordController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');
+    Route::post('settings/profile/export', [ProfileController::class, 'exportData'])->name('profile.export');
+
+    Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
 
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');
