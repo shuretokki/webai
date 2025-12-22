@@ -27,14 +27,7 @@ class ThrottleBySubscriptionTier
             ) ?: abort(429, 'Too many requests. Please try again later.');
         }
 
-        /**
-         * Get user's subscription tier
-         */
         $tier = $user->subscription_tier ?? 'free';
-
-        /**
-         * Get rate limit for tier and limiter type
-         */
         $limits = match ($limiter) {
             'chat-messages' => [
                 'free' => config('limits.subscription_tiers.free.chat_rate_limit', 2),
@@ -55,9 +48,6 @@ class ThrottleBySubscriptionTier
 
         $maxAttempts = $limits[$tier] ?? $limits['free'];
 
-        /**
-         * Apply rate limit
-         */
         return RateLimiter::attempt(
             "{$tier}:{$limiter}:{$user->id}",
             perMinute: $maxAttempts,
@@ -65,4 +55,3 @@ class ThrottleBySubscriptionTier
         ) ?: abort(429, "Rate limit exceeded for {$tier} tier. Upgrade your plan for higher limits.");
     }
 }
-
