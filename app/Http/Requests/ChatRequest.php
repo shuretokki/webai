@@ -16,7 +16,14 @@ class ChatRequest extends FormRequest
         }
 
         if ($this->has('chat_id') && $this->input('chat_id')) {
-            $chat = \App\Models\Chat::find($this->input('chat_id'));
+            $chatId = $this->input('chat_id');
+
+            if (! is_numeric($chatId)) {
+                $decodedId = \Vinkla\Hashids\Facades\Hashids::decode($chatId);
+                $chatId = ! empty($decodedId) ? $decodedId[0] : $chatId;
+            }
+
+            $chat = \App\Models\Chat::find($chatId);
 
             return $chat && $chat->user_id === auth()->id();
         }
@@ -36,7 +43,7 @@ class ChatRequest extends FormRequest
     {
         return [
             'prompt' => 'required|string|max:' . config('limits.validation.prompt_max_length'),
-            'chat_id' => 'nullable|exists:chats,id',
+            'chat_id' => 'nullable|string',
             'model' => 'nullable|string|max:' . config('limits.validation.model_max_length'),
             'files.*' => 'nullable|file|max:' . config('limits.file_uploads.max_size') . '|mimes:' . implode(',', config('limits.file_uploads.allowed_mimes.all')),
         ];
