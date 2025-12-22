@@ -357,8 +357,8 @@ test('concurrent searches by different users are isolated', function () {
     /**
      * Both users search concurrently
      */
-    $response1 = $this->actingAs($user1)->get('/chat/search?q=Laravel');
-    $response2 = $this->actingAs($user2)->get('/chat/search?q=Laravel');
+    $response1 = $this->actingAs($user1)->get('/s?q=Laravel');
+    $response2 = $this->actingAs($user2)->get('/s?q=Laravel');
 
     $response1->assertOk();
     $response2->assertOk();

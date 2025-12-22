@@ -54,7 +54,7 @@ test('search response time is under 2 seconds', function () {
 
     $startTime = microtime(true);
 
-    $response = $this->actingAs($user)->get('/chat/search?q=test');
+    $response = $this->actingAs($user)->get('/s?q=test');
 
     $duration = microtime(true) - $startTime;
 
@@ -113,7 +113,7 @@ test('search results avoid n plus 1 queries', function () {
 
     DB::enableQueryLog();
 
-    $this->actingAs($user)->get('/chat/search?q=test');
+    $this->actingAs($user)->get('/s?q=test');
 
     $queries = DB::getQueryLog();
     $queryCount = count($queries);

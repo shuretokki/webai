@@ -72,7 +72,7 @@ test('complete user journey: register to chat deletion', function () {
      * Step 4: Search for Chats
      */
     $searchResponse = $this->actingAs($user)
-        ->get('/chat/search?q=Laravel');
+        ->get('/s?q=Laravel');
 
     $searchResponse->assertOk();
     $searchResults = $searchResponse->json();
@@ -152,7 +152,7 @@ test('multi-chat workflow with search and pagination', function () {
      * Step 2: Search for Specific Topic
      */
     $searchResponse = $this->actingAs($user)
-        ->get('/chat/search?q=Laravel');
+        ->get('/s?q=Laravel');
 
     $searchResponse->assertOk();
     $results = $searchResponse->json();

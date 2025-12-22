@@ -63,7 +63,7 @@ test('search query sanitizes sql wildcard characters', function () {
     /**
      * Test that % doesn't act as SQL LIKE wildcard
      */
-    $response = $this->actingAs($user)->get('/chat/search?q=%');
+    $response = $this->actingAs($user)->get('/s?q=%');
 
     $response->assertOk();
     $results = $response->json();
@@ -81,7 +81,7 @@ test('search query sanitizes underscore wildcard', function () {
     /**
      * Test that _ doesn't act as single character wildcard
      */
-    $response = $this->actingAs($user)->get('/chat/search?q=P_P');
+    $response = $this->actingAs($user)->get('/s?q=P_P');
 
     $response->assertOk();
     $results = $response->json();
@@ -107,7 +107,7 @@ test('search prevents sql injection in query parameter', function () {
 
     $maliciousSql = "'; DROP TABLE chats; --";
 
-    $response = $this->actingAs($user)->get('/chat/search?q=' . urlencode($maliciousSql));
+    $response = $this->actingAs($user)->get('/s?q=' . urlencode($maliciousSql));
 
     $response->assertOk();
 

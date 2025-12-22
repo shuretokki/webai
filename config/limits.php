@@ -30,8 +30,8 @@ return [
     */
 
     'file_uploads' => [
-        'max_size' => env('MAX_FILE_UPLOAD_SIZE', 10240), // 10MB in KB
-        'avatar_max_size' => env('MAX_AVATAR_SIZE', 800), // 800KB
+        'max_size' => env('MAX_FILE_UPLOAD_SIZE', 10240),
+        'max_avatar_size' => env('MAX_AVATAR_SIZE', 800),
         'allowed_mimes' => [
             'images' => ['jpeg', 'jpg', 'png', 'gif'],
             'documents' => ['pdf', 'txt', 'doc', 'docx'],

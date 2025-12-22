@@ -18,7 +18,7 @@ test('returns empty results for non-matching query', function () {
         ->create(['title' => 'Laravel Development']);
 
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=nonexistent');
+        ->getJson('/s?q=nonexistent');
 
     $response->assertOk()
         ->assertJson([
@@ -40,7 +40,7 @@ test('finds chats by title', function () {
         ->create(['title' => 'Laravel Policies']);
 
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=Laravel');
+        ->getJson('/s?q=Laravel');
 
     $response->assertOk();
 
@@ -81,7 +81,7 @@ test('finds messages by content', function () {
         ]);
 
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=policies');
+        ->getJson('/s?q=policies');
 
     $response->assertOk();
 
@@ -118,7 +118,7 @@ test('limits results correctly', function () {
     }
 
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=Laravel');
+        ->getJson('/s?q=Laravel');
 
     $response->assertOk();
 
@@ -161,7 +161,7 @@ test('prevents SQL injection via special character escaping', function () {
     // Test that % doesn't act as a wildcard (which would match everything)
     // If escaping is broken, "%" would match all 2 chats
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=%');
+        ->getJson('/s?q=%');
 
     $response->assertOk();
     $results = collect($response->json('results'));
@@ -173,7 +173,7 @@ test('prevents SQL injection via special character escaping', function () {
     // Test that _ doesn't act as a single-character wildcard
     // If escaping is broken, "P_P" would match "PHP"
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=P_P');
+        ->getJson('/s?q=P_P');
 
     $response->assertOk();
     $results = collect($response->json('results'));
@@ -209,7 +209,7 @@ test('only returns current users data', function () {
         ]);
 
     $response = $this->actingAs($this->user)
-        ->getJson('/chat/search?q=Laravel');
+        ->getJson('/s?q=Laravel');
 
     $response->assertOk();
 
@@ -225,7 +225,7 @@ test('only returns current users data', function () {
 });
 
 test('requires authentication', function () {
-    $response = $this->getJson('/chat/search?q=test');
+    $response = $this->getJson('/s?q=test');
 
     $response->assertUnauthorized();
 });

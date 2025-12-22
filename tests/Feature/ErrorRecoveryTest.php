@@ -456,7 +456,7 @@ test('handles orphaned messages gracefully', function () {
     /**
      * Search should not crash on orphaned messages
      */
-    $response = $this->actingAs($user)->get('/chat/search?q=test');
+    $response = $this->actingAs($user)->get('/s?q=test');
 
     $response->assertOk();
 })->group('error-recovery');
