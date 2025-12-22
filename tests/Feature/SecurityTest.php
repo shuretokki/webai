@@ -21,7 +21,7 @@ test('chat prompt sanitizes script tags', function () {
     $xssPayload = '<script>alert("XSS")</script>Hello';
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => $xssPayload,
             'model' => 'gemini-2.5-flash-lite',
         ]);
@@ -45,7 +45,7 @@ test('chat title sanitizes html tags', function () {
     $xssPayload = '<img src=x onerror=alert(1)>Malicious Title';
 
     $response = $this->actingAs($user)
-        ->patchJson("/chat/{$chat->id}", [
+        ->patchJson("/c/{$chat->id}", [
             'title' => $xssPayload,
         ]);
 
@@ -71,7 +71,7 @@ test('search query sanitizes sql wildcard characters', function () {
     /**
      * Should return 0 results because no titles contain literal "%"
      */
-    expect($results['chats'])->toHaveCount(0);
+    expect($results['results'])->toHaveCount(0);
 });
 
 test('search query sanitizes underscore wildcard', function () {
@@ -89,7 +89,7 @@ test('search query sanitizes underscore wildcard', function () {
     /**
      * Should return 0 because no content has literal "P_P"
      */
-    expect($results['chats'])->toHaveCount(0);
+    expect($results['results'])->toHaveCount(0);
 });
 
 /*
@@ -125,7 +125,7 @@ test('chat id parameter prevents sql injection', function () {
     $maliciousSql = "{$chat->id} OR 1=1";
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'chat_id' => $maliciousSql,
             'prompt' => 'Test',
             'model' => 'gemini-2.5-flash-lite',
@@ -156,7 +156,7 @@ test('cannot access other user chat via id manipulation', function () {
      * User 1 attempts to send message to User 2's chat
      */
     $response = $this->actingAs($user1)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'chat_id' => $user2Chat->id,
             'prompt' => 'Trying to access',
             'model' => 'gemini-2.5-flash-lite',
@@ -172,7 +172,7 @@ test('cannot update other user chat via parameter tampering', function () {
     $user2Chat = Chat::factory()->for($user2)->create(['title' => 'Original']);
 
     $response = $this->actingAs($user1)
-        ->patchJson("/chat/{$user2Chat->id}", [
+        ->patchJson("/c/{$user2Chat->id}", [
             'title' => 'Hacked Title',
         ]);
 
@@ -190,7 +190,7 @@ test('cannot delete other user chat via parameter tampering', function () {
 
     $user2Chat = Chat::factory()->for($user2)->create();
 
-    $response = $this->actingAs($user1)->deleteJson("/chat/{$user2Chat->id}");
+    $response = $this->actingAs($user1)->deleteJson("/c/{$user2Chat->id}");
 
     $response->assertForbidden();
 
@@ -215,7 +215,7 @@ test('rejects executable files in chat upload', function () {
     $maliciousFile = \Illuminate\Http\UploadedFile::fake()->create('malware.exe', 100, 'application/x-msdownload');
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'Test with file',
             'model' => 'gemini-2.5-flash-lite',
             'files' => [$maliciousFile],
@@ -231,7 +231,7 @@ test('rejects php files in chat upload', function () {
     $phpFile = \Illuminate\Http\UploadedFile::fake()->create('backdoor.php', 100, 'application/x-php');
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'Test with file',
             'model' => 'gemini-2.5-flash-lite',
             'files' => [$phpFile],
@@ -251,7 +251,7 @@ test('rejects oversized files to prevent dos', function () {
     $oversizedFile = \Illuminate\Http\UploadedFile::fake()->create('huge.pdf', $maxSize + 1);
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'Test with file',
             'model' => 'gemini-2.5-flash-lite',
             'files' => [$oversizedFile],
@@ -279,7 +279,7 @@ test('rate limiting blocks rapid fire requests', function () {
      */
     for ($i = 0; $i < $limit; $i++) {
         $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "Request {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ])
@@ -290,7 +290,7 @@ test('rate limiting blocks rapid fire requests', function () {
      * Next request should be blocked
      */
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'DOS attempt',
             'model' => 'gemini-2.5-flash-lite',
         ]);
@@ -315,7 +315,7 @@ test('rejects extremely long prompts', function () {
     $tooLongPrompt = str_repeat('A', $maxLength + 1);
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => $tooLongPrompt,
             'model' => 'gemini-2.5-flash-lite',
         ]);
@@ -330,7 +330,7 @@ test('application stores null byte in prompt without sanitization', function () 
     $nullBytePayload = "Hello\x00World";
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => $nullBytePayload,
             'model' => 'gemini-2.5-flash-lite',
         ]);

@@ -25,9 +25,16 @@ it('can upload avatar successfully', function () {
 
     $response->assertSuccessful();
     $response->assertJsonStructure(['url']);
+    $response->assertJson(fn ($json) =>
+        $json->has('url')
+             ->etc()
+    );
 
-    expect($user->fresh()->avatar)->not->toBeNull();
-    Storage::disk('public')->assertExists($user->fresh()->avatar);
+    $freshUser = $user->fresh();
+    expect($freshUser->avatar)->not->toBeNull();
+    expect($freshUser->avatar)->toBeString();
+    expect($freshUser->avatar)->toContain('avatars/');
+    Storage::disk('public')->assertExists($freshUser->avatar);
 });
 
 it('validates avatar is required', function () {
@@ -37,6 +44,10 @@ it('validates avatar is required', function () {
         ->post(route('avatar.upload'), []);
 
     $response->assertSessionHasErrors('avatar');
+    $response->assertStatus(302); // Redirect with validation errors
+
+    // Verify avatar unchanged
+    expect($user->fresh()->avatar)->toBeNull();
 });
 
 it('validates avatar must be an image', function () {
@@ -49,11 +60,15 @@ it('validates avatar must be an image', function () {
         ]);
 
     $response->assertSessionHasErrors('avatar');
+    $response->assertStatus(302);
+
+    // Verify no avatar was set
+    expect($user->fresh()->avatar)->toBeNull();
 });
 
 it('validates avatar must not exceed 800kb', function () {
     $user = User::factory()->create();
-    $file = UploadedFile::fake()->image('avatar.jpg')->size(900);
+    $file = UploadedFile::fake()->image('avatar.jpg')->size(900); // 900 KB
 
     $response = actingAs($user)
         ->post(route('avatar.upload'), [
@@ -61,6 +76,21 @@ it('validates avatar must not exceed 800kb', function () {
         ]);
 
     $response->assertSessionHasErrors('avatar');
+    $response->assertStatus(302);
+    expect($user->fresh()->avatar)->toBeNull();
+});
+
+it('accepts avatar at exactly 800kb', function () {
+    $user = User::factory()->create();
+    $file = UploadedFile::fake()->image('avatar.jpg')->size(800); // Exactly 800 KB
+
+    $response = actingAs($user)
+        ->post(route('avatar.upload'), [
+            'avatar' => $file,
+        ]);
+
+    $response->assertSuccessful();
+    expect($user->fresh()->avatar)->not->toBeNull();
 });
 
 it('validates avatar must be jpg, png, or gif', function () {
@@ -73,21 +103,38 @@ it('validates avatar must be jpg, png, or gif', function () {
         ]);
 
     $response->assertSessionHasErrors('avatar');
+    $response->assertStatus(302);
+
+    // Verify in database
+    $user->refresh();
+    expect($user->avatar)->toBeNull();
+
+    // Verify no file was stored
+    Storage::disk('public')->assertDirectoryEmpty('avatars');
 });
 
 it('deletes old avatar when uploading new one', function () {
     $user = User::factory()->create(['avatar' => 'avatars/old-avatar.jpg']);
-    Storage::disk('public')->put('avatars/old-avatar.jpg', 'old content');
+    $oldPath = 'avatars/old-avatar.jpg';
+    Storage::disk('public')->put($oldPath, 'old content');
 
     $file = UploadedFile::fake()->image('avatar.jpg');
 
-    actingAs($user)
+    $response = actingAs($user)
         ->post(route('avatar.upload'), [
             'avatar' => $file,
         ]);
 
-    Storage::disk('public')->assertMissing('avatars/old-avatar.jpg');
-    Storage::disk('public')->assertExists($user->fresh()->avatar);
+    $response->assertSuccessful();
+
+    // Verify old file deleted
+    Storage::disk('public')->assertMissing($oldPath);
+
+    // Verify new file exists
+    $freshUser = $user->fresh();
+    expect($freshUser->avatar)->not->toBe($oldPath);
+    expect($freshUser->avatar)->not->toBeNull();
+    Storage::disk('public')->assertExists($freshUser->avatar);
 });
 
 it('can disconnect social account', function () {
@@ -97,11 +144,20 @@ it('can disconnect social account', function () {
     assertDatabaseHas('social_identities', [
         'id' => $socialIdentity->id,
         'user_id' => $user->id,
+        'provider' => 'github',
     ]);
 
-    actingAs($user)
-        ->delete(route('social.disconnect', ['provider' => 'github']))
-        ->assertRedirect();
+    $response = actingAs($user)
+        ->delete(route('social.disconnect', ['provider' => 'github']));
+
+    $response->assertRedirect();
+    $response->assertSessionHas('status');
+
+    // Verify deleted from database
+    assertDatabaseMissing('social_identities', [
+        'id' => $socialIdentity->id,
+    ]);
 
     expect(SocialIdentity::find($socialIdentity->id))->toBeNull();
+    expect($user->socialIdentities()->count())->toBe(0);
 });

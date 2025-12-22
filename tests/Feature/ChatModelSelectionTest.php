@@ -8,7 +8,7 @@ test('free user can use free models', function () {
     $chat = Chat::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
             'model' => 'gemini-2.5-flash',
@@ -22,7 +22,7 @@ test('free user cannot use paid models', function () {
     $chat = Chat::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
             'model' => 'gpt-5.2',
@@ -36,7 +36,7 @@ test('plus user can use paid models (demo mode)', function () {
     $chat = Chat::factory()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'chat_id' => $chat->id,
             'prompt' => 'Hello',
             'model' => 'gpt-5.2',

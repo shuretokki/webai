@@ -327,7 +327,7 @@ class ChatController extends Controller
                 'type' => 'chat',
                 'id' => $chat->id,
                 'title' => $chat->title,
-                'url' => "/chat/{$chat->id}",
+                'url' => "/c/{$chat->id}",
                 'subtitle' => $chat->updated_at->diffForHumans(),
             ]);
 
@@ -356,7 +356,7 @@ class ChatController extends Controller
                 'id' => $msg->id,
                 'title' => Str::limit(
                     $msg->content, 60),
-                'url' => "/chat/{$msg->chat_id}",
+                'url' => "/c/{$msg->chat_id}",
                 'subtitle' => "in {$msg->chat_title}",
             ]);
 

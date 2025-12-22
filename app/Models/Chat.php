@@ -20,6 +20,18 @@ class Chat extends Model
      */
     protected static function booted(): void
     {
+        /**
+         * Soft delete messages when chat is soft deleted
+         */
+        static::deleting(function (Chat $chat) {
+            if (! $chat->isForceDeleting()) {
+                $chat->messages()->delete();
+            }
+        });
+
+        /**
+         * Force delete attachments and files when chat is force deleted
+         */
         static::forceDeleting(function (Chat $chat) {
             $filePaths = $chat->messages()
                 ->withTrashed()

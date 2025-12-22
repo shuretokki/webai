@@ -28,7 +28,7 @@ test('concurrent chat creation does not create duplicate chats', function () {
     $promises = [];
     for ($i = 0; $i < 10; $i++) {
         $promises[] = fn () => $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "Concurrent message {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ]);
@@ -42,8 +42,8 @@ test('concurrent chat creation does not create duplicate chats', function () {
     /**
      * Count successful responses
      */
-    $successCount = collect($responses)->filter(fn ($r) => $r->status() === 200)->count();
-    $rateLimitedCount = collect($responses)->filter(fn ($r) => $r->status() === 429)->count();
+    $successCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 200)->count();
+    $rateLimitedCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 429)->count();
 
     /**
      * Some should succeed within rate limit
@@ -75,7 +75,7 @@ test('concurrent message creation in same chat maintains order', function () {
     $responses = [];
     for ($i = 0; $i < 5; $i++) {
         $responses[] = $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'chat_id' => $chat->id,
                 'prompt' => "Message {$i}",
                 'model' => 'gemini-2.5-flash-lite',
@@ -119,7 +119,7 @@ test('concurrent requests correctly track usage count', function () {
     $responses = [];
     for ($i = 0; $i < $limit; $i++) {
         $responses[] = $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "Concurrent test {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ]);
@@ -128,7 +128,7 @@ test('concurrent requests correctly track usage count', function () {
     /**
      * Count successful responses
      */
-    $successCount = collect($responses)->filter(fn ($r) => $r->status() === 200)->count();
+    $successCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 200)->count();
 
     /**
      * Verify usage records match successful requests
@@ -161,7 +161,7 @@ test('concurrent quota checks prevent over-limit execution', function () {
     $responses = [];
     for ($i = 0; $i < 10; $i++) {
         $responses[] = $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "Test {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ]);
@@ -170,8 +170,8 @@ test('concurrent quota checks prevent over-limit execution', function () {
     /**
      * Count successful and blocked responses
      */
-    $successCount = collect($responses)->filter(fn ($r) => $r->status() === 200)->count();
-    $blockedCount = collect($responses)->filter(fn ($r) => $r->status() === 403)->count();
+    $successCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 200)->count();
+    $blockedCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 403)->count();
 
     /**
      * Should not exceed daily limit
@@ -206,14 +206,14 @@ test('concurrent chat deletions are idempotent', function () {
      */
     $responses = [];
     for ($i = 0; $i < 5; $i++) {
-        $responses[] = $this->actingAs($user)->deleteJson("/chat/{$chatId}");
+        $responses[] = $this->actingAs($user)->deleteJson("/c/{$chatId}");
     }
 
     /**
      * First should succeed, rest should fail gracefully
      */
-    $successCount = collect($responses)->filter(fn ($r) => in_array($r->status(), [200, 302]))->count();
-    $notFoundCount = collect($responses)->filter(fn ($r) => $r->status() === 404)->count();
+    $successCount = collect($responses)->filter(fn ($r) => in_array($r->getStatusCode(), [200, 302]))->count();
+    $notFoundCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 404)->count();
 
     /**
      * At least one should succeed
@@ -248,13 +248,13 @@ test('concurrent chat updates maintain consistency', function () {
 
     foreach ($titles as $title) {
         $responses[] = $this->actingAs($user)
-            ->patchJson("/chat/{$chat->id}", ['title' => $title]);
+            ->patchJson("/c/{$chat->id}", ['title' => $title]);
     }
 
     /**
      * All should succeed
      */
-    $successCount = collect($responses)->filter(fn ($r) => in_array($r->status(), [200, 302]))->count();
+    $successCount = collect($responses)->filter(fn ($r) => in_array($r->getStatusCode(), [200, 302]))->count();
     expect($successCount)->toBe(count($titles));
 
     /**
@@ -287,7 +287,7 @@ test('multiple users can create chats simultaneously', function () {
     $responses = [];
     foreach ($users as $user) {
         $responses[] = $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "User {$user->id} chat",
                 'model' => 'gemini-2.5-flash-lite',
             ]);
@@ -296,7 +296,7 @@ test('multiple users can create chats simultaneously', function () {
     /**
      * All should succeed (no interference between users)
      */
-    $successCount = collect($responses)->filter(fn ($r) => $r->status() === 200)->count();
+    $successCount = collect($responses)->filter(fn ($r) => $r->getStatusCode() === 200)->count();
     expect($successCount)->toBe(count($users));
 
     /**
@@ -318,7 +318,7 @@ test('multiple users rate limits are independent', function () {
      */
     for ($i = 0; $i < $limit; $i++) {
         $this->actingAs($user1)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "User1 message {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ])
@@ -329,7 +329,7 @@ test('multiple users rate limits are independent', function () {
      * User 1 should be rate limited
      */
     $this->actingAs($user1)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'Should fail',
             'model' => 'gemini-2.5-flash-lite',
         ])
@@ -339,7 +339,7 @@ test('multiple users rate limits are independent', function () {
      * User 2 should still be able to make requests
      */
     $response = $this->actingAs($user2)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'User2 message',
             'model' => 'gemini-2.5-flash-lite',
         ]);
@@ -369,11 +369,11 @@ test('concurrent searches by different users are isolated', function () {
     $results1 = $response1->json();
     $results2 = $response2->json();
 
-    expect($results1['chats'])->toHaveCount(1);
-    expect($results2['chats'])->toHaveCount(1);
+    expect($results1['results'])->toHaveCount(1);
+    expect($results2['results'])->toHaveCount(1);
 
-    expect($results1['chats'][0]['title'])->toBe('User1 Laravel');
-    expect($results2['chats'][0]['title'])->toBe('User2 Laravel');
+    expect($results1['results'][0]['title'])->toBe('User1 Laravel');
+    expect($results2['results'][0]['title'])->toBe('User2 Laravel');
 });
 
 /*

@@ -17,7 +17,7 @@ test('chat stream enforces configured rate limit dynamically', function () {
      */
     for ($i = 1; $i <= $limit; $i++) {
         $response = $this->actingAs($user)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "Test request {$i} of {$limit}",
                 'model' => 'gemini-2.5-flash-lite',
             ]);
@@ -42,7 +42,7 @@ test('chat stream enforces configured rate limit dynamically', function () {
      * The next request (limit + 1) should be rate limited
      */
     $blockedResponse = $this->actingAs($user)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'This should be blocked',
             'model' => 'gemini-2.5-flash-lite',
         ]);
@@ -68,7 +68,7 @@ test('rate limit resets after time window', function () {
      * Exhaust the rate limit
      */
     for ($i = 1; $i <= $limit; $i++) {
-        $this->actingAs($user)->postJson('/chat/stream', [
+        $this->actingAs($user)->postJson('/c/stream', [
             'prompt' => "Test {$i}",
             'model' => 'gemini-2.5-flash-lite',
         ])->assertOk();
@@ -77,7 +77,7 @@ test('rate limit resets after time window', function () {
     /**
      * Next request should fail
      */
-    $this->actingAs($user)->postJson('/chat/stream', [
+    $this->actingAs($user)->postJson('/c/stream', [
         'prompt' => 'Should fail',
         'model' => 'gemini-2.5-flash-lite',
     ])->assertStatus(429);
@@ -90,7 +90,7 @@ test('rate limit resets after time window', function () {
     /**
      * Rate limit should be reset
      */
-    $this->actingAs($user)->postJson('/chat/stream', [
+    $this->actingAs($user)->postJson('/c/stream', [
         'prompt' => 'Should work after reset',
         'model' => 'gemini-2.5-flash-lite',
     ])->assertOk();
@@ -106,7 +106,7 @@ test('different users have independent rate limits', function () {
      */
     for ($i = 1; $i <= $limit; $i++) {
         $this->actingAs($user1)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "User 1 Test {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ])
@@ -117,7 +117,7 @@ test('different users have independent rate limits', function () {
      * User 1 is now blocked
      */
     $this->actingAs($user1)
-        ->postJson('/chat/stream', [
+        ->postJson('/c/stream', [
             'prompt' => 'User 1 blocked',
             'model' => 'gemini-2.5-flash-lite',
         ])
@@ -128,7 +128,7 @@ test('different users have independent rate limits', function () {
      */
     for ($i = 1; $i <= $limit; $i++) {
         $response = $this->actingAs($user2)
-            ->postJson('/chat/stream', [
+            ->postJson('/c/stream', [
                 'prompt' => "User 2 Test {$i}",
                 'model' => 'gemini-2.5-flash-lite',
             ]);

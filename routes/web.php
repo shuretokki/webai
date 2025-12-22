@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\UsageController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -78,30 +79,51 @@ Route::middleware(['auth', 'verified'])
     });
 
 Route::middleware(['auth', 'verified'])
+    ->prefix('profile')
     ->group(function () {
-        Route::delete('/chat/{chat}', [ChatController::class, 'destroy'])
+        Route::post('/avatar', [ProfileController::class, 'uploadAvatar'])
+            ->name('profile.avatar');
+
+        Route::patch('/', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/password', [ProfileController::class, 'changePassword'])
+            ->name('profile.password');
+
+        Route::post('/export', [ProfileController::class, 'exportData'])
+            ->name('profile.export');
+
+        Route::delete('/', [ProfileController::class, 'destroy'])
+            ->name('profile.destroy');
+    });
+
+Route::middleware(['auth', 'verified'])
+    ->group(function () {
+        Route::delete('/c/{chat}', [ChatController::class, 'destroy'])
             ->name('chat.destroy')
             ->can('delete', 'chat');
 
-        Route::patch('/chat/{chat}', [ChatController::class, 'update'])
+        Route::patch('/c/{chat}', [ChatController::class, 'update'])
             ->name('chat.update')
             ->can('update', 'chat');
 
-        Route::post('/chat/stream', [ChatController::class, 'stream'])
+        Route::post('/c/stream', [ChatController::class, 'stream'])
             ->name('chat.stream')
             ->middleware('throttle:chat-messages');
 
-        Route::get('/chat/search', [ChatController::class, 'search'])
+        Route::get('/s', [ChatController::class, 'search'])
             ->name('chat.search')
             ->middleware('throttle:60,1');
 
-        Route::get('/chat/{chat}/export/{format?}', [ChatController::class, 'export'])
+        Route::get('/c/{chat}/export/{format?}', [ChatController::class, 'export'])
             ->name('chat.export')
             ->can('view', 'chat')
             ->where('format', 'pdf|md');
 
-        Route::get('/chat/{chat?}', [ChatController::class, 'index'])
+        Route::get('/c/{chat?}', [ChatController::class, 'index'])
             ->name('chat');
+        Route::redirect('/chat/{chat?}', '/c/{chat?}')->where('chat', '[0-9]+');
+        Route::redirect('/chat/search', '/s');
     });
 
 require __DIR__.'/settings.php';

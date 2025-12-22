@@ -61,6 +61,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<Chat, User>
+     */
+    public function chats(): HasMany
+    {
+        return $this->hasMany(Chat::class);
+    }
+
+    /**
      * @return HasMany<SocialIdentity, User>
      */
     public function socialIdentities(): HasMany
