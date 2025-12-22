@@ -18,9 +18,6 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        /**
-         * Fake Prism responses to prevent API rate limits and costs
-         */
         Prism::fake([
             new TextResponse(
                 steps: collect([]),

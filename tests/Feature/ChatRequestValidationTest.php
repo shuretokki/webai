@@ -138,7 +138,7 @@ test('chat request validates file size limit', function () {
     /**
      * Create image larger than limit using size() method instead of dimensions
      */
-    $file = UploadedFile::fake()->image('test.jpg')->size(10241); // 10241 KB > 10240 KB limit
+    $file = UploadedFile::fake()->image('test.jpg')->size(10241);
 
     $response = $this->postJson('/c/stream', [
         'prompt' => 'Analyze this file',
