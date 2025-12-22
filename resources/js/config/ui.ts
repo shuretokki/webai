@@ -163,6 +163,28 @@ export const ui = {
   },
 
   /**
+   * <Features>
+   * Configuration for the brand marquee and trusted partners section.
+   */
+  features: {
+    section: 'py-24 border-y border-white/5 bg-black overflow-hidden select-none',
+    track: 'flex gap-16 md:gap-32 items-center whitespace-nowrap min-w-full',
+    brandIcon: 'w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-500',
+    brandName: 'text-white/10 group-hover:text-white/40 font-medium tracking-tight text-xl md:text-2xl transition-colors',
+  },
+
+  /**
+   * <Developer>
+   * Technical feature cards and living interface animations.
+   */
+  developer: {
+    grid: 'grid grid-cols-1 md:grid-cols-12 gap-6',
+    card: 'relative bg-[#080808]/50 border border-white/5 rounded-2xl overflow-hidden group transition-colors flex flex-col',
+    imageWrapper: 'flex-1 relative overflow-hidden flex items-center justify-center p-12 mt-auto',
+    glow: 'absolute -top-20 -left-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none',
+  },
+
+  /**
    * <Animations>
    * Animation constants and motion presets.
    */
@@ -319,7 +341,7 @@ export const ui = {
 
       /**
        * <Hero>
-       * Scroll effects for the hero section.
+       * Scroll effects for the fixed hero section.
        *
        * @default
        * range: [0, 1000],
@@ -334,7 +356,6 @@ export const ui = {
        */
       hero: {
         range: [0, 1000],
-        imageY: [0, 0],
         imageScale: [1, 1.15],
         headerY: [0, -400],
         headerScale: [1, 0.5],
@@ -357,6 +378,19 @@ export const ui = {
         scale: (v: number) => 1 + v * 0.0001,
       },
     },
+  },
+
+  /**
+   * <Pricing>
+   * Pricing specific design tokens and styles.
+   */
+  pricing: {
+    card: 'flex flex-col relative px-8 py-10 rounded-2xl border border-white/5 bg-[#050505] overflow-hidden',
+    premiumCard: 'flex flex-col relative px-8 py-10 rounded-2xl border border-white/10 bg-[#080808] overflow-hidden',
+    popularBadge: 'absolute top-4 right-4 px-3 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-wider',
+    featureItem: 'flex items-center gap-3 text-sm text-white/40',
+    toggleWrapper: 'bg-white/5 border border-white/10 rounded-full p-1 flex items-center relative w-full max-w-[280px] self-center md:self-auto',
+    toggleActive: 'absolute inset-y-1 w-[calc(50%-4px)] bg-white/10 rounded-full',
   },
 
   /**
