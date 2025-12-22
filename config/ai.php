@@ -83,5 +83,30 @@ return [
             'input_cost' => 0.00055,
             'output_cost' => 0.00219,
         ],
+
+        [
+            'id' => 'llama-3.3-70b-versatile',
+            'name' => 'Llama 3.3 70B',
+            'provider' => 'groq',
+            'is_free' => true,
+            'input_cost' => 0.00,
+            'output_cost' => 0.00,
+        ],
+        [
+            'id' => 'llama-3.1-8b-instant',
+            'name' => 'Llama 3.1 8B (Instant)',
+            'provider' => 'groq',
+            'is_free' => true,
+            'input_cost' => 0.00,
+            'output_cost' => 0.00,
+        ],
+        [
+            'id' => 'mixtral-8x7b-32768',
+            'name' => 'Mixtral 8x7B',
+            'provider' => 'groq',
+            'is_free' => true,
+            'input_cost' => 0.00,
+            'output_cost' => 0.00,
+        ],
     ],
 ];
