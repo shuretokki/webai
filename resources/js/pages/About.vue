@@ -2,6 +2,9 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import RevealFooter from '@/components/RevealFooter.vue';
+import PreFooter from '@/components/PreFooter.vue';
+import { Motion } from 'motion-v';
+import { ui } from '@/config/ui';
 
 const content = {
   footer: {
@@ -19,6 +22,31 @@ const content = {
     }
   }
 };
+
+const container = {
+  initial: { opacity: 0 },
+  enter: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const reveal = {
+  initial: { opacity: 0, y: 40, filter: 'blur(10px)', scale: 0.95 },
+  enter: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    scale: 1,
+    transition: {
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
 </script>
 
 <template>
@@ -26,35 +54,90 @@ const content = {
   <Head title="About" />
 
   <AppLayout>
-    <div class="py-12 bg-black min-h-screen text-white">
-      <div class="max-w-4xl mx-auto px-6">
-        <div class="mb-16">
-          <h1 class="text-4xl font-light mb-6">About Ecnelis</h1>
-          <p class="text-xl text-white/50 leading-relaxed font-light">
-            We are building the interface between human thought and artificial intelligence.
-          </p>
-        </div>
+    <div class="bg-black min-h-screen text-white selection:bg-white/20">
 
-        <div class="space-y-12 text-white/80 leading-relaxed font-light">
-          <section>
-            <h2 class="text-2xl font-normal text-white mb-4">Our Mission</h2>
-            <p class="mb-4">
-              Ecnelis was founded on the belief that AI should be an extension of the mind, not a replacement. We strive
-              to create tools that amplify human creativity, streamline workflows, and make advanced technology
-              accessible to everyone.
-            </p>
-          </section>
+      <section class="min-h-[90vh] flex items-center justify-center px-6">
+        <Motion :initial="'initial'" :animate="'enter'" :variants="container" class="text-center">
+          <Motion :variants="reveal" class="mb-6">
+            <span :class="ui.typography.label" class="justify-center">
+              Ecnelis
+            </span>
+          </Motion>
 
-          <section>
-            <h2 class="text-2xl font-normal text-white mb-4">The Platform</h2>
-            <p class="mb-4">
-              Our platform integrates state-of-the-art AI models into a unified, intuitive workspace. Whether you are
-              coding, writing, or designing, Ecnelis provides the intelligence you need, right when you need it.
+          <Motion :variants="reveal">
+            <h1 :class="ui.typography.manifesto" class="max-w-5xl mx-auto">
+              The interface <br />
+              <span class="text-white/20">of thought.</span>
+            </h1>
+          </Motion>
+        </Motion>
+      </section>
+
+      <section class="py-64 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+          <Motion :initial="'initial'" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
+            :variants="reveal">
+            <h2 class="text-white/30 uppercase tracking-[0.3em] text-[10px] font-mono mb-12">Mission</h2>
+            <p :class="ui.typography.display" class="text-white/90">
+              We believe AI should be an extension of the mind, not a replacement.
             </p>
-          </section>
+          </Motion>
         </div>
-      </div>
-      <div class="h-[10dvh] bg-black relative z-20"></div>
+      </section>
+
+
+      <section class="py-64 px-6 bg-white/[0.02]">
+        <div class="max-w-4xl mx-auto text-center">
+          <Motion :initial="'initial'" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
+            :variants="reveal">
+            <h2 class="text-white/30 uppercase tracking-[0.3em] text-[10px] font-mono mb-12">Vision</h2>
+            <p :class="ui.typography.display" class="text-white/90">
+              Zero friction between <br />
+              <span class="text-white/40 italic font-serif">idea and execution.</span>
+            </p>
+          </Motion>
+        </div>
+      </section>
+
+
+      <section class="py-64 px-6">
+        <div class="max-w-2xl mx-auto">
+          <Motion :initial="'initial'" :while-in-view="'enter'" :viewport="{ once: true, margin: '-20%' }"
+            :variants="container" class="space-y-32">
+            <Motion :variants="reveal" class="group">
+              <h3 class="text-white/40 text-xs font-mono mb-4">03.1</h3>
+              <p class="text-2xl font-light tracking-tight group-hover:text-white transition-colors duration-500">
+                Simplicity is the ultimate sophistication. We strip away the noise so you can focus on the signal.
+              </p>
+            </Motion>
+
+            <Motion :variants="reveal" class="group">
+              <h3 class="text-white/40 text-xs font-mono mb-4">03.2</h3>
+              <p class="text-2xl font-light tracking-tight group-hover:text-white transition-colors duration-500">
+                Human-centric by design. Every feature we build starts with the question: "How does this empower the
+                user?"
+              </p>
+            </Motion>
+
+            <Motion :variants="reveal" class="group">
+              <h3 class="text-white/40 text-xs font-mono mb-4">03.3</h3>
+              <p class="text-2xl font-light tracking-tight group-hover:text-white transition-colors duration-500">
+                Radical innovation. We don't follow trends; we build the tools that define the future of work.
+              </p>
+            </Motion>
+          </Motion>
+        </div>
+      </section>
+
+
+      <section class="py-64 flex flex-center justify-center">
+        <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
+          class="w-px h-32 bg-gradient-to-b from-white/0 via-white/20 to-white/0">
+        </Motion>
+      </section>
+
+      <PreFooter />
+
       <RevealFooter :content="content" />
     </div>
   </AppLayout>
