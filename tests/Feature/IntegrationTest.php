@@ -30,11 +30,13 @@ test('complete user journey: register to chat deletion', function () {
     ];
 
     $registerResponse = $this->post('/register', $userData);
-    $registerResponse->assertRedirect('/c');
+    $registerResponse->assertRedirect(route('verification.notice'));
 
     $user = User::where('email', 'test@example.com')->first();
     expect($user)->not->toBeNull();
     expect($user->name)->toBe('Test User');
+
+    $user->markEmailAsVerified();
 
     /**
      * Step 2: Create First Chat
