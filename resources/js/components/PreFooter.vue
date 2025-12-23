@@ -28,7 +28,19 @@ const transition = {
 
 <template>
   <section class="relative h-[60dvh] bg-black overflow-hidden flex items-center justify-center pb-[env(safe-area-inset-bottom)]">
-    <!-- The "50% up, 50% cut out" background element -->
+    <div class="absolute bottom-0 left-0 right-0 w-full h-full overflow-hidden pointer-events-none opacity-100">
+      <img
+        src="/images/preFooter.webp"
+        alt=""
+        class="w-full h-full object-cover object-bottom"
+        width="1920"
+        height="1080"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent"></div>
+    </div>
+
     <Motion
       :initial="variants.background.initial"
       :while-in-view="variants.background.enter"
@@ -37,16 +49,6 @@ const transition = {
       class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[150vw] aspect-square bg-white/[0.02] rounded-full border border-white/10"
     />
 
-    <!-- Subtle glow -->
-    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_100%,#ffffff08,transparent_70%)] pointer-events-none"></div>
-
-    <!-- Minimalist center line -->
-    <Motion
-      :initial="variants.line.initial"
-      :while-in-view="variants.line.enter"
-      :viewport="{ once: true }"
-      :transition="transition.line"
-      class="relative z-10 w-px h-32 bg-gradient-to-b from-transparent via-white/20 to-transparent origin-bottom"
-    />
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none"></div>
   </section>
 </template>
