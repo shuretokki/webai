@@ -15,17 +15,22 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(Request $request): RedirectResponse
     {
+        $urlUserId = $request->route('id');
         $user = $request->user();
 
+        if ($user && $user->id != $urlUserId) {
+            abort(403, 'Invalid verification link.');
+        }
+
         if (! $user) {
-            $user = \App\Models\User::findOrFail($request->route('id'));
+            $user = \App\Models\User::findOrFail($urlUserId);
         }
 
         if (! hash_equals(
             (string) $request->route('hash'),
             sha1($user->getEmailForVerification())
         )) {
-            return redirect('/login')->with('error', 'Invalid verification link.');
+            abort(403, 'Invalid verification link.');
         }
 
         if (! $user->hasVerifiedEmail()) {
@@ -38,7 +43,11 @@ class VerifyEmailController extends Controller
             $request->session()->regenerate();
         }
 
-        return redirect()->intended(config('fortify.home', '/c'))
+        $request->session()->forget('pending_verification_user_id');
+
+        $redirectUrl = config('fortify.home', '/c');
+
+        return redirect($redirectUrl.'?verified=1')
             ->with('verified', true)
             ->with('status', 'Your email has been verified!');
     }
