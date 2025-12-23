@@ -16,7 +16,7 @@ import { ui } from '@/config/ui';
 
         <Head title="Register" />
 
-        <Form action="/register" method="post" :reset-on-success="['password', 'password_confirmation']"
+        <Form action="/register" method="post"
             v-slot="{ errors, processing }" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
