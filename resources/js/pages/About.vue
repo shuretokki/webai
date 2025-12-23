@@ -129,13 +129,6 @@ const reveal = {
         </div>
       </section>
 
-
-      <section class="py-64 flex flex-center justify-center">
-        <Motion :initial="{ opacity: 0 }" :while-in-view="{ opacity: 1 }" :viewport="{ once: true }"
-          class="w-px h-32 bg-gradient-to-b from-white/0 via-white/20 to-white/0">
-        </Motion>
-      </section>
-
       <PreFooter />
 
       <RevealFooter :content="content" />
