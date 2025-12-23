@@ -17,7 +17,7 @@ export const ui = {
   navigation: {
     height: 'h-14',
     maxWidth: 'max-w-[1400px]',
-    scrollThreshold: [0, 600],
+    scrollThreshold: [0, 0],
 
     /**
      * <Background>
