@@ -9,21 +9,34 @@ use Inertia\Inertia;
 Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('settings/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('settings/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('settings/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
     Route::get('settings/profile/verify-current-email', [ProfileController::class, 'verifyCurrentEmail'])
         ->middleware('signed')
         ->name('profile.email.verify-current');
+
     Route::post('settings/profile/cancel-email-change', [ProfileController::class, 'cancelEmailChange'])
         ->name('profile.email.cancel');
-    Route::post('api/user/avatar', [ProfileController::class, 'uploadAvatar'])->name('avatar.upload');
+
+    Route::post('api/user/avatar', [ProfileController::class, 'uploadAvatar'])
+        ->name('avatar.upload');
+
     Route::put('settings/password', [PasswordController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');
-    Route::post('settings/profile/export', [ProfileController::class, 'exportData'])->name('profile.export');
 
-    Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
+    Route::post('settings/profile/export', [ProfileController::class, 'exportData'])
+        ->name('profile.export');
+
+    Route::get('settings/password', [PasswordController::class, 'edit'])
+        ->name('user-password.edit');
 
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');
