@@ -81,7 +81,7 @@ Route::middleware(['auth', 'verified'])
         Route::get('/usage/current', [UsageController::class, 'current']);
     });
 
-Route::middleware(['auth'])
+Route::middleware(['auth', 'verified'])
     ->group(function () {
         Route::delete('/c/{chat}', [ChatController::class, 'destroy'])
             ->name('chat.destroy')
