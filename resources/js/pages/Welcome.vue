@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'motion-v';
 import Lenis from 'lenis';
 import { Menu, X } from 'lucide-vue-next';
 
 import RevealFooter from '@/components/RevealFooter.vue';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Hero from '@/components/landing/Hero.vue';
 import Manifesto from '@/components/landing/Manifesto.vue';
 import Features from '@/components/landing/Features.vue';

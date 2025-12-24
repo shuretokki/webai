@@ -30,7 +30,6 @@ export default defineConfig(({ mode }) => {
                     },
                 },
             }),
-            // Use correct command and only run in development to avoid production hangs
             !isProduction && run([
                 {
                     name: 'wayfinder',
