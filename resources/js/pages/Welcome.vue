@@ -317,8 +317,8 @@ const content = {
 
   <div class="min-h-dvh bg-black text-white font-space selection:bg-white/20 overflow-x-hidden relative z-10">
 
-    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.1] mix-blend-overlay"
-      style="background-image: url('/images/noise.jpg');">
+    <div class="fixed inset-0 pointer-events-none z-40 opacity-[0.2] mix-blend-overlay"
+      style="background-image: url('/images/noise.webp');">
     </div>
 
     <header class="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none"
